@@ -1,7 +1,6 @@
 // src/components/song/SongForm.tsx
 import React, { useState, useEffect } from 'react';
 import { Song } from '../../domain/entities/Song'; // Import Entity Song
-import { v4 as uuidv4 } from 'uuid';
 import { Track } from '../../domain/entities/Track';
 
 
@@ -288,26 +287,26 @@ const trackOrderInputStyle: React.CSSProperties = {
   textAlign: 'center',
 };
 
-const addButtonFormStyle: React.CSSProperties = {
-  padding: '8px 12px',
-  fontSize: '0.9em',
-  backgroundColor: '#28a745',
-  color: 'white',
-  border: 'none',
-  borderRadius: '4px',
-  cursor: 'pointer',
-  marginTop: '5px',
-};
+// const addButtonFormStyle: React.CSSProperties = {
+//   padding: '8px 12px',
+//   fontSize: '0.9em',
+//   backgroundColor: '#28a745',
+//   color: 'white',
+//   border: 'none',
+//   borderRadius: '4px',
+//   cursor: 'pointer',
+//   marginTop: '5px',
+// };
 
-const removeButtonStyle: React.CSSProperties = {
-  padding: '6px 10px',
-  fontSize: '1em',
-  backgroundColor: '#dc3545',
-  color: 'white',
-  border: 'none',
-  borderRadius: '4px',
-  cursor: 'pointer',
-};
+// const removeButtonStyle: React.CSSProperties = {
+//   padding: '6px 10px',
+//   fontSize: '1em',
+//   backgroundColor: '#dc3545',
+//   color: 'white',
+//   border: 'none',
+//   borderRadius: '4px',
+//   cursor: 'pointer',
+// };
 
 const formStyle: React.CSSProperties = {
   display: 'flex',

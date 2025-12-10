@@ -10,7 +10,7 @@ export interface NoteFormData {
   title: string;
   description: string;
   color: string;
-  icon: string;
+  icon?: string;
 }
 
 // Props của Form: Cần toàn bộ Song để lấy Track List và Total Duration
@@ -50,6 +50,8 @@ const NoteEditForm: React.FC<NoteEditFormProps> = ({
   const [formData, setFormData] = useState<NoteFormData>(
     getDefaultNoteFormData(currentSong, initialNote)
   );
+
+  console.log('---fomdata', formData)
 
   const { tracks, totalDuration } = currentSong;
 
@@ -154,6 +156,16 @@ const NoteEditForm: React.FC<NoteEditFormProps> = ({
         value={formData.color}
         onChange={handleChange}
         style={{ ...inputStyle, height: '40px' }}
+      />
+
+      {/* 6. Icon Input */}
+      <label style={labelStyle}>Icon:</label>
+      <input
+        type="text"
+        name="icon"
+        value={formData.icon}
+        onChange={handleChange}
+        style={{ ...inputStyle }}
       />
       
       {/* Action Buttons */}

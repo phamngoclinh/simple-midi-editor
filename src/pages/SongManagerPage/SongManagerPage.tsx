@@ -9,7 +9,9 @@ import {
   deleteSongUseCase,
   addNoteToSongUseCase,
   editExistingNoteUseCase,
-  deleteExistingNoteUseCase
+  deleteExistingNoteUseCase,
+  importSongFromJsonUseCase,
+  exportSongToJsonUseCase
 } from '../../dependencies'; // Import từ file dependencies đã tạo
 import SongForm from '../../components/song/SongForm';
 import SongListItem from '../../components/song/SongListItem';
@@ -204,6 +206,65 @@ const SongManagerPage: React.FC = () => {
     }
   };
 
+  // --- Hàm Export Song ---
+  const handleExportSong = (song: Song) => {
+    // 💥 LOGIC EXPORT
+    try {
+        // Tạm thời, chỉ lấy dữ liệu của Song đang được chỉnh sửa (hoặc Song được chọn)
+        // Nếu muốn export một Song từ danh sách, cần truyền Song đó vào
+        const jsonString = exportSongToJsonUseCase.execute(song); 
+        
+        // Tạo Blob và tải file
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${song.name.replace(/\s/g, '_')}_export.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        alert(`Đã export Song "${song.name}" thành công.`);
+
+    } catch (error) {
+        console.error("Lỗi khi export Song:", error);
+        alert("Export Song thất bại: " + (error as Error).message);
+    }
+  };
+
+  // --- Hàm Import Song ---
+  const handleImportSong = () => {
+    // Tạo input file ẩn để mở cửa sổ chọn file
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const jsonString = event.target?.result as string;
+        
+        // 💥 LOGIC IMPORT
+        try {
+          // Gửi chuỗi JSON đến Use Case để xử lý
+          const newSong = await importSongFromJsonUseCase.execute(jsonString);
+          
+          alert(`Đã import và tạo Song mới: "${newSong.name}"`);
+          await loadSongs(); // Tải lại danh sách để thấy Song mới
+          
+        } catch (error) {
+          console.error("Lỗi khi import Song:", error);
+          alert("Import Song thất bại: " + (error as Error).message);
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  };
+
   if (loading) return <div>Đang tải danh sách bài hát...</div>;
 
   return (
@@ -211,12 +272,21 @@ const SongManagerPage: React.FC = () => {
       <h2>🎶 Quản Lý Bài Hát</h2>
 
       {/* 1. Khu vực Tạo Song */}
-      <button
-        onClick={handleOpenCreateModal}
-        style={createButtonStyle}
-      >
-        + Tạo Bài Hát Mới
-      </button>
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+        <button
+          onClick={handleOpenCreateModal}
+          style={createButtonStyle}
+        >
+          + Tạo Bài Hát Mới
+        </button>
+
+        <button 
+          onClick={handleImportSong} 
+          style={{ ...createButtonStyle, backgroundColor: '#6f42c1' }} // Màu Tím cho Import
+        >
+          Import Song (JSON)
+        </button>
+      </div>
 
       <hr style={{ margin: '20px 0' }} />
 
@@ -251,6 +321,7 @@ const SongManagerPage: React.FC = () => {
                   onEdit={() => handleStartEdit(song)}
                   onDelete={() => handleDeleteSong(song.id!, song.name)}
                   onEditNotes={handleStartNoteManagement}
+                  onExport={handleExportSong}
                 />
               </li>
             ))}
@@ -307,7 +378,7 @@ const SongManagerPage: React.FC = () => {
                   title: editingNote.title || '',
                   description: editingNote.description || '',
                   color: editingNote.color || '#007bff',
-                  icon: editingNote.color || '',
+                  icon: editingNote.icon || '',
                 }}
                 onSubmit={handleSaveNote}
                 onCancel={() => setEditingNote(null)} // Quay lại danh sách

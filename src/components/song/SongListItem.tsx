@@ -14,6 +14,8 @@ interface SongListItemProps {
   onDelete: (songId: string) => void;
   /** Hàm được gọi khi người dùng nhấn nút "Edit Notes". */
   onEditNotes: (song: Song) => void;
+  /** Hàm được gọi khi người dùng nhấn nút "Export". */
+  onExport: (song: Song) => void;
 }
 
 const SongListItem: React.FC<SongListItemProps> = ({ 
@@ -21,7 +23,8 @@ const SongListItem: React.FC<SongListItemProps> = ({
   onOpen, 
   onEdit, 
   onDelete,
-  onEditNotes
+  onEditNotes,
+  onExport
 }) => {
   // Định dạng timestamp cho dễ đọc
   const formattedDate = song.updatedTimestamp 
@@ -39,6 +42,7 @@ const SongListItem: React.FC<SongListItemProps> = ({
   const handleEdit = () => song.id && onEdit(song.id);
   const handleDelete = () => song.id && onDelete(song.id);
   const handleEditNotes = () => onEditNotes(song);
+  const handleExportSong = () => onExport(song);
 
   return (
     <div style={itemContainerStyle}>
@@ -54,6 +58,13 @@ const SongListItem: React.FC<SongListItemProps> = ({
 
       {/* Các Nút Thao tác */}
       <div style={actionsStyle}>
+        <button 
+          onClick={handleExportSong} 
+          style={{ ...buttonStyle, backgroundColor: '#ffc107' }}
+          title="Export Song này thành JSON"
+        >
+          Export
+        </button>
         <button 
           onClick={handleEditNotes} 
           style={{ ...buttonStyle, backgroundColor: '#17a2b8' }}

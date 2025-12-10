@@ -62,7 +62,7 @@ const MidiEditorManager: React.FC<MidiEditorProps> = ({ currentSong, reload }) =
           title: editingNote.title || '',
           description: editingNote.description || '',
           color: editingNote.color || '#007bff',
-          icon: editingNote.color || '',
+          icon: editingNote.icon || '',
         }}
         onSubmit={handleSaveNote}
         onCancel={() => setEditingNote(null)} // Quay lại danh sách
