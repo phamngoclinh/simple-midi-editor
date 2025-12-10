@@ -3,9 +3,10 @@
 import { INoteRepository } from '../../domain/repositories/INoteRepository';
 import { Note } from '../../domain/entities/Note';
 import { v4 as uuidv4 } from 'uuid';
+import { MIDI_EDITOR_NOTES_SONG } from '../config/localStorageKeys';
 
 // Hàm helper để tạo key cho từng Song
-const getNoteStorageKey = (songId: string) => `MIDI_EDITOR_NOTES_${songId}`;
+const getNoteStorageKey = (songId: string) => MIDI_EDITOR_NOTES_SONG.replace('{{songId}}', songId);
 
 export class LocalStorageNoteRepository implements INoteRepository {
     private getNotesForSong(songId: string): Note[] {

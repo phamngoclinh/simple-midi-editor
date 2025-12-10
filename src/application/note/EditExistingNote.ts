@@ -52,8 +52,14 @@ export class EditExistingNote {
         const notes = await this.noteRepository.findBySongId(data.songId);
         const existingNote = notes.find(n => n.id === data.id);
 
+        console.log('notes', notes, existingNote)
+
         if (!existingNote) {
             throw new Error(`Note with ID ${data.id} not found in Song ${data.songId}.`);
+        }
+
+        if (notes.some(x => x.id !== data.id && x.time === data.time && x.trackId === data.trackId)) {
+            throw new Error(`Note with Time ${data.time}, TrackId ${data.trackId} is existing in song`);
         }
 
         // 3. Áp dụng các thay đổi

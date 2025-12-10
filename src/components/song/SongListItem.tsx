@@ -12,13 +12,16 @@ interface SongListItemProps {
   onEdit: (songId: string) => void;
   /** Hàm được gọi khi người dùng nhấn nút "Delete". */
   onDelete: (songId: string) => void;
+  /** Hàm được gọi khi người dùng nhấn nút "Edit Notes". */
+  onEditNotes: (song: Song) => void;
 }
 
 const SongListItem: React.FC<SongListItemProps> = ({ 
   song, 
   onOpen, 
   onEdit, 
-  onDelete 
+  onDelete,
+  onEditNotes
 }) => {
   // Định dạng timestamp cho dễ đọc
   const formattedDate = song.updatedTimestamp 
@@ -35,6 +38,7 @@ const SongListItem: React.FC<SongListItemProps> = ({
   const handleOpen = () => song.id && onOpen(song.id);
   const handleEdit = () => song.id && onEdit(song.id);
   const handleDelete = () => song.id && onDelete(song.id);
+  const handleEditNotes = () => onEditNotes(song);
 
   return (
     <div style={itemContainerStyle}>
@@ -50,6 +54,13 @@ const SongListItem: React.FC<SongListItemProps> = ({
 
       {/* Các Nút Thao tác */}
       <div style={actionsStyle}>
+        <button 
+          onClick={handleEditNotes} 
+          style={{ ...buttonStyle, backgroundColor: '#17a2b8' }}
+          title="Thêm/Sửa Notes cho Song"
+        >
+          Sửa Notes
+        </button>
         <button 
           onClick={handleOpen} 
           style={{ ...buttonStyle, backgroundColor: '#28a745' }}

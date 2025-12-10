@@ -2,20 +2,19 @@
 
 import { ISongRepository } from '../../domain/repositories/ISongRepository';
 import { Song } from '../../domain/entities/Song';
-import { v4 as uuidv4 } from 'uuid'; // Giả sử dùng uuid để tạo ID
-
-const SONG_STORAGE_KEY = 'MIDI_EDITOR_SONGS';
+import { v4 as uuidv4 } from 'uuid';
+import { MIDI_EDITOR_SONGS } from '../config/localStorageKeys';
 
 export class LocalStorageSongRepository implements ISongRepository {
     private getSongsFromStorage(): Song[] {
-        const json = localStorage.getItem(SONG_STORAGE_KEY);
+        const json = localStorage.getItem(MIDI_EDITOR_SONGS);
         // Xử lý deserialization và trả về mảng Song
         return json ? (JSON.parse(json) as Song[]) : [];
     }
 
     private saveSongsToStorage(songs: Song[]): void {
         // Xử lý serialization và lưu vào localStorage
-        localStorage.setItem(SONG_STORAGE_KEY, JSON.stringify(songs));
+        localStorage.setItem(MIDI_EDITOR_SONGS, JSON.stringify(songs));
     }
 
     // --- Implementations từ ISongRepository ---
@@ -56,6 +55,5 @@ export class LocalStorageSongRepository implements ISongRepository {
         let songs = this.getSongsFromStorage();
         songs = songs.filter(song => song.id !== id);
         this.saveSongsToStorage(songs);
-        // Thường sau khi xóa Song, cần xóa cả Notes liên quan (DIP/Use Case sẽ xử lý)
     }
 }

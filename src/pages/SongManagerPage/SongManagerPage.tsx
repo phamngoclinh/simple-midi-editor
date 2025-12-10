@@ -2,17 +2,23 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Song } from '../../domain/entities/Song';
-import { 
-  listAllSongsUseCase, 
-  createNewSongUseCase, 
-  editSongUseCase, 
-  deleteSongUseCase 
+import {
+  listAllSongsUseCase,
+  createNewSongUseCase,
+  editSongUseCase,
+  deleteSongUseCase,
+  addNoteToSongUseCase,
+  editExistingNoteUseCase,
+  deleteExistingNoteUseCase
 } from '../../dependencies'; // Import từ file dependencies đã tạo
 import SongForm from '../../components/song/SongForm';
 import SongListItem from '../../components/song/SongListItem';
 import { SongSortBy, SortOrder } from '../../application/song/ListAllSong';
 import Modal from '../../components/common/Modal';
 import { Track } from '../../domain/entities/Track';
+import NoteEditForm, { NoteFormData } from '../../components/note/NoteEditForm';
+import { Note } from '../../domain/entities/Note';
+import NoteList from '../../components/note/NoteList';
 
 interface SongFormData {
   name: string;
@@ -34,6 +40,8 @@ const SongManagerPage: React.FC = () => {
   const [editingSong, setEditingSong] = useState<Song | null>(null);
   const [sortState, setSortState] = useState<SortState>({ by: 'updated', order: 'desc' });
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); // Modal Tạo mới
+  const [selectedSongForNoteEdit, setSelectedSongForNoteEdit] = useState<Song | null>(null);
+  const [editingNote, setEditingNote] = useState<Note | null>(null);
   const navigate = useNavigate();
 
   // --- Hàm Tải Dữ liệu ---
@@ -64,6 +72,8 @@ const SongManagerPage: React.FC = () => {
   const handleCloseModal = () => {
     setIsCreateModalOpen(false);
     setEditingSong(null); // Đóng Modal Edit nếu đang mở
+    setSelectedSongForNoteEdit(null); // 💥 Thêm reset state này
+    setEditingNote(null);
   };
 
   // --- Xử lý Tạo Song (Create) ---
@@ -96,11 +106,11 @@ const SongManagerPage: React.FC = () => {
   const handleEditSong = async (songId: string, data: SongFormData) => {
     try {
       const updateData = {
-          id: songId,
-          name: data.name,
-          description: data.description,
-          totalDuration: data.totalDuration,
-          tracks: data.tracks,
+        id: songId,
+        name: data.name,
+        description: data.description,
+        totalDuration: data.totalDuration,
+        tracks: data.tracks,
       };
       const updatedSong = await editSongUseCase.execute(updateData);
       handleCloseModal();
@@ -121,17 +131,76 @@ const SongManagerPage: React.FC = () => {
     try {
       await deleteSongUseCase.execute(songId);
       // Xóa thành công, cập nhật UI mà không cần tải lại toàn bộ
-      setSongs(prev => prev.filter(s => s.id !== songId)); 
+      setSongs(prev => prev.filter(s => s.id !== songId));
       alert(`Bài hát "${songName}" đã bị xóa.`);
     } catch (error) {
       console.error("Lỗi khi xóa Song:", error);
       alert("Xóa bài hát thất bại.");
     }
   };
-  
+
   // --- Xử lý Mở Song (Navigate) ---
   const handleOpenSong = (songId: string) => {
     navigate(`/editor/${songId}`);
+  };
+
+  // --- Hàm Xử lý Note Edit/Create ---
+
+  // 1. Mở Modal Note Edit/List
+  const handleStartNoteManagement = (song: Song) => {
+    setSelectedSongForNoteEdit(song);
+    setEditingNote(null); // Luôn bắt đầu ở chế độ List/Create
+  };
+
+  // 2. Chuyển sang chế độ Chỉnh sửa Note đã có
+  const handleStartEditNote = (note: Note) => {
+    setEditingNote(note);
+  };
+
+  // 3. Xử lý lưu Note (tạo mới hoặc cập nhật)
+  const handleSaveNote = async (noteData: NoteFormData) => {
+    if (!selectedSongForNoteEdit) return;
+
+    try {
+      if (editingNote && editingNote.id) {
+        // 💥 LOGIC UPDATE NOTE
+        console.log("Cập nhật Note:", editingNote.id, noteData);
+        await editExistingNoteUseCase.execute({ id: editingNote.id as string, ...noteData });
+      } else {
+        // 💥 LOGIC TẠO MỚI NOTE
+        console.log("Tạo mới Note:", noteData);
+        await addNoteToSongUseCase.execute({ ...noteData });
+      }
+
+      alert(`Note đã được lưu thành công.`);
+      // Sau khi lưu, đóng form và reset trạng thái chỉnh sửa Note
+      setEditingNote(null);
+      // Nếu NoteList có cơ chế refresh tự động, không cần làm gì thêm
+    } catch (error: any) {
+      console.error("Lỗi khi lưu Note:", error);
+      alert(`Lưu Note thất bại. ${error.message}`);
+    }
+  };
+
+  // 4. Xử lý Xóa Note
+  const handleDeleteNote = async (noteId: string) => {
+    if (!selectedSongForNoteEdit) return;
+    if (!window.confirm("Bạn có chắc chắn muốn xóa Note này không?")) return;
+
+    try {
+      const trackId = selectedSongForNoteEdit.tracks.find(t => t.notes.some(n => n.id === noteId))?.id;
+      if (!trackId) throw new Error("Track ID không tìm thấy");
+
+      // 💥 LOGIC DELETE NOTE
+      await deleteExistingNoteUseCase.execute(noteId, selectedSongForNoteEdit.id!, trackId);
+      console.log(`Đã xóa Note ID: ${noteId}`);
+
+      alert("Note đã được xóa.");
+      // Sau khi xóa, component NoteList sẽ tự tải lại (nếu có cơ chế dependency injection)
+    } catch (error) {
+      console.error("Lỗi khi xóa Note:", error);
+      alert("Xóa Note thất bại.");
+    }
   };
 
   if (loading) return <div>Đang tải danh sách bài hát...</div>;
@@ -139,14 +208,10 @@ const SongManagerPage: React.FC = () => {
   return (
     <div className="song-manager-page" style={pageStyle}>
       <h2>🎶 Quản Lý Bài Hát</h2>
-      
+
       {/* 1. Khu vực Tạo Song */}
-      {/* <div className="section create-song">
-        <h3>Tạo Bài Hát Mới</h3>
-        <SongForm onSubmit={handleCreateSong} />
-      </div> */}
-      <button 
-        onClick={handleOpenCreateModal} 
+      <button
+        onClick={handleOpenCreateModal}
         style={createButtonStyle}
       >
         + Tạo Bài Hát Mới
@@ -159,20 +224,20 @@ const SongManagerPage: React.FC = () => {
         <h3>Danh Sách Bài Hát ({songs.length})</h3>
 
         {/* Control Sắp xếp */}
-            <div style={sortControlStyle}>
-                <label htmlFor="sort-by-select">Sắp xếp theo:</label>
-                <select id="sort-by-select" onChange={handleSortChange} value={`${sortState.by}:${sortState.order}`} style={selectStyle}>
-                    <option value="updated:desc">Cập nhật gần nhất</option>
-                    <option value="updated:asc">Cập nhật cũ nhất</option>
-                    <option value="name:asc">Tên (A-Z)</option>
-                    <option value="name:desc">Tên (Z-A)</option>
-                    <option value="created:desc">Ngày tạo (mới nhất)</option>
-                    <option value="created:asc">Ngày tạo (cũ nhất)</option>
-                    <option value="tempo:desc">Tempo (cao nhất)</option>
-                    <option value="tempo:asc">Tempo (thấp nhất)</option>
-                </select>
+        <div style={sortControlStyle}>
+          <label htmlFor="sort-by-select">Sắp xếp theo:</label>
+          <select id="sort-by-select" onChange={handleSortChange} value={`${sortState.by}:${sortState.order}`} style={selectStyle}>
+            <option value="updated:desc">Cập nhật gần nhất</option>
+            <option value="updated:asc">Cập nhật cũ nhất</option>
+            <option value="name:asc">Tên (A-Z)</option>
+            <option value="name:desc">Tên (Z-A)</option>
+            <option value="created:desc">Ngày tạo (mới nhất)</option>
+            <option value="created:asc">Ngày tạo (cũ nhất)</option>
+            <option value="tempo:desc">Tempo (cao nhất)</option>
+            <option value="tempo:asc">Tempo (thấp nhất)</option>
+          </select>
         </div>
-        
+
         {songs.length === 0 ? (
           <p>Chưa có bài hát nào được lưu.</p>
         ) : (
@@ -184,6 +249,7 @@ const SongManagerPage: React.FC = () => {
                   onOpen={() => handleOpenSong(song.id!)}
                   onEdit={() => handleStartEdit(song)}
                   onDelete={() => handleDeleteSong(song.id!, song.name)}
+                  onEditNotes={handleStartNoteManagement}
                 />
               </li>
             ))}
@@ -192,31 +258,86 @@ const SongManagerPage: React.FC = () => {
       </div>
 
       {/* 3. 💥 Modal Tạo Song (Create Modal) */}
-      <Modal 
-        isOpen={isCreateModalOpen} 
-        onClose={handleCloseModal} 
+      <Modal
+        isOpen={isCreateModalOpen}
+        onClose={handleCloseModal}
         title="Tạo Song Mới"
       >
         {/* Truyền hàm xử lý tạo mới vào SongForm */}
-        <SongForm 
-            onSubmit={handleCreateSong} 
-            buttonLabel="Tạo Song" 
+        <SongForm
+          onSubmit={handleCreateSong}
+          buttonLabel="Tạo Song"
         />
       </Modal>
 
       {/* 4. 💥 Modal Chỉnh Sửa Song (Edit Modal) */}
-      <Modal 
-        isOpen={!!editingSong} 
-        onClose={handleCloseModal} 
+      <Modal
+        isOpen={!!editingSong}
+        onClose={handleCloseModal}
         title={`Chỉnh Sửa: ${editingSong?.name || ''}`}
       >
         {/* Truyền dữ liệu Song hiện tại và hàm xử lý lưu chỉnh sửa */}
         {editingSong && (
-            <SongForm 
-              initialSong={editingSong} 
-              onSubmit={(data) => handleEditSong(editingSong.id as string, data)}
-              buttonLabel="Lưu Thay Đổi"
-            />
+          <SongForm
+            initialSong={editingSong}
+            onSubmit={(data) => handleEditSong(editingSong.id as string, data)}
+            buttonLabel="Lưu Thay Đổi"
+          />
+        )}
+      </Modal>
+
+      {/* 💥 Modal Chỉnh Sửa Notes (Note Edit Modal) */}
+      <Modal
+        isOpen={!!selectedSongForNoteEdit}
+        onClose={handleCloseModal}
+        title={editingNote ? (editingNote.id ? `Sửa Note: ${editingNote.title}` : 'Tạo Note') : `Quản Lý Notes cho: ${selectedSongForNoteEdit?.name || ''}`}
+      >
+        {selectedSongForNoteEdit && (
+          <>
+            {editingNote ? (
+              // 💥 Chế độ FORM SỬA (hoặc Tạo mới)
+              <NoteEditForm
+                currentSong={selectedSongForNoteEdit}
+                // Gán các trường Note Entity vào NoteFormData (cần đảm bảo tương thích)
+                initialNote={{
+                  songId: selectedSongForNoteEdit.id as string,
+                  trackId: editingNote.trackId as string,
+                  time: editingNote.time,
+                  title: editingNote.title || '',
+                  description: editingNote.description || '',
+                  color: editingNote.color || '#007bff',
+                  icon: editingNote.color || '',
+                }}
+                onSubmit={handleSaveNote}
+                onCancel={() => setEditingNote(null)} // Quay lại danh sách
+                buttonLabel="Lưu Note"
+              />
+            ) : (
+              // 💥 Chế độ LIST NOTES (và nút Tạo mới)
+              <>
+                <button
+                  onClick={() => setEditingNote({
+                    trackId: selectedSongForNoteEdit.tracks[0].id as string,
+                    time: 0,
+                    title: '',
+                    description: '',
+                    color: '',
+                    icon: ''
+                  })} // Giả lập tạo mới
+                  style={{ padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px' }}
+                >
+                  + Tạo Note Mới
+                </button>
+
+                <NoteList
+                  songId={selectedSongForNoteEdit.id!}
+                  currentSong={selectedSongForNoteEdit}
+                  onEditNote={handleStartEditNote} // Mở form chỉnh sửa Note
+                  onDeleteNote={handleDeleteNote}
+                />
+              </>
+            )}
+          </>
         )}
       </Modal>
     </div>

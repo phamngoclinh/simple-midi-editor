@@ -6,6 +6,9 @@ import { EditSong } from './application/song/EditSong';
 import { DeleteSong } from './application/song/DeleteSong';
 import { LoadSongById } from './application/song/LoadSongById';
 import { AddNoteToSong } from './application/note/AddNoteToSong';
+import { DeleteExistingNote } from './application/note/DeleteExistingNote';
+import { EditExistingNote } from './application/note/EditExistingNote';
+import { ListNotesInSong } from './application/note/ListNotesInSong';
 
 export const songRepo = new LocalStorageSongRepository();
 export const noteRepo = new LocalStorageNoteRepository();
@@ -14,4 +17,7 @@ export const createNewSongUseCase = new CreateNewSong(songRepo);
 export const editSongUseCase = new EditSong(songRepo);
 export const deleteSongUseCase = new DeleteSong(songRepo);
 export const loadSongByIdUseCase = new LoadSongById(songRepo);
-export const addNoteToSongUseCase = new AddNoteToSong(songRepo, noteRepo);
+export const addNoteToSongUseCase = new AddNoteToSong(noteRepo, songRepo);
+export const deleteExistingNoteUseCase = new DeleteExistingNote(noteRepo, songRepo);
+export const editExistingNoteUseCase = new EditExistingNote(noteRepo, songRepo);
+export const listNotesInSongUseCase = new ListNotesInSong(noteRepo);

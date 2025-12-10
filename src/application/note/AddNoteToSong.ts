@@ -6,10 +6,13 @@ import { Note } from '../../domain/entities/Note';
 
 // DTO (Data Transfer Object) đơn giản cho dữ liệu Note đầu vào
 export interface NoteData {
+    songId: string;
+    trackId: string;
     time: number;
-    duration: number;
-    pitch: number;
-    velocity: number;
+    title: string;
+    description: string;
+    color: string;
+    icon: string;
 }
 
 /**
@@ -20,9 +23,9 @@ export class AddNoteToSong {
     private songRepository: ISongRepository;
     private noteRepository: INoteRepository;
 
-    constructor(songRepository: ISongRepository, noteRepository: INoteRepository) {
-        this.songRepository = songRepository;
+    constructor(noteRepository: INoteRepository, songRepository: ISongRepository) {
         this.noteRepository = noteRepository;
+        this.songRepository = songRepository;
     }
 
     /**
@@ -32,32 +35,36 @@ export class AddNoteToSong {
      * @param data Dữ liệu cơ bản của Note mới.
      * @returns Promise trả về Note đã được lưu.
      */
-    async execute(songId: string, trackId: string, data: NoteData): Promise<Note> {
+    async execute(data: NoteData): Promise<Note> {
         // 1. Tải Song hiện tại (Đảm bảo Song và Track tồn tại)
-        const song = await this.songRepository.findById(songId);
+        const song = await this.songRepository.findById(data.songId);
         if (!song) {
-            throw new Error(`Song with ID ${songId} not found.`);
+            throw new Error(`Song with ID ${data.songId} not found.`);
         }
 
-        const track = song.tracks.find(x => x.id === trackId);
+        const track = song.tracks.find(x => x.id === data.trackId);
         if (!track) {
-            throw new Error(`Track with ID ${trackId} not found.`);
+            throw new Error(`Track with ID ${data.trackId} not found.`);
+        }
+
+        const time = track.notes.find(n => n.time === data.time);
+        if (time) {
+            throw new Error(`Note with Time ${data.time} is existing`);
         }
 
         // 2. Tạo thực thể Note mới
         const newNote: Note = {
-            songId: songId,
-            trackId: trackId,
+            songId: data.songId,
+            trackId: data.trackId,
             time: data.time,
-            title: 'New Note',
-            description: 'default description',
-            color: '#ffffff',
-            icon: 'default icon'
+            title: data.title,
+            description: data.description,
+            color: data.color,
+            icon: data.icon
         };
 
         // 3. Sử dụng Note Repository để lưu trữ Note (sinh ra ID)
         const savedNote = await this.noteRepository.save(newNote);
-
 
         // 4. Cập nhật Song: Thêm Note vào Track tương ứng
         track.notes.push(savedNote);
