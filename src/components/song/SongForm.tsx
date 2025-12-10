@@ -23,8 +23,6 @@ interface SongFormProps {
   buttonLabel?: string;
 }
 
-
-
 const getDefaultFormData = (song?: Song): SongFormData => {
   let tracks: Track[] = [];
   
@@ -57,8 +55,8 @@ const getDefaultFormData = (song?: Song): SongFormData => {
     name: song?.name || '',
     description: song?.description || '',
     totalDuration: song?.totalDuration || 100,
+    tags: song?.tags || [],
     tracks: tracks,
-    tags: [],
   }
 };
 
@@ -81,7 +79,7 @@ const SongForm: React.FC<SongFormProps> = ({
     const { name, value } = e.target;
     const mapping: Record<string, (value: any) => any> = {
       totalDuration: (value: any) => parseInt(value) || 0,
-      // trackLabels: (value: any) => value.trim().split(',') || [],
+      tags: (value: any) => value.trim().split(',') || [],
       default: (value: any) => value,
     }
     setFormData(prev => ({
@@ -189,6 +187,15 @@ const SongForm: React.FC<SongFormProps> = ({
         onChange={handleChange}
         min="1"
         max="300"
+        style={inputStyle}
+      />
+
+      <label style={labelStyle}>Tags:</label>
+      <input
+        type="text"
+        name="tags"
+        value={formData.tags}
+        onChange={handleChange}
         style={inputStyle}
       />
 

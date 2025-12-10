@@ -1,5 +1,5 @@
 // src/components/note/NoteList.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Note } from '../../domain/entities/Note'; // Import Entity Note
 import { Song } from '../../domain/entities/Song'; // Import Song để lấy track label
 import { listNotesInSongUseCase } from '../../dependencies'; // Use Case
@@ -27,7 +27,7 @@ const NoteList: React.FC<NoteListProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   // --- Hàm Tải Notes ---
-  const loadNotes = async () => {
+  const loadNotes = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -40,11 +40,11 @@ const NoteList: React.FC<NoteListProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [songId]);
 
   useEffect(() => {
     loadNotes();
-  }, [songId]); // Tải lại khi Song ID thay đổi
+  }, [loadNotes]); // Tải lại khi Song ID thay đổi
 
   // Hàm helper để tìm tên Track từ ID
   const getTrackLabel = (trackId?: string) => {

@@ -111,6 +111,7 @@ const SongManagerPage: React.FC = () => {
         description: data.description,
         totalDuration: data.totalDuration,
         tracks: data.tracks,
+        tags: data.tags,
       };
       const updatedSong = await editSongUseCase.execute(updateData);
       handleCloseModal();

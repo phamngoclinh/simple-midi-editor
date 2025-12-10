@@ -1,0 +1,187 @@
+// src/components/editor/MidiEditorContainer.tsx
+import React, { useMemo, useRef, useCallback } from 'react';
+import { Song } from '../../domain/entities/Song';
+import { Note } from '../../domain/entities/Note';
+import TimeRuler from './TimeRuler';
+import TrackHeader from './TrackHeader';
+
+import {
+  TRACK_WIDTH_PX,
+  TIME_UNIT_HEIGHT_PX,
+  SECONDS_PER_UNIT,
+  MAX_DURATION_DEFAULT,
+  PRIMARY_GRID_COLOR,
+  HEADER_BOTTOM_GAP
+} from './constants';
+import TimeGrid from './TimeGrid';
+import NoteRenderer from './NoteRenderer';
+import { editTrackLabelUseCase } from '../../dependencies';
+
+interface MidiEditorContainerProps {
+  currentSong: Song;
+  // Giả định có hàm để xử lý Note click (ví dụ: mở Modal Edit)
+  onNoteClick: (note: Note) => void;
+  onSongUpdate: (updatedSong: Song) => void;
+}
+
+const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, onNoteClick, onSongUpdate }) => {
+  const editorRef = useRef<HTMLDivElement>(null);
+
+  // Tính toán kích thước Editor
+  const totalDuration = currentSong.totalDuration || MAX_DURATION_DEFAULT; // Giả định totalDuration tính bằng giây
+  const numTracks = currentSong.tracks.length;
+
+  // Tính tổng chiều cao và chiều rộng của khu vực cuộn
+  const totalEditorHeight = (totalDuration / SECONDS_PER_UNIT) * TIME_UNIT_HEIGHT_PX;
+  const totalEditorWidth = numTracks * TRACK_WIDTH_PX;
+
+  // --- Logic Chuyển đổi Tọa độ ---
+
+  // Ánh xạ Track ID sang vị trí Index (0, 1, 2...)
+  const trackIdToIndex = useMemo(() => {
+    return currentSong.tracks.reduce((map, track, index) => {
+      map.set(track.order, index);
+      return map;
+    }, new Map<string | number, number>());
+  }, [currentSong.tracks]);
+
+  // Hàm chuyển đổi thời gian (giây) sang vị trí Y (pixel)
+  const timeToY = useCallback((time: number): number => {
+    return (time / SECONDS_PER_UNIT) * TIME_UNIT_HEIGHT_PX;
+  }, []);
+
+  // Hàm chuyển đổi Track Index sang vị trí X (pixel)
+  const trackIndexToX = useCallback((index: number): number => {
+    // Vị trí X là điểm giữa của Track
+    return index * TRACK_WIDTH_PX + (TRACK_WIDTH_PX / 2);
+  }, []);
+
+  // --- Thu thập tất cả Notes ---
+
+  const allNotes = useMemo(() => {
+    return currentSong.tracks.flatMap(track =>
+      (track.notes || []).map(note => ({
+        ...note,
+        // Gán thêm tọa độ X, Y cho Note để NoteRenderer dễ dàng render
+        x: trackIndexToX(trackIdToIndex.get(track.order)!),
+        y: timeToY(note.time),
+      }))
+    );
+  }, [currentSong.tracks, trackIdToIndex, trackIndexToX, timeToY]);
+
+  // --- Hàm xử lý Chỉnh sửa Track Label ---
+  const handleTrackLabelEdit = useCallback(async (trackId: string, newLabel: string) => {
+    if (!currentSong.id) return;
+    
+    // Tìm Track hiện tại để đảm bảo các giá trị khác không thay đổi
+    const trackToUpdate = currentSong.tracks.find(t => t.id === trackId);
+    if (!trackToUpdate) return;
+    
+    console.log(`Đang cố gắng cập nhật Track ID ${trackId} với Label: "${newLabel}"`);
+
+    // 💥 LOGIC GỌI USE CASE:
+    try {
+      const updatedSong = await editTrackLabelUseCase.execute({
+        songId: currentSong.id,
+        trackId: trackId,
+        newLabel: newLabel
+      });
+      onSongUpdate(updatedSong); // Cập nhật lại state Song trong component cha
+    } catch (error) {
+      console.error("Lỗi khi cập nhật Track Label:", error);
+      alert("Cập nhật nhãn Track thất bại.");
+    }
+    
+  }, [currentSong, onSongUpdate]);
+
+  return (
+    <div style={containerStyle}>
+      <div style={headerRulerWrapperStyle}>
+        {/* 1. Góc trên bên trái (Giao điểm của Ruler và Header) */}
+        <div style={cornerBlockStyle} />
+
+        {/* 2. Track Header (Cuộn ngang cùng Editor) */}
+        <div>
+          <TrackHeader
+            currentSong={currentSong}
+            totalWidth={totalEditorWidth}
+            onTrackLabelEdit={handleTrackLabelEdit}
+          />
+        </div>
+      </div>
+      <div style={editorWrapperStyle}>
+        <TimeRuler
+          totalDuration={totalDuration}
+          totalHeight={totalEditorHeight}
+        />
+        <div
+          ref={editorRef}
+          style={{ width: '100%' }} // Chiều rộng 100% của container cha
+        >
+          {/* Khu vực có thể cuộn */}
+          <div style={{ ...scrollAreaContentStyle, width: totalEditorWidth, height: totalEditorHeight + HEADER_BOTTOM_GAP }}>
+
+            {/* 1. Grid và Timeline */}
+            <TimeGrid
+              numTracks={numTracks}
+              totalHeight={totalEditorHeight}
+              totalDuration={totalDuration}
+            />
+
+            {/* 2. Notes Renderer */}
+            <NoteRenderer
+              notes={allNotes}
+              onNoteClick={onNoteClick}
+            />
+
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MidiEditorContainer;
+
+const RULER_WIDTH_PX = 40; // Chiều rộng cố định của TimeRuler (cần định nghĩa lại nếu dùng hằng số)
+const HEADER_HEIGHT_PX = 50; // Chiều cao cố định của TrackHeader
+
+// --- Styles ---
+
+const containerStyle: React.CSSProperties = {
+  overflow: 'auto',
+  display: 'flex',
+  flexDirection: 'column',
+  height: '80vh', // Chiều cao cố định
+};
+
+// Wrapper chứa Header và Ruler (ngăn không cho cuộn dọc)
+const headerRulerWrapperStyle: React.CSSProperties = {
+  display: 'flex',
+  flexShrink: 0,
+  position: 'sticky', // Cố định Header ở trên cùng khi cuộn dọc
+  top: 0,
+  zIndex: 100,
+  backgroundColor: '#fff',
+};
+
+const cornerBlockStyle: React.CSSProperties = {
+  width: RULER_WIDTH_PX, // Chiều rộng bằng Ruler
+  height: HEADER_HEIGHT_PX, // Chiều cao bằng Header
+  backgroundColor: '#e9ecef',
+  borderBottom: `1px solid ${PRIMARY_GRID_COLOR}`,
+  borderRight: `1px solid ${PRIMARY_GRID_COLOR}`,
+  flexShrink: 0,
+};
+
+const editorWrapperStyle: React.CSSProperties = {
+  display: 'flex', // Kích hoạt Flexbox
+  flexGrow: 1,
+  position: 'relative',
+};
+
+const scrollAreaContentStyle: React.CSSProperties = {
+  position: 'relative',
+  minHeight: '100%',
+  minWidth: '100%', // Quan trọng để đảm bảo cuộn ngang khi Tracks vượt quá
+};

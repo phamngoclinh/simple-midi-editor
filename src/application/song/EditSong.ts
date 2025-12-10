@@ -14,6 +14,7 @@ export interface EditSongData {
     description?: string;
     totalDuration?: number;
     tracks?: Track[];
+    tags?: string[];
 }
 
 /**
@@ -52,6 +53,9 @@ export class EditSong {
         }
         if (data.tracks !== undefined) {
             song.tracks = data.tracks;
+        }
+        if (data.tags !== undefined) {
+            song.tags = data.tags;
         }
 
         // 3. Sử dụng Repository để lưu lại (cập nhật)
