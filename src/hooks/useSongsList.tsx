@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Song } from '../domain/entities/Song';
 import { SongSortBy, SortOrder } from '../application/song/ListAllSong';
-import { listAllSongsUseCase, importSongFromJsonUseCase, exportSongToJsonUseCase } from '../dependencies';
+import { useModal } from '../contexts/ModalContext';
+import { exportSongToJsonUseCase, importSongFromJsonUseCase, listAllSongsUseCase } from '../dependencies';
+import { Song } from '../domain/entities/Song';
 
 interface SortState {
   by: SongSortBy;
@@ -13,6 +14,8 @@ export default function useSongsList(initialSort: SortState = { by: 'updated', o
   const [loading, setLoading] = useState<boolean>(true);
   const [sortState, setSortState] = useState<SortState>(initialSort);
 
+  const { showToast } = useModal();
+
   const loadSongs = useCallback(async () => {
     setLoading(true);
     try {
@@ -20,11 +23,14 @@ export default function useSongsList(initialSort: SortState = { by: 'updated', o
       setSongs(all);
     } catch (err) {
       console.error('Lỗi khi tải Songs:', err);
-      alert('Không thể tải danh sách bài hát.');
+      showToast({
+        type: 'error',
+        message: 'Không thể tải danh sách bài hát.',
+      });
     } finally {
       setLoading(false);
     }
-  }, [sortState]);
+  }, [sortState, showToast]);
 
   useEffect(() => {
     loadSongs();
@@ -42,11 +48,17 @@ export default function useSongsList(initialSort: SortState = { by: 'updated', o
         const jsonString = ev.target?.result as string;
         try {
           const newSong = await importSongFromJsonUseCase.execute(jsonString);
-          alert(`Đã import và tạo Song mới: "${newSong.name}"`);
+          showToast({
+            type: 'success',
+            message: `Đã import và tạo Song mới: "${newSong.name}"`,
+          });
           await loadSongs();
         } catch (err: any) {
           console.error('Lỗi khi import Song:', err);
-          alert('Import Song thất bại: ' + (err?.message || ''));
+          showToast({
+            type: 'error',
+            message: 'Import Song thất bại: ' + (err?.message || ''),
+          });
         }
       };
       reader.readAsText(file);
@@ -66,10 +78,16 @@ export default function useSongsList(initialSort: SortState = { by: 'updated', o
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      alert(`Đã export Song "${song.name}" thành công.`);
+      showToast({
+        type: 'success',
+        message: `Đã export Song "${song.name}" thành công.`,
+      });
     } catch (err: any) {
       console.error('Lỗi khi export Song:', err);
-      alert('Export Song thất bại: ' + (err?.message || ''));
+      showToast({
+        type: 'error',
+        message: 'Export Song thất bại: ' + (err?.message || ''),
+      });
     }
   };
 

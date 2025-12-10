@@ -40,7 +40,7 @@ export class ImportSongFromJsonUseCase {
       tracks: [],
       createdTimestamp: new Date().toISOString(),
       updatedTimestamp: new Date().toISOString(),
-      tags: []
+      tags: importData.tags
     };
 
     await this.songRepository.save(newSong);
@@ -69,7 +69,8 @@ export class ImportSongFromJsonUseCase {
           time: noteData.time,
           title: noteData.title,
           description: noteData.description,
-          color: noteData.color
+          color: noteData.color,
+          icon: noteData.icon
         };
         const savedNote = await this.noteRepository.save(newNote);
         targetTrack.notes.push(savedNote);

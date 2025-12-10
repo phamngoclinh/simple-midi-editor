@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Song } from '../domain/entities/Song';
-import { Track } from '../domain/entities/Track';
+import { useModal } from '../contexts/ModalContext';
 import {
   createNewSongUseCase,
-  editSongUseCase,
-  deleteSongUseCase
+  deleteSongUseCase,
+  editSongUseCase
 } from '../dependencies';
+import { Song } from '../domain/entities/Song';
+import { Track } from '../domain/entities/Track';
 
 interface SongFormData {
   name: string;
@@ -21,6 +22,8 @@ export default function useSongEditor(onAfterChange?: () => Promise<void>) {
 
   const openCreateModal = () => setIsCreateModalOpen(true);
   const startEditSong = (song: Song | null) => setEditingSong(song);
+
+  const { showConfirmation } = useModal();
 
   const createSong = async (data: SongFormData) => {
     const createData = {
@@ -51,9 +54,15 @@ export default function useSongEditor(onAfterChange?: () => Promise<void>) {
   };
 
   const deleteSong = async (songId: string, songName: string) => {
-    if (!window.confirm(`Bạn có chắc chắn muốn xóa bài hát "${songName}" không?`)) return;
-    await deleteSongUseCase.execute(songId);
-    if (onAfterChange) await onAfterChange();
+    const confirmed = await showConfirmation({
+      message: `Bạn có chắc chắn muốn xóa bài hát "${songName}" không?`,
+      title: "Xác nhận Xóa",
+      confirmButtonLabel: "XÓA VĨNH VIỄN",
+    });
+    if (confirmed) {
+      await deleteSongUseCase.execute(songId);
+      if (onAfterChange) await onAfterChange();
+    }
   };
 
   const resetEditor = () => {

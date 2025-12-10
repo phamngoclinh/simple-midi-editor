@@ -23,6 +23,7 @@ export class ExportSongToJsonUseCase {
           title: note.title,
           description: note.description,
           color: note.color,
+          icon: note.icon
         });
       });
     });
@@ -34,6 +35,7 @@ export class ExportSongToJsonUseCase {
       totalDuration: song.totalDuration || 60, // Giả định thời lượng
       trackLabels: song.tracks.map(t => t.label),
       notes: exportNotes,
+      tags: song.tags
     };
 
     // Chuyển đối tượng thành chuỗi JSON

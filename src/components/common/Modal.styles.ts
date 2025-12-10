@@ -26,9 +26,7 @@ export const headerStyle: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-  marginBottom: '15px',
   borderBottom: '1px solid #eee',
-  paddingBottom: '10px',
 };
 
 export const bodyStyle: React.CSSProperties = {
@@ -41,4 +39,11 @@ export const closeButtonStyle: React.CSSProperties = {
   fontSize: '1.5em',
   cursor: 'pointer',
   color: '#aaa',
+};
+
+export const modalFooterStyle: React.CSSProperties = {
+  marginTop: '20px',
+  borderTop: '1px solid #eee',
+  paddingTop: '20px',
+  textAlign: 'right'
 };

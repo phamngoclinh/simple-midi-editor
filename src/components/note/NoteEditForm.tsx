@@ -1,8 +1,9 @@
 // src/components/note/NoteEditForm.tsx
 import React, { useEffect } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { Song } from '../../domain/entities/Song'; // Import Song để lấy tracks và totalDuration
+import { MUSIC_ICONS } from '../../utils/icons';
 import { buttonGroupStyle, cancelButtonStyle, errorStyle, formStyle, inputStyle, labelStyle, submitButtonStyle, textareaStyle } from './NoteEditForm.styles';
-import { useForm, SubmitHandler } from 'react-hook-form';
 
 // Định nghĩa dữ liệu Note tối thiểu để form xử lý
 export interface NoteFormData {
@@ -40,7 +41,7 @@ const getDefaultNoteFormData = (song: Song, initialNote: NoteFormData | null): N
     title: '',
     description: '',
     color: '#007bff',
-    icon: ''
+    icon: 'none'
   };
 };
 
@@ -60,52 +61,17 @@ const NoteEditForm: React.FC<NoteEditFormProps> = ({
 
   // Reset form khi initialNote hoặc currentSong thay đổi
   useEffect(() => {
+    console.log('---currentSong, initialNote, reset--', currentSong, initialNote, reset)
     reset(getDefaultNoteFormData(currentSong, initialNote));
   }, [currentSong, initialNote, reset]);
 
   const handleRHFSubmit: SubmitHandler<NoteFormData> = (data) => {
-    // 💥 Lưu ý: Đảm bảo trackId được chuyển về đúng kiểu (number/string) nếu cần thiết
-    // Hiện tại, RHF sẽ giữ nguyên giá trị từ <select> (thường là string)
-    const processedData: NoteFormData = {
-      ...data, 
-    };
+    const processedData: NoteFormData = { ...data };
 
     processedData.track = currentSong.tracks.findIndex(x => x.id === processedData.trackId) + 1;
     
     onSubmit(processedData);
   };
-
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-  //   const { name, value } = e.target;
-    
-  //   // Xử lý trường Time: đảm bảo là số và nằm trong giới hạn
-  //   if (name === 'time') {
-  //     const timeValue = parseFloat(value);
-  //     if (timeValue >= 0 && timeValue <= totalDuration) {
-  //       setFormData(prev => ({ ...prev, [name]: timeValue }));
-  //     }
-  //     return;
-  //   }
-    
-  //   setFormData(prev => ({ ...prev, [name]: value }));
-  // };
-
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-
-  //   if (!formData.title.trim()) {
-  //     alert("Tiêu đề Note không được để trống.");
-  //     return;
-  //   }
-  //   if (formData.time < 0 || formData.time > totalDuration) {
-  //       alert(`Thời gian không hợp lệ. Phải nằm trong khoảng 0 đến ${totalDuration}.`);
-  //       return;
-  //   }
-
-  //   formData.track = currentSong.tracks.findIndex(x => x.id === formData.trackId) + 1;
-
-  //   onSubmit(formData);
-  // };
 
   const submitButtonLabel = buttonLabel || (initialNote ? 'Lưu Note' : 'Tạo Note');
 
@@ -173,11 +139,20 @@ const NoteEditForm: React.FC<NoteEditFormProps> = ({
 
       {/* 6. Icon Input */}
       <label style={labelStyle}>Icon:</label>
-      <input
-        type="text"
+      <select
         {...register("icon")}
-        style={{ ...inputStyle }}
-      />
+        style={inputStyle}
+      >
+        {MUSIC_ICONS.map(icon => (
+          <option 
+            key={icon.key} 
+            value={icon.key} 
+            // Có thể hiển thị symbol trong option nếu trình duyệt hỗ trợ tốt
+          >
+            {icon.symbol} {icon.description}
+          </option>
+        ))}
+      </select>
       
       {/* Action Buttons */}
       <div style={buttonGroupStyle}>

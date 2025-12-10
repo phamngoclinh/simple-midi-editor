@@ -1,10 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import SongForm from '../../components/song/SongForm';
-import SongListItem from '../../components/song/SongListItem';
 import Modal from '../../components/common/Modal';
 import NoteEditForm from '../../components/note/NoteEditForm';
 import NoteList from '../../components/note/NoteList';
+import SongForm from '../../components/song/SongForm';
+import SongListItem from '../../components/song/SongListItem';
+import { useModal } from '../../contexts/ModalContext';
 import { SongManagerProvider } from '../../contexts/SongManagerContext';
 import useSongManager from '../../hooks/useSongManager';
 import { createButtonStyle, listItemStyle, listStyle, pageStyle, selectStyle, sortControlStyle } from './SongManagerPage.style';
@@ -43,6 +44,7 @@ const SongManagerContent: React.FC = () => {
     importSong,
     exportSong,
   } = useSongManager();
+  const { showToast } = useModal();
 
   if (loading) return <div>Đang tải danh sách bài hát...</div>;
 
@@ -57,11 +59,17 @@ const SongManagerContent: React.FC = () => {
       closeAllModals();
       if (newSong && newSong.id) {
         navigate(`/editor/${newSong.id}`);
-        alert(`Bài hát "${newSong.name}" đã được tạo.`);
+        showToast({
+          type: 'success',
+          message: `Bài hát "${newSong.name}" đã được tạo.`,
+        });
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert('Tạo bài hát thất bại.');
+      showToast({
+        type: 'error',
+        message: `Tạo bài hát thất bại. ${err.message}`,
+      });
     }
   };
 
@@ -145,7 +153,7 @@ const SongManagerContent: React.FC = () => {
                   title: editingNote.title || '',
                   description: editingNote.description || '',
                   color: editingNote.color || '#007bff',
-                  icon: editingNote.icon || '',
+                  icon: editingNote.icon || 'none',
                 }}
                 onSubmit={saveNote}
                 onCancel={() => startEditNote(null)}

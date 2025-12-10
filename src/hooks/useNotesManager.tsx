@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Song } from '../domain/entities/Song';
-import { Note } from '../domain/entities/Note';
+import { useModal } from '../contexts/ModalContext';
 import {
   addNoteToSongUseCase,
-  editExistingNoteUseCase,
-  deleteExistingNoteUseCase
+  deleteExistingNoteUseCase,
+  editExistingNoteUseCase
 } from '../dependencies';
+import { Note } from '../domain/entities/Note';
+import { Song } from '../domain/entities/Song';
 
 interface NoteFormData {
   songId: string;
@@ -29,6 +30,8 @@ export default function useNotesManager(onAfterChange?: () => Promise<void>) {
 
   const startEditNote = (note: Note | null) => setEditingNote(note);
 
+  const { showToast, showConfirmation } = useModal();
+
   const saveNote = async (noteData: NoteFormData) => {
     if (!selectedSongForNoteEdit) return;
     try {
@@ -37,27 +40,45 @@ export default function useNotesManager(onAfterChange?: () => Promise<void>) {
       } else {
         await addNoteToSongUseCase.execute({ ...noteData });
       }
-      alert('Note đã được lưu thành công.');
+      showToast({
+        type: 'success',
+        message: 'Note đã được lưu thành công.',
+      });
       setEditingNote(null);
       if (onAfterChange) await onAfterChange();
     } catch (err: any) {
       console.error('Lỗi khi lưu Note:', err);
-      alert('Lưu Note thất bại. ' + (err?.message || ''));
+      showToast({
+        type: 'error',
+        message: 'Lưu Note thất bại. ' + (err?.message || ''),
+      });
     }
   };
 
   const deleteNote = async (noteId: string) => {
     if (!selectedSongForNoteEdit) return;
-    if (!window.confirm('Bạn có chắc chắn muốn xóa Note này không?')) return;
-    try {
-      const trackId = selectedSongForNoteEdit.tracks.find(t => t.notes.some(n => n.id === noteId))?.id;
-      if (!trackId) throw new Error('Track ID không tìm thấy');
-      await deleteExistingNoteUseCase.execute(noteId, selectedSongForNoteEdit.id!, trackId);
-      alert('Note đã được xóa.');
-      if (onAfterChange) await onAfterChange();
-    } catch (err) {
-      console.error('Lỗi khi xóa Note:', err);
-      alert('Xóa Note thất bại.');
+    const confirmed = await showConfirmation({
+      message: 'Bạn có chắc chắn muốn xóa Note này không?',
+      title: "Xác nhận Xóa",
+      confirmButtonLabel: "XÓA VĨNH VIỄN",
+    });
+    if (confirmed) {
+      try {
+        const trackId = selectedSongForNoteEdit.tracks.find(t => t.notes.some(n => n.id === noteId))?.id;
+        if (!trackId) throw new Error('Track ID không tìm thấy');
+        await deleteExistingNoteUseCase.execute(noteId, selectedSongForNoteEdit.id!, trackId);
+        showToast({
+          type: 'success',
+          message: 'Note đã được xóa.',
+        });
+        if (onAfterChange) await onAfterChange();
+      } catch (err) {
+        console.error('Lỗi khi xóa Note:', err);
+        showToast({
+          type: 'error',
+          message: 'Xóa Note thất bại.',
+        });
+      }
     }
   };
 

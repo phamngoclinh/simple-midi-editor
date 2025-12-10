@@ -1,10 +1,9 @@
 // src/components/editor/MidiEditorContainer.tsx
 import React, { useCallback, useMemo, useRef } from 'react';
+import { useModal } from '../../contexts/ModalContext';
+import { editTrackLabelUseCase } from '../../dependencies';
 import { Note } from '../../domain/entities/Note';
 import { Song } from '../../domain/entities/Song';
-import TimeRuler from './TimeRuler';
-import TrackHeader from './TrackHeader';
-import { editTrackLabelUseCase } from '../../dependencies';
 import {
   HEADER_BOTTOM_GAP,
   MAX_DURATION_DEFAULT,
@@ -15,6 +14,8 @@ import {
 import { containerStyle, cornerBlockStyle, editorWrapperStyle, headerRulerWrapperStyle, scrollAreaContentStyle } from './MidiEditorContainer.styles';
 import NoteRenderer from './NoteRenderer';
 import TimeGrid from './TimeGrid';
+import TimeRuler from './TimeRuler';
+import TrackHeader from './TrackHeader';
 
 interface MidiEditorContainerProps {
   currentSong: Song;
@@ -25,6 +26,8 @@ interface MidiEditorContainerProps {
 
 const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, onNoteClick, onSongUpdate }) => {
   const editorRef = useRef<HTMLDivElement>(null);
+
+  const { showToast } = useModal();
 
   // Tính toán kích thước Editor
   const totalDuration = currentSong.totalDuration || MAX_DURATION_DEFAULT; // Giả định totalDuration tính bằng giây
@@ -88,10 +91,13 @@ const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, 
       onSongUpdate(updatedSong); // Cập nhật lại state Song trong component cha
     } catch (error) {
       console.error("Lỗi khi cập nhật Track Label:", error);
-      alert("Cập nhật nhãn Track thất bại.");
+      showToast({
+        type: 'error',
+        message: "Cập nhật nhãn Track thất bại."
+      });
     }
     
-  }, [currentSong, onSongUpdate]);
+  }, [currentSong, onSongUpdate, showToast]);
 
   return (
     <div style={containerStyle}>

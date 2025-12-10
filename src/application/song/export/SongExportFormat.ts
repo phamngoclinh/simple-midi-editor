@@ -12,5 +12,7 @@ export interface SongExportFormat {
     title: string;
     description?: string;
     color: string;
+    icon?: string;
   }[];
+  tags: string[]
 }

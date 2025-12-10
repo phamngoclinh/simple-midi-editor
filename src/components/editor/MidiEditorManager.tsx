@@ -1,11 +1,12 @@
 // src/components/editor/MidiEditorManager.tsx
 import React, { useState } from 'react';
-import { Song } from '../../domain/entities/Song'; 
+import { useModal } from '../../contexts/ModalContext';
+import { editExistingNoteUseCase } from '../../dependencies';
 import { Note } from '../../domain/entities/Note';
-import MidiEditorContainer from './MidiEditorContainer';
+import { Song } from '../../domain/entities/Song';
 import Modal from '../common/Modal';
 import NoteEditForm, { NoteFormData } from '../note/NoteEditForm';
-import { editExistingNoteUseCase } from '../../dependencies';
+import MidiEditorContainer from './MidiEditorContainer';
 
 interface MidiEditorProps {
   currentSong: Song;
@@ -14,6 +15,7 @@ interface MidiEditorProps {
 
 const MidiEditorManager: React.FC<MidiEditorProps> = ({ currentSong, reload }) => {
   const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const { showToast } = useModal();
 
   const handleCloseModal = () => {
     setEditingNote(null);
@@ -31,15 +33,21 @@ const MidiEditorManager: React.FC<MidiEditorProps> = ({ currentSong, reload }) =
         // 💥 LOGIC UPDATE NOTE
         console.log("Cập nhật Note:", editingNote.id, noteData);
         await editExistingNoteUseCase.execute({ id: editingNote.id as string, ...noteData });
-        alert(`Note đã được lưu thành công.`);
+        showToast({
+          type: 'success',
+          message: 'Note đã được lưu thành công.',
+        });
         // Sau khi lưu, đóng form và reset trạng thái chỉnh sửa Note
         setEditingNote(null);
         // Nếu NoteList có cơ chế refresh tự động, không cần làm gì thêm
         reload();
       }
     } catch (error: any) {
-      console.error("Lỗi khi lưu Note:", error);
-      alert(`Lưu Note thất bại. ${error.message}`);
+      console.error('Lỗi khi lưu Note:', error);
+      showToast({
+        type: 'error',
+        message: `Lưu Note thất bại. ${error.message}`,
+      });
     }
   };
 
@@ -62,11 +70,11 @@ const MidiEditorManager: React.FC<MidiEditorProps> = ({ currentSong, reload }) =
           title: editingNote.title || '',
           description: editingNote.description || '',
           color: editingNote.color || '#007bff',
-          icon: editingNote.icon || '',
+          icon: editingNote.icon || 'none',
         }}
         onSubmit={handleSaveNote}
         onCancel={() => setEditingNote(null)} // Quay lại danh sách
-        buttonLabel="Lưu Note"
+        buttonLabel='Lưu Note'
       />}
     </Modal>
   </>
