@@ -8,6 +8,7 @@ import { Note } from '../../domain/entities/Note';
 export interface NoteData {
     songId: string;
     trackId: string;
+    track: number;
     time: number;
     title: string;
     description: string;
@@ -42,9 +43,9 @@ export class AddNoteToSong {
             throw new Error(`Song with ID ${data.songId} not found.`);
         }
 
-        const track = song.tracks.find(x => x.id === data.trackId);
+        const track = song.tracks[data.track];
         if (!track) {
-            throw new Error(`Track with ID ${data.trackId} not found.`);
+            throw new Error(`Track with ID ${data.track} not found.`);
         }
 
         const time = track.notes.find(n => n.time === data.time);
@@ -56,6 +57,7 @@ export class AddNoteToSong {
         const newNote: Note = {
             songId: data.songId,
             trackId: data.trackId,
+            track: data.track,
             time: data.time,
             title: data.title,
             description: data.description,

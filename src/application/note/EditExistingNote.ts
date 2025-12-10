@@ -11,6 +11,7 @@ export interface EditNoteData {
     id: string; // ID của Note cần chỉnh sửa
     songId: string; // ID của Song chứa Note này
     trackId: string;
+    track: number;
     time?: number;
     title?: string;
     description?: string;
@@ -52,8 +53,6 @@ export class EditExistingNote {
         const notes = await this.noteRepository.findBySongId(data.songId);
         const existingNote = notes.find(n => n.id === data.id);
 
-        console.log('notes', notes, existingNote)
-
         if (!existingNote) {
             throw new Error(`Note with ID ${data.id} not found in Song ${data.songId}.`);
         }
@@ -69,13 +68,69 @@ export class EditExistingNote {
         const updatedNote = await this.noteRepository.save(existingNote);
 
         // 5. Cập nhật Song/Track (quan trọng để giữ state UI đồng bộ, nếu Track chứa Notes)
-        const trackIndex = song.tracks.findIndex(t => t.id === track.id);
-        const noteIndex = song.tracks[trackIndex].notes.findIndex(n => n.id === updatedNote.id);
-        if (noteIndex !== -1) {
-            song.tracks[trackIndex].notes[noteIndex] = updatedNote;
-            await this.songRepository.save(song); // Lưu lại Song đã cập nhật
+        let oldTrackId: string | undefined;
+        let oldTrackIndex = -1;
+        let noteIndex = -1;
+
+        // Duyệt qua tất cả các tracks để tìm vị trí Note hiện tại
+        for (let i = 0; i < song.tracks.length; i++) {
+            const track = song.tracks[i];
+            noteIndex = track.notes.findIndex(n => n.id === data.id);
+
+            if (noteIndex !== -1) {
+                oldTrackId = track.id;
+                oldTrackIndex = i;
+                break; // Đã tìm thấy vị trí cũ
+            }
+        }
+        if (noteIndex === -1) {
+            throw new Error(`Note với ID '${updatedNote.id}' không tồn tại trong Song.`);
         }
 
+        const newTrackId = data.trackId;
+        const newTrackIndex = song.tracks.findIndex(t => t.id === newTrackId);
+
+        if (newTrackIndex === -1) {
+            throw new Error(`Track mới với ID '${newTrackId}' không tồn tại.`);
+        }
+
+        if (oldTrackId !== newTrackId) {
+            // A. Xóa Note khỏi Track cũ
+            // Tạo bản sao của mảng notes để đảm bảo tính bất biến
+            const oldTrackNotes = [...song.tracks[oldTrackIndex].notes];
+            oldTrackNotes.splice(noteIndex, 1);
+
+            // Cập nhật Song với Track cũ đã xóa Note
+            song.tracks[oldTrackIndex] = {
+                ...song.tracks[oldTrackIndex],
+                notes: oldTrackNotes
+            };
+
+            // B. Thêm Note vào Track mới
+            // Note đã được cập nhật (`updatedNote`) sẽ được thêm vào track mới
+            const newTrackNotes = [...song.tracks[newTrackIndex].notes, updatedNote];
+
+            // Cập nhật Song với Track mới đã thêm Note
+            song.tracks[newTrackIndex] = {
+                ...song.tracks[newTrackIndex],
+                notes: newTrackNotes
+            };
+        } else {
+            // --- 3. Xử lý Cập nhật Note trong cùng Track ---
+
+            // Note vẫn nằm trong Track cũ (oldTrackId === newTrackId)
+
+            // Tạo bản sao và cập nhật Note tại vị trí cũ
+            const currentTrackNotes = [...song.tracks[oldTrackIndex].notes];
+            currentTrackNotes[noteIndex] = updatedNote;
+
+            // Cập nhật Song với Track đã chỉnh sửa Note
+            song.tracks[oldTrackIndex] = {
+                ...song.tracks[oldTrackIndex],
+                notes: currentTrackNotes
+            };
+        }
+        await this.songRepository.save(song); // Lưu lại Song đã cập nhật
         return updatedNote;
     }
 }

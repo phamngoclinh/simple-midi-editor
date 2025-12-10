@@ -100,7 +100,6 @@ const SongManagerPage: React.FC = () => {
   };
 
   const handleStartEdit = (song: Song) => {
-    console.log('editing song', song)
     setEditingSong(song); // Thiết lập Song đang chỉnh sửa để mở Modal Edit
   };
 
@@ -374,6 +373,7 @@ const SongManagerPage: React.FC = () => {
                 initialNote={{
                   songId: selectedSongForNoteEdit.id as string,
                   trackId: editingNote.trackId as string,
+                  track: editingNote.track,
                   time: editingNote.time,
                   title: editingNote.title || '',
                   description: editingNote.description || '',
@@ -390,6 +390,7 @@ const SongManagerPage: React.FC = () => {
                 <button
                   onClick={() => setEditingNote({
                     trackId: selectedSongForNoteEdit.tracks[0].id as string,
+                    track: 1,
                     time: 0,
                     title: '',
                     description: '',

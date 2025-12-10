@@ -13,6 +13,8 @@ export interface Note {
     /** ID của Track mà Note này thuộc về (Dùng cho Repository/Lưu trữ). */
     trackId?: string;
 
+    track: number;
+
     /** Thời gian bắt đầu của nốt (tính bằng tick, milliseconds, hoặc đơn vị thời gian khác). */
     time: number;
 

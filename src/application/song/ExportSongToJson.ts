@@ -1,5 +1,5 @@
 import { Song } from '../../domain/entities/Song';
-import { SongExportFormat } from './SongExportFormat.dto';
+import { SongExportFormat } from './export/SongExportFormat';
 
 export class ExportSongToJsonUseCase {
   /**
@@ -15,10 +15,10 @@ export class ExportSongToJsonUseCase {
     const exportNotes: SongExportFormat['notes'] = [];
 
     // Thu thập và làm phẳng tất cả Notes từ tất cả Tracks
-    song.tracks.forEach(track => {
+    song.tracks.forEach((track, index) => {
       (track.notes || []).forEach(note => {
         exportNotes.push({
-          trackId: track.id as string,
+          track: index + 1,
           time: note.time,
           title: note.title,
           description: note.description,
@@ -32,15 +32,7 @@ export class ExportSongToJsonUseCase {
       name: song.name,
       description: song.description,
       totalDuration: song.totalDuration || 60, // Giả định thời lượng
-
-      // Export chỉ các metadata của Tracks
-      tracks: song.tracks.map(t => ({
-        id: t.id as string,
-        label: t.label,
-        order: t.order,
-        instrument: t.instrument || 'synth',
-      })),
-
+      tracks: song.tracks.map(t => t.label),
       notes: exportNotes,
     };
 

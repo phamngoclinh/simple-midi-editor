@@ -2,13 +2,17 @@ import { ISongRepository } from '../../domain/repositories/ISongRepository';
 import { Song } from '../../domain/entities/Song';
 import { Track } from '../../domain/entities/Track'; // Giả định entity Track
 import { Note } from '../../domain/entities/Note'; // Giả định entity Note
-import { SongExportFormat } from './SongExportFormat.dto';
+import { SongExportFormat } from './export/SongExportFormat';
+import { INoteRepository } from '../../domain/repositories/INoteRepository';
+import { v4 as uuidv4 } from 'uuid';
 
 export class ImportSongFromJsonUseCase {
-  private songRepository: ISongRepository;
+  private songRepository: ISongRepository; // Cần thiết để cập nhật Track
+  private noteRepository: INoteRepository;
 
-  constructor(songRepository: ISongRepository) {
+  constructor(songRepository: ISongRepository, noteRepository: INoteRepository) {
     this.songRepository = songRepository;
+    this.noteRepository = noteRepository;
   }
 
   /**
@@ -30,49 +34,57 @@ export class ImportSongFromJsonUseCase {
       throw new Error("Thiếu các trường bắt buộc (name, tracks) trong dữ liệu nhập.");
     }
 
-    // 2. Tái tạo cấu trúc Tracks và Notes
-
-    // Khởi tạo các Track mới, sẵn sàng chứa Notes
-    const newTracks: Track[] = importData.tracks.map(t => ({
-      label: t.label,
-      order: t.order,
-      instrument: t.instrument,
-      notes: [], // Khởi tạo mảng Notes rỗng
-    }));
-
-    // Phân phối Notes vào các Track tương ứng
-    (importData.notes || []).forEach(noteData => {
-      const targetTrack = newTracks.find(t => t.id === noteData.trackId);
-
-      if (targetTrack) {
-        // Tạo Note Entity mới
-        const newNote: Note = {
-          trackId: targetTrack.id, // Dùng ID của Track mới
-          time: noteData.time,
-          title: noteData.title,
-          description: noteData.description,
-          color: noteData.color
-        };
-        targetTrack.notes.push(newNote);
-      } else {
-        console.warn(`Note tham chiếu Track ID ${noteData.trackId} không tồn tại. Bỏ qua Note.`);
-      }
-    });
-
-    // 3. Tạo Song Entity mới
     const newSong: Song = {
       name: importData.name,
       description: importData.description,
       totalDuration: importData.totalDuration,
-      tracks: newTracks,
+      tracks: [],
       createdTimestamp: new Date().toISOString(),
       updatedTimestamp: new Date().toISOString(),
       tags: []
     };
 
-    // 4. Lưu Song mới vào Repository
-    const savedSong = await this.songRepository.save(newSong);
+    await this.songRepository.save(newSong);
 
-    return savedSong;
+    // 2. Tái tạo cấu trúc Tracks và Notes
+
+    // Khởi tạo các Track mới, sẵn sàng chứa Notes
+    const newTracks: Track[] = importData.tracks.map((t, i) => ({
+      id: (i + 1).toString(),
+      label: t,
+      order: i + 1,
+      instrument: 'Default Instrument',
+      notes: [], // Khởi tạo mảng Notes rỗng
+    }));
+
+    // Phân phối Notes vào các Track tương ứng
+    const notes = importData.notes || [];
+    for (const noteData of notes) {
+      const targetTrack = newTracks[noteData.track - 1];
+      if (targetTrack) {
+        // Tạo Note Entity mới
+        const newNote: Note = {
+          songId: newSong.id,
+          trackId: targetTrack.id,
+          track: noteData.track,
+          time: noteData.time,
+          title: noteData.title,
+          description: noteData.description,
+          color: noteData.color
+        };
+        const savedNote = await this.noteRepository.save(newNote);
+        targetTrack.notes.push(savedNote);
+      } else {
+        console.warn(`Note tham chiếu Track ${noteData.track} không tồn tại. Bỏ qua Note.`);
+      }
+    }
+
+    // 3. Tạo Song Entity mới
+    newSong.tracks = newTracks;
+
+    // 4. Lưu Song mới vào Repository
+    await this.songRepository.save(newSong);
+
+    return newSong;
   }
 }

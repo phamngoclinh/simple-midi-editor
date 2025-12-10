@@ -20,7 +20,6 @@ const MidiEditorManager: React.FC<MidiEditorProps> = ({ currentSong, reload }) =
   };
 
   const handleStartEditNote = (note: Note) => {
-    console.log('Clicked note:', note);
     setEditingNote(note);
   };
 
@@ -55,9 +54,10 @@ const MidiEditorManager: React.FC<MidiEditorProps> = ({ currentSong, reload }) =
       {currentSong && editingNote && <NoteEditForm
           currentSong={currentSong}
           // Gán các trường Note Entity vào NoteFormData (cần đảm bảo tương thích)
-          initialNote={{
+        initialNote={{
           songId: currentSong.id as string,
           trackId: editingNote.trackId as string,
+          track: editingNote.track,
           time: editingNote.time,
           title: editingNote.title || '',
           description: editingNote.description || '',

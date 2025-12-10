@@ -6,6 +6,7 @@ import { Song } from '../../domain/entities/Song'; // Import Song để lấy tr
 export interface NoteFormData {
   songId: string;
   trackId: string;
+  track: number;
   time: number; 
   title: string;
   description: string;
@@ -32,6 +33,7 @@ const getDefaultNoteFormData = (song: Song, initialNote: NoteFormData | null): N
   return initialNote || {
     songId: song.id || '',
     trackId: song.tracks[0]?.id || '',
+    track: 1,
     time: 0,
     title: '',
     description: '',
@@ -50,8 +52,6 @@ const NoteEditForm: React.FC<NoteEditFormProps> = ({
   const [formData, setFormData] = useState<NoteFormData>(
     getDefaultNoteFormData(currentSong, initialNote)
   );
-
-  console.log('---fomdata', formData)
 
   const { tracks, totalDuration } = currentSong;
 
@@ -86,6 +86,8 @@ const NoteEditForm: React.FC<NoteEditFormProps> = ({
         alert(`Thời gian không hợp lệ. Phải nằm trong khoảng 0 đến ${totalDuration}.`);
         return;
     }
+
+    formData.track = currentSong.tracks.findIndex(x => x.id === formData.trackId) + 1;
 
     onSubmit(formData);
   };
