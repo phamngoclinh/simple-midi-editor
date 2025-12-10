@@ -4,7 +4,6 @@ import { Track } from '../../domain/entities/Track'; // Giả định entity Tra
 import { Note } from '../../domain/entities/Note'; // Giả định entity Note
 import { SongExportFormat } from './export/SongExportFormat';
 import { INoteRepository } from '../../domain/repositories/INoteRepository';
-import { v4 as uuidv4 } from 'uuid';
 
 export class ImportSongFromJsonUseCase {
   private songRepository: ISongRepository; // Cần thiết để cập nhật Track
@@ -30,7 +29,7 @@ export class ImportSongFromJsonUseCase {
       throw new Error("Dữ liệu JSON không hợp lệ.");
     }
 
-    if (!importData.name || !importData.tracks) {
+    if (!importData.name || !importData.trackLabels) {
       throw new Error("Thiếu các trường bắt buộc (name, tracks) trong dữ liệu nhập.");
     }
 
@@ -49,7 +48,7 @@ export class ImportSongFromJsonUseCase {
     // 2. Tái tạo cấu trúc Tracks và Notes
 
     // Khởi tạo các Track mới, sẵn sàng chứa Notes
-    const newTracks: Track[] = importData.tracks.map((t, i) => ({
+    const newTracks: Track[] = importData.trackLabels.map((t, i) => ({
       id: (i + 1).toString(),
       label: t,
       order: i + 1,

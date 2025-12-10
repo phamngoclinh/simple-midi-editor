@@ -1,21 +1,20 @@
 // src/components/editor/MidiEditorContainer.tsx
-import React, { useMemo, useRef, useCallback } from 'react';
-import { Song } from '../../domain/entities/Song';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { Note } from '../../domain/entities/Note';
+import { Song } from '../../domain/entities/Song';
 import TimeRuler from './TimeRuler';
 import TrackHeader from './TrackHeader';
-
-import {
-  TRACK_WIDTH_PX,
-  TIME_UNIT_HEIGHT_PX,
-  SECONDS_PER_UNIT,
-  MAX_DURATION_DEFAULT,
-  PRIMARY_GRID_COLOR,
-  HEADER_BOTTOM_GAP
-} from './constants';
-import TimeGrid from './TimeGrid';
-import NoteRenderer from './NoteRenderer';
 import { editTrackLabelUseCase } from '../../dependencies';
+import {
+  HEADER_BOTTOM_GAP,
+  MAX_DURATION_DEFAULT,
+  SECONDS_PER_UNIT,
+  TIME_UNIT_HEIGHT_PX,
+  TRACK_WIDTH_PX
+} from './constants';
+import { containerStyle, cornerBlockStyle, editorWrapperStyle, headerRulerWrapperStyle, scrollAreaContentStyle } from './MidiEditorContainer.styles';
+import NoteRenderer from './NoteRenderer';
+import TimeGrid from './TimeGrid';
 
 interface MidiEditorContainerProps {
   currentSong: Song;
@@ -142,46 +141,3 @@ const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, 
 };
 
 export default MidiEditorContainer;
-
-const RULER_WIDTH_PX = 40; // Chiều rộng cố định của TimeRuler (cần định nghĩa lại nếu dùng hằng số)
-const HEADER_HEIGHT_PX = 50; // Chiều cao cố định của TrackHeader
-
-// --- Styles ---
-
-const containerStyle: React.CSSProperties = {
-  overflow: 'auto',
-  display: 'flex',
-  flexDirection: 'column',
-  height: '80vh', // Chiều cao cố định
-};
-
-// Wrapper chứa Header và Ruler (ngăn không cho cuộn dọc)
-const headerRulerWrapperStyle: React.CSSProperties = {
-  display: 'flex',
-  flexShrink: 0,
-  position: 'sticky', // Cố định Header ở trên cùng khi cuộn dọc
-  top: 0,
-  zIndex: 100,
-  backgroundColor: '#fff',
-};
-
-const cornerBlockStyle: React.CSSProperties = {
-  width: RULER_WIDTH_PX, // Chiều rộng bằng Ruler
-  height: HEADER_HEIGHT_PX, // Chiều cao bằng Header
-  backgroundColor: '#e9ecef',
-  borderBottom: `1px solid ${PRIMARY_GRID_COLOR}`,
-  borderRight: `1px solid ${PRIMARY_GRID_COLOR}`,
-  flexShrink: 0,
-};
-
-const editorWrapperStyle: React.CSSProperties = {
-  display: 'flex', // Kích hoạt Flexbox
-  flexGrow: 1,
-  position: 'relative',
-};
-
-const scrollAreaContentStyle: React.CSSProperties = {
-  position: 'relative',
-  minHeight: '100%',
-  minWidth: '100%', // Quan trọng để đảm bảo cuộn ngang khi Tracks vượt quá
-};

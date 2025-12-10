@@ -3,16 +3,14 @@ import React, { useMemo } from 'react';
 import {
   TIME_UNIT_HEIGHT_PX,
   SECONDS_PER_UNIT,
-  PRIMARY_GRID_COLOR,
   HEADER_BOTTOM_GAP
 } from './constants';
+import { labelStyle, RULER_WIDTH_PX, rulerStyle } from './TimeRuler.styles';
 
 interface TimeRulerProps {
   totalDuration: number;
   totalHeight: number;
 }
-
-const RULER_WIDTH_PX = 40; // Chiều rộng cố định của thanh Ruler
 
 const TimeRuler: React.FC<TimeRulerProps> = ({ totalDuration, totalHeight }) => {
 
@@ -55,30 +53,3 @@ const TimeRuler: React.FC<TimeRulerProps> = ({ totalDuration, totalHeight }) => 
 };
 
 export default TimeRuler;
-
-// --- Styles cho Ruler ---
-
-const rulerStyle: React.CSSProperties = {
-  position: 'relative', // Giữ thanh Ruler cố định bên trái khi cuộn ngang
-  left: 0,
-  minHeight: '100%',
-  backgroundColor: '#e9ecef', // Màu nền thước đo
-  zIndex: 50, // Đảm bảo nằm trên TimeGrid
-  borderRight: `1px solid ${PRIMARY_GRID_COLOR}`,
-  boxSizing: 'content-box',
-  flexShrink: 0
-};
-
-const labelStyle: React.CSSProperties = {
-  position: 'absolute',
-  right: 5,
-  transform: 'translateY(-50%)', // Căn giữa theo vạch
-  fontSize: '12px',
-  color: PRIMARY_GRID_COLOR,
-  fontWeight: 'bold',
-  paddingLeft: '5px',
-  height: '20px',
-  lineHeight: '20px',
-  textAlign: 'right',
-  width: RULER_WIDTH_PX - 5,
-};

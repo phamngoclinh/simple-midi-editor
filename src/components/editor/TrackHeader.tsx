@@ -1,8 +1,9 @@
 // src/components/editor/TrackHeader.tsx
 import React, { useState } from 'react';
 import { Song } from '../../domain/entities/Song';
-import { TRACK_WIDTH_PX, PRIMARY_GRID_COLOR } from './constants';
+import { TRACK_WIDTH_PX } from './constants';
 import { Track } from '../../domain/entities/Track';
+import { headerContainerStyle, inputStyle, labelStyle, labelWrapperStyle, orderStyle, trackHeaderItemStyle } from './TrackHeader.styles';
 
 interface TrackHeaderProps {
   currentSong: Song;
@@ -87,67 +88,3 @@ const TrackHeader: React.FC<TrackHeaderProps> = ({ currentSong, totalWidth, onTr
 };
 
 export default TrackHeader;
-
-// --- Styles cho Header ---
-
-const HEADER_HEIGHT_PX = 50;
-
-const labelWrapperStyle: React.CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '100%',
-    cursor: 'pointer',
-    padding: '0 5px',
-};
-
-const labelStyle: React.CSSProperties = {
-    fontSize: '0.9em',
-    fontWeight: 'bold',
-    color: '#333',
-    maxWidth: '90%',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-};
-
-const inputStyle: React.CSSProperties = {
-    width: '90%',
-    padding: '3px 5px',
-    fontSize: '0.9em',
-    textAlign: 'center',
-    border: '1px solid #007bff',
-    borderRadius: '3px',
-    boxSizing: 'border-box',
-    height: '80%', // Chiếm gần hết chiều cao
-};
-
-const headerContainerStyle: React.CSSProperties = {
-  display: 'flex',
-  flexShrink: 0, // Quan trọng: Ngăn không cho container co lại
-  height: HEADER_HEIGHT_PX,
-  backgroundColor: '#f1f3f5', // Nền sáng
-  borderBottom: `1px solid ${PRIMARY_GRID_COLOR}`,
-  position: 'relative', // Relative để chứa các items
-};
-
-const trackHeaderItemStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-  padding: '5px 0',
-  boxSizing: 'border-box',
-  borderRight: `1px solid ${PRIMARY_GRID_COLOR}`,
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-};
-
-const orderStyle: React.CSSProperties = {
-  fontSize: '0.7em',
-  color: '#666',
-  marginTop: '2px',
-};

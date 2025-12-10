@@ -3,7 +3,7 @@ export interface SongExportFormat {
   description?: string;
   totalDuration: number;
   // Tracks hoàn chỉnh (dễ dàng tái tạo lại)
-  tracks: string[];
+  trackLabels: string[];
   notes: {
     // Sử dụng Track ID (hoặc order) để tham chiếu
     // trackId: string;

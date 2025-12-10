@@ -8,6 +8,7 @@ import {
   SECONDARY_GRID_COLOR,
   HEADER_BOTTOM_GAP,
 } from './constants';
+import { gridStyle, horizontalLineStyle, verticalLineStyle } from './TimeGrid.styles';
 
 interface TimeGridProps {
   numTracks: number;
@@ -79,30 +80,3 @@ const TimeGrid: React.FC<TimeGridProps> = ({ numTracks, totalHeight, totalDurati
 };
 
 export default TimeGrid;
-
-// --- Styles cho Grid ---
-
-const gridStyle: React.CSSProperties = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  width: '100%', // Kéo dài hết chiều rộng
-  pointerEvents: 'none', // Cho phép click xuyên qua để tương tác với Notes
-  backgroundColor: '#f8f8f8',
-};
-
-const horizontalLineStyle: React.CSSProperties = {
-  position: 'absolute',
-  width: '100%',
-  borderBottomStyle: 'solid',
-  borderBottomWidth: 1,
-  transform: 'translateY(-0.5px)', // Căn giữa đường kẻ
-};
-
-const verticalLineStyle: React.CSSProperties = {
-  position: 'absolute',
-  height: '100%',
-  borderLeftStyle: 'solid',
-  borderLeftWidth: 1,
-  transform: 'translateX(-1px)',
-};

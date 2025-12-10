@@ -1,6 +1,7 @@
 // src/components/common/Modal.tsx
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { backdropStyle, bodyStyle, closeButtonStyle, headerStyle, modalContentStyle } from './Modal.styles';
 
 interface ModalProps {
   /** Trạng thái hiển thị Modal (true/false). */
@@ -36,49 +37,3 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
 };
 
 export default Modal;
-
-// --- Styles cho Modal ---
-
-const backdropStyle: React.CSSProperties = {
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: '100%',
-  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  zIndex: 1000,
-};
-
-const modalContentStyle: React.CSSProperties = {
-  backgroundColor: '#fff',
-  padding: '20px',
-  borderRadius: '8px',
-  maxWidth: '500px',
-  width: '90%',
-  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-  position: 'relative',
-};
-
-const headerStyle: React.CSSProperties = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '15px',
-    borderBottom: '1px solid #eee',
-    paddingBottom: '10px',
-};
-
-const bodyStyle: React.CSSProperties = {
-    paddingTop: '10px',
-};
-
-const closeButtonStyle: React.CSSProperties = {
-  background: 'none',
-  border: 'none',
-  fontSize: '1.5em',
-  cursor: 'pointer',
-  color: '#aaa',
-};

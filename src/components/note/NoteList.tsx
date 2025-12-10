@@ -1,8 +1,9 @@
 // src/components/note/NoteList.tsx
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { listNotesInSongUseCase } from '../../dependencies'; // Use Case
 import { Note } from '../../domain/entities/Note'; // Import Entity Note
 import { Song } from '../../domain/entities/Song'; // Import Song để lấy track label
-import { listNotesInSongUseCase } from '../../dependencies'; // Use Case
+import { actionsStyle, containerStyle, deleteButtonStyle, editButtonStyle, listItemStyle, listStyle, noteDetailsStyle, noteInfoStyle, noteTitleStyle, refreshButtonStyle } from './NoteList.styles';
 
 // Định nghĩa Props
 interface NoteListProps {
@@ -92,78 +93,3 @@ const NoteList: React.FC<NoteListProps> = ({
 };
 
 export default NoteList;
-
-// --- Styles ---
-const containerStyle: React.CSSProperties = {
-  marginTop: '15px',
-  paddingTop: '10px',
-  borderTop: '1px solid #eee',
-};
-
-const listStyle: React.CSSProperties = {
-  listStyle: 'none',
-  padding: 0,
-  maxHeight: '600px',
-  overflow: 'auto'
-};
-
-const listItemStyle: React.CSSProperties = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  padding: '10px 15px',
-  marginBottom: '8px',
-  backgroundColor: '#fff',
-  borderRadius: '4px',
-  borderLeftWidth: '5px',
-  borderLeftStyle: 'solid',
-  boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-};
-
-const noteInfoStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-};
-
-const noteTitleStyle: React.CSSProperties = {
-  fontWeight: 'bold',
-  fontSize: '1em',
-  marginBottom: '3px',
-};
-
-const noteDetailsStyle: React.CSSProperties = {
-  fontSize: '0.85em',
-  color: '#666',
-};
-
-const actionsStyle: React.CSSProperties = {
-  display: 'flex',
-  gap: '8px',
-};
-
-const buttonBaseStyle: React.CSSProperties = {
-  padding: '6px 10px',
-  fontSize: '0.85em',
-  border: 'none',
-  borderRadius: '3px',
-  cursor: 'pointer',
-};
-
-const editButtonStyle: React.CSSProperties = {
-  ...buttonBaseStyle,
-  backgroundColor: '#ffc107',
-  color: '#333',
-};
-
-const deleteButtonStyle: React.CSSProperties = {
-  ...buttonBaseStyle,
-  backgroundColor: '#dc3545',
-  color: 'white',
-};
-
-const refreshButtonStyle: React.CSSProperties = {
-    ...buttonBaseStyle,
-    backgroundColor: '#007bff',
-    color: 'white',
-    marginTop: '10px',
-};

@@ -1,0 +1,44 @@
+
+export const backdropStyle: React.CSSProperties = {
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  zIndex: 1000,
+};
+
+export const modalContentStyle: React.CSSProperties = {
+  backgroundColor: '#fff',
+  padding: '20px',
+  borderRadius: '8px',
+  maxWidth: '500px',
+  width: '90%',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  position: 'relative',
+};
+
+export const headerStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: '15px',
+  borderBottom: '1px solid #eee',
+  paddingBottom: '10px',
+};
+
+export const bodyStyle: React.CSSProperties = {
+  paddingTop: '10px',
+};
+
+export const closeButtonStyle: React.CSSProperties = {
+  background: 'none',
+  border: 'none',
+  fontSize: '1.5em',
+  cursor: 'pointer',
+  color: '#aaa',
+};

@@ -1,6 +1,8 @@
 // src/components/note/NoteEditForm.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Song } from '../../domain/entities/Song'; // Import Song để lấy tracks và totalDuration
+import { buttonGroupStyle, cancelButtonStyle, errorStyle, formStyle, inputStyle, labelStyle, submitButtonStyle, textareaStyle } from './NoteEditForm.styles';
+import { useForm, SubmitHandler } from 'react-hook-form';
 
 // Định nghĩa dữ liệu Note tối thiểu để form xử lý
 export interface NoteFormData {
@@ -49,103 +51,113 @@ const NoteEditForm: React.FC<NoteEditFormProps> = ({
   onCancel, 
   buttonLabel 
 }) => {
-  const [formData, setFormData] = useState<NoteFormData>(
-    getDefaultNoteFormData(currentSong, initialNote)
-  );
-
   const { tracks, totalDuration } = currentSong;
 
-  // Cập nhật state nếu initialNote thay đổi
+  // 💥 Khởi tạo useForm
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<NoteFormData>({
+    defaultValues: getDefaultNoteFormData(currentSong, initialNote),
+  });
+
+  // Reset form khi initialNote hoặc currentSong thay đổi
   useEffect(() => {
-    setFormData(getDefaultNoteFormData(currentSong, initialNote));
-  }, [currentSong, initialNote]);
+    reset(getDefaultNoteFormData(currentSong, initialNote));
+  }, [currentSong, initialNote, reset]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+  const handleRHFSubmit: SubmitHandler<NoteFormData> = (data) => {
+    // 💥 Lưu ý: Đảm bảo trackId được chuyển về đúng kiểu (number/string) nếu cần thiết
+    // Hiện tại, RHF sẽ giữ nguyên giá trị từ <select> (thường là string)
+    const processedData: NoteFormData = {
+      ...data, 
+    };
+
+    processedData.track = currentSong.tracks.findIndex(x => x.id === processedData.trackId) + 1;
     
-    // Xử lý trường Time: đảm bảo là số và nằm trong giới hạn
-    if (name === 'time') {
-      const timeValue = parseFloat(value);
-      if (timeValue >= 0 && timeValue <= totalDuration) {
-        setFormData(prev => ({ ...prev, [name]: timeValue }));
-      }
-      return;
-    }
-    
-    setFormData(prev => ({ ...prev, [name]: value }));
+    onSubmit(processedData);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  //   const { name, value } = e.target;
+    
+  //   // Xử lý trường Time: đảm bảo là số và nằm trong giới hạn
+  //   if (name === 'time') {
+  //     const timeValue = parseFloat(value);
+  //     if (timeValue >= 0 && timeValue <= totalDuration) {
+  //       setFormData(prev => ({ ...prev, [name]: timeValue }));
+  //     }
+  //     return;
+  //   }
+    
+  //   setFormData(prev => ({ ...prev, [name]: value }));
+  // };
 
-    if (!formData.title.trim()) {
-      alert("Tiêu đề Note không được để trống.");
-      return;
-    }
-    if (formData.time < 0 || formData.time > totalDuration) {
-        alert(`Thời gian không hợp lệ. Phải nằm trong khoảng 0 đến ${totalDuration}.`);
-        return;
-    }
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
 
-    formData.track = currentSong.tracks.findIndex(x => x.id === formData.trackId) + 1;
+  //   if (!formData.title.trim()) {
+  //     alert("Tiêu đề Note không được để trống.");
+  //     return;
+  //   }
+  //   if (formData.time < 0 || formData.time > totalDuration) {
+  //       alert(`Thời gian không hợp lệ. Phải nằm trong khoảng 0 đến ${totalDuration}.`);
+  //       return;
+  //   }
 
-    onSubmit(formData);
-  };
+  //   formData.track = currentSong.tracks.findIndex(x => x.id === formData.trackId) + 1;
+
+  //   onSubmit(formData);
+  // };
 
   const submitButtonLabel = buttonLabel || (initialNote ? 'Lưu Note' : 'Tạo Note');
 
   return (
-    <form onSubmit={handleSubmit} style={formStyle}>
+    <form onSubmit={handleSubmit(handleRHFSubmit)} style={formStyle}>
       {/* 1. Track Selection */}
       <label style={labelStyle}>Track:</label>
       <select
-        name="trackId"
-        value={formData.trackId}
-        onChange={handleChange}
+        {...register("trackId", { required: "Vui lòng chọn Track" })}
         style={inputStyle}
-        required
       >
         {tracks.map(track => (
-          // Đảm bảo id của track là string hoặc number
           <option key={track.id} value={track.id as string}>
             {track.label} (ID: {track.id})
           </option>
         ))}
       </select>
+      {errors.trackId && <p style={errorStyle}>{errors.trackId.message}</p>}
 
-      {/* 2. Time Input */}
       <label style={labelStyle}>Time (0 đến {totalDuration}):</label>
       <input
         type="number"
-        name="time"
-        value={formData.time}
-        onChange={handleChange}
-        min="0"
-        max={totalDuration}
-        step="1"
+        // 💥 Sử dụng register với Validation
+        {...register("time", {
+          required: "Thời gian là bắt buộc",
+          valueAsNumber: true,
+          min: { value: 0, message: "Thời gian phải >= 0" },
+          max: { value: totalDuration, message: `Thời gian phải <= ${totalDuration}` }
+        })}
         style={inputStyle}
-        required
       />
+      {errors.time && <p style={errorStyle}>{errors.time.message}</p>}
+      
       
       {/* 3. Title Input */}
       <label style={labelStyle}>Tiêu đề Note:</label>
       <input
         type="text"
-        name="title"
-        value={formData.title}
-        onChange={handleChange}
+        // 💥 Sử dụng register
+        {...register("title", { required: "Tiêu đề là bắt buộc" })}
         style={inputStyle}
         placeholder="Tiêu đề gợi nhớ"
-        required
       />
+      {errors.title && <p style={errorStyle}>{errors.title.message}</p>}
+
       
       {/* 4. Description Textarea */}
       <label style={labelStyle}>Mô tả Note:</label>
       <textarea
-        name="description"
-        value={formData.description}
-        onChange={handleChange}
         rows={3}
+        // 💥 Sử dụng register
+        {...register("description")}
         style={textareaStyle}
         placeholder="Ghi chú chi tiết cho Note này..."
       />
@@ -154,9 +166,8 @@ const NoteEditForm: React.FC<NoteEditFormProps> = ({
       <label style={labelStyle}>Màu sắc:</label>
       <input
         type="color"
-        name="color"
-        value={formData.color}
-        onChange={handleChange}
+        // 💥 Sử dụng register
+        {...register("color")}
         style={{ ...inputStyle, height: '40px' }}
       />
 
@@ -164,9 +175,7 @@ const NoteEditForm: React.FC<NoteEditFormProps> = ({
       <label style={labelStyle}>Icon:</label>
       <input
         type="text"
-        name="icon"
-        value={formData.icon}
-        onChange={handleChange}
+        {...register("icon")}
         style={{ ...inputStyle }}
       />
       
@@ -184,53 +193,3 @@ const NoteEditForm: React.FC<NoteEditFormProps> = ({
 };
 
 export default NoteEditForm;
-
-// --- Định nghĩa Style Cơ bản ---
-// (Sử dụng lại một số style từ SongForm và thêm mới)
-
-const formStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '10px',
-};
-
-const labelStyle: React.CSSProperties = {
-  fontWeight: 'bold',
-  marginTop: '5px',
-  color: '#555',
-  fontSize: '0.9em'
-};
-
-const inputStyle: React.CSSProperties = {
-  padding: '8px',
-  fontSize: '1em',
-  borderRadius: '4px',
-  border: '1px solid #ccc',
-};
-
-const textareaStyle: React.CSSProperties = {
-    ...inputStyle,
-    resize: 'vertical',
-};
-
-const buttonGroupStyle: React.CSSProperties = {
-    display: 'flex',
-    gap: '10px',
-    marginTop: '15px',
-    justifyContent: 'flex-end',
-};
-
-const submitButtonStyle: React.CSSProperties = {
-  padding: '10px 15px',
-  fontSize: '1em',
-  backgroundColor: '#28a745',
-  color: 'white',
-  border: 'none',
-  borderRadius: '4px',
-  cursor: 'pointer',
-};
-
-const cancelButtonStyle: React.CSSProperties = {
-    ...submitButtonStyle,
-    backgroundColor: '#6c757d',
-};

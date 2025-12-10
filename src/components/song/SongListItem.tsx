@@ -1,6 +1,7 @@
 // src/components/song/SongListItem.tsx
 import React from 'react';
 import { Song } from '../../domain/entities/Song'; // Import Entity Song
+import { actionsStyle, buttonStyle, infoStyle, itemContainerStyle, metadataStyle, titleStyle } from './SongListItem.styles';
 
 // Định nghĩa Props cho component
 interface SongListItemProps {
@@ -96,50 +97,3 @@ const SongListItem: React.FC<SongListItemProps> = ({
 };
 
 export default SongListItem;
-
-// --- Định nghĩa Style Cơ bản (Có thể thay bằng file CSS modules) ---
-
-const itemContainerStyle: React.CSSProperties = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  padding: '15px',
-  border: '1px solid #ddd',
-  borderRadius: '8px',
-  marginBottom: '10px',
-  backgroundColor: '#f9f9f9',
-};
-
-const infoStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  flexGrow: 1,
-};
-
-const titleStyle: React.CSSProperties = {
-  fontSize: '1.2em',
-  fontWeight: 'bold',
-  color: '#007bff',
-  cursor: 'pointer',
-  marginBottom: '5px',
-};
-
-const metadataStyle: React.CSSProperties = {
-  fontSize: '0.9em',
-  color: '#666',
-};
-
-const actionsStyle: React.CSSProperties = {
-  display: 'flex',
-  gap: '10px',
-};
-
-const buttonStyle: React.CSSProperties = {
-  padding: '8px 12px',
-  fontSize: '0.9em',
-  color: 'white',
-  border: 'none',
-  borderRadius: '4px',
-  cursor: 'pointer',
-  minWidth: '100px',
-};

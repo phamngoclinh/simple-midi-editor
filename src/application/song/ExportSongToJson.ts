@@ -32,7 +32,7 @@ export class ExportSongToJsonUseCase {
       name: song.name,
       description: song.description,
       totalDuration: song.totalDuration || 60, // Giả định thời lượng
-      tracks: song.tracks.map(t => t.label),
+      trackLabels: song.tracks.map(t => t.label),
       notes: exportNotes,
     };
 
