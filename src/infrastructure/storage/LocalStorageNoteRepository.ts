@@ -2,59 +2,26 @@
 
 import { INoteRepository } from '../../domain/repositories/INoteRepository';
 import { Note } from '../../domain/entities/Note';
-import { v4 as uuidv4 } from 'uuid';
-import { MIDI_EDITOR_NOTES_SONG } from '../config/localStorageKeys';
-
-// Hàm helper để tạo key cho từng Song
-const getNoteStorageKey = (songId: string) => MIDI_EDITOR_NOTES_SONG.replace('{{songId}}', songId);
-
+import { createNote, deleteNote, findNotesBySong, updateNote } from '../services/api';
+import { NoteMapper } from './mapper';
+import { Track } from '../types/api';
 export class LocalStorageNoteRepository implements INoteRepository {
-    private getNotesForSong(songId: string): Note[] {
-        const key = getNoteStorageKey(songId);
-        const json = localStorage.getItem(key);
-        return json ? (JSON.parse(json) as Note[]) : [];
-    }
+  async create(songId: string, trackId: string, note: Omit<Note, 'id' | 'track'>): Promise<Note> {
+    const response = await createNote(songId, trackId, { ...note, track: { id: trackId } as Track });
+    return NoteMapper.toDomain(response);
+  }
 
-    private saveNotesForSong(songId: string, notes: Note[]): void {
-        const key = getNoteStorageKey(songId);
-        localStorage.setItem(key, JSON.stringify(notes));
-    }
+  async update(id: string, note: Partial<Omit<Note, 'id' | 'track'>>): Promise<Note> {
+    const response = await updateNote(id, note);
+    return NoteMapper.toDomain(response);
+  }
 
-    // --- Implementations từ INoteRepository ---
+  async findBySongId(songId: string): Promise<Note[]> {
+    const response = await findNotesBySong(songId);
+    return response.map(NoteMapper.toDomain);
+  }
 
-    async save(note: Note): Promise<Note> {
-        if (!note.songId) throw new Error("Note must have a songId.");
-
-        const notes = this.getNotesForSong(note.songId);
-
-        if (note.id) {
-            // Cập nhật Note hiện có
-            const index = notes.findIndex(n => n.id === note.id);
-            if (index !== -1) {
-                notes[index] = note;
-            }
-        } else {
-            // Thêm Note mới
-            note.id = uuidv4();
-            notes.push(note);
-        }
-
-        this.saveNotesForSong(note.songId, notes);
-        return note;
-    }
-
-    async findBySongId(songId: string): Promise<Note[]> {
-        return this.getNotesForSong(songId);
-    }
-
-    async deleteById(id: string, songId: string): Promise<void> {
-        let notes = this.getNotesForSong(songId);
-        notes = notes.filter(note => note.id !== id);
-        this.saveNotesForSong(songId, notes);
-    }
-
-    async deleteAllBySongId(songId: string): Promise<void> {
-        const key = getNoteStorageKey(songId);
-        localStorage.removeItem(key);
-    }
+  async deleteById(id: string): Promise<void> {
+    await deleteNote(id);
+  }
 }

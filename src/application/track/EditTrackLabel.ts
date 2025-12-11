@@ -1,5 +1,5 @@
 import { ISongRepository } from '../../domain/repositories/ISongRepository';
-import { Song } from '../../domain/entities/Song'; // Giả định
+import { Track } from '../../domain/entities/Track';
 
 export interface EditTrackLabelData {
   /** ID của Song chứa Track cần chỉnh sửa. */
@@ -26,7 +26,7 @@ export class EditTrackLabelUseCase {
    * @returns Promise trả về Song đã được cập nhật.
    * @throws Error nếu Song hoặc Track không tồn tại, hoặc nhãn mới không hợp lệ.
    */
-  async execute(data: EditTrackLabelData): Promise<Song> {
+  async execute(data: EditTrackLabelData): Promise<Track> {
     const { songId, trackId, newLabel } = data;
 
     // 1. Validation (Kiểm tra cơ bản)
@@ -36,42 +36,6 @@ export class EditTrackLabelUseCase {
 
     const trimmedLabel = newLabel.trim();
 
-    // 2. Tải Song hiện tại từ Repository
-    const song = await this.songRepository.findById(songId);
-
-    if (!song) {
-      throw new Error(`Song với ID '${songId}' không tồn tại.`);
-    }
-
-    // 3. Tìm Track cần chỉnh sửa
-    const trackIndex = song.tracks.findIndex(t => t.id === trackId);
-
-    if (trackIndex === -1) {
-      throw new Error(`Track với ID '${trackId}' không tồn tại trong Song.`);
-    }
-
-    // 4. Cập nhật nhãn Track
-    // Tạo một bản sao của mảng tracks để đảm bảo tính bất biến (Immutability)
-    const updatedTracks = [...song.tracks];
-
-    // Tạo một bản sao của track để thay đổi
-    updatedTracks[trackIndex] = {
-      ...updatedTracks[trackIndex],
-      label: trimmedLabel, // Áp dụng nhãn mới
-      // Giữ nguyên các trường khác như order, instrument, notes, v.v.
-    };
-
-    // Tạo một bản sao của Song với mảng tracks đã được cập nhật
-    const updatedSong: Song = {
-      ...song,
-      tracks: updatedTracks,
-      // Cập nhật timestamp (nếu có)
-      updatedTimestamp: new Date().toISOString(),
-    };
-
-    // 5. Lưu Song đã được cập nhật vào Repository
-    const savedSong = await this.songRepository.save(updatedSong);
-
-    return savedSong;
+    return this.songRepository.updateTrackLabel(songId, trackId, trimmedLabel);
   }
 }

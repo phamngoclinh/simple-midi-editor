@@ -1,7 +1,7 @@
 // src/components/editor/MidiEditorContainer.tsx
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useModal } from '../../contexts/ModalContext';
-import { editTrackLabelUseCase } from '../../dependencies';
+import { editTrackLabelUseCase, loadSongByIdUseCase } from '../../dependencies';
 import { Note } from '../../domain/entities/Note';
 import { Song } from '../../domain/entities/Song';
 import {
@@ -83,12 +83,12 @@ const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, 
 
     // 💥 LOGIC GỌI USE CASE:
     try {
-      const updatedSong = await editTrackLabelUseCase.execute({
+      await editTrackLabelUseCase.execute({
         songId: currentSong.id,
         trackId: trackId,
         newLabel: newLabel
       });
-      onSongUpdate(updatedSong); // Cập nhật lại state Song trong component cha
+      onSongUpdate(await loadSongByIdUseCase.execute(currentSong.id));
     } catch (error) {
       console.error("Lỗi khi cập nhật Track Label:", error);
       showToast({

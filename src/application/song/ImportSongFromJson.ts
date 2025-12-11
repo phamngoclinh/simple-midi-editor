@@ -43,13 +43,10 @@ export class ImportSongFromJsonUseCase {
       tags: importData.tags
     };
 
-    await this.songRepository.save(newSong);
-
     // 2. Tái tạo cấu trúc Tracks và Notes
 
     // Khởi tạo các Track mới, sẵn sàng chứa Notes
     const newTracks: Track[] = importData.trackLabels.map((t, i) => ({
-      id: (i + 1).toString(),
       label: t,
       order: i + 1,
       instrument: 'Default Instrument',
@@ -61,19 +58,14 @@ export class ImportSongFromJsonUseCase {
     for (const noteData of notes) {
       const targetTrack = newTracks[noteData.track - 1];
       if (targetTrack) {
-        // Tạo Note Entity mới
-        const newNote: Note = {
-          songId: newSong.id,
-          trackId: targetTrack.id,
-          track: noteData.track,
+        const newNote = {
           time: noteData.time,
           title: noteData.title,
           description: noteData.description,
           color: noteData.color,
           icon: noteData.icon
-        };
-        const savedNote = await this.noteRepository.save(newNote);
-        targetTrack.notes.push(savedNote);
+        } as Note;
+        targetTrack.notes.push(newNote);
       } else {
         console.warn(`Note tham chiếu Track ${noteData.track} không tồn tại. Bỏ qua Note.`);
       }
@@ -82,9 +74,9 @@ export class ImportSongFromJsonUseCase {
     // 3. Tạo Song Entity mới
     newSong.tracks = newTracks;
 
-    // 4. Lưu Song mới vào Repository
-    await this.songRepository.save(newSong);
+    console.log('------newSong', newSong);
 
-    return newSong;
+    // 4. Lưu Song mới vào Repository
+    return this.songRepository.create(newSong);
   }
 }

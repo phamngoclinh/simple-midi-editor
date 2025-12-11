@@ -61,7 +61,6 @@ const NoteEditForm: React.FC<NoteEditFormProps> = ({
 
   // Reset form khi initialNote hoặc currentSong thay đổi
   useEffect(() => {
-    console.log('---currentSong, initialNote, reset--', currentSong, initialNote, reset)
     reset(getDefaultNoteFormData(currentSong, initialNote));
   }, [currentSong, initialNote, reset]);
 
@@ -82,10 +81,11 @@ const NoteEditForm: React.FC<NoteEditFormProps> = ({
       <select
         {...register("trackId", { required: "Vui lòng chọn Track" })}
         style={inputStyle}
+        disabled={true}
       >
         {tracks.map(track => (
           <option key={track.id} value={track.id as string}>
-            {track.label} (ID: {track.id})
+            {track.label} (No: #{track.order || track.id})
           </option>
         ))}
       </select>

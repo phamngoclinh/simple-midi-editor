@@ -24,6 +24,6 @@ export const importSongFromJsonUseCase = new ImportSongFromJsonUseCase(songRepo,
 export const exportSongToJsonUseCase = new ExportSongToJsonUseCase();
 export const editTrackLabelUseCase = new EditTrackLabelUseCase(songRepo);
 export const addNoteToSongUseCase = new AddNoteToSong(noteRepo, songRepo);
-export const deleteExistingNoteUseCase = new DeleteExistingNote(noteRepo, songRepo);
+export const deleteExistingNoteUseCase = new DeleteExistingNote(noteRepo);
 export const editExistingNoteUseCase = new EditExistingNote(noteRepo, songRepo);
 export const listNotesInSongUseCase = new ListNotesInSong(noteRepo);

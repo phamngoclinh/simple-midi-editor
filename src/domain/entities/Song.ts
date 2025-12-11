@@ -6,29 +6,29 @@ import { Track } from "./Track";
  * Thể hiện một dự án/bản nhạc MIDI hoàn chỉnh.
  */
 export interface Song {
-    /** ID duy nhất của Song, được tạo khi lưu trữ (Infrastructure Layer). */
-    id?: string;
+  /** ID duy nhất của Song, được tạo khi lưu trữ (Infrastructure Layer). */
+  id?: string;
 
-    /** Tên của bản nhạc. */
-    name: string;
+  /** Tên của bản nhạc. */
+  name: string;
 
-    /** Mô tả chi tiết bản nhạc. */
-    description?: string;
+  /** Mô tả chi tiết bản nhạc. */
+  description?: string;
 
-    /** Tổng thời lượng của bản nhạc, có thể tính bằng giây hoặc tick/đơn vị thời gian MIDI. */
-    totalDuration: number;
+  /** Tổng thời lượng của bản nhạc, có thể tính bằng giây hoặc tick/đơn vị thời gian MIDI. */
+  totalDuration: number;
 
-    /** Danh sách các thẻ (tags) giúp phân loại và tìm kiếm. */
-    tags: string[];
+  /** Danh sách các thẻ (tags) giúp phân loại và tìm kiếm. */
+  tags: string[];
 
-    tracks: Track[];
+  tracks: Track[];
 
-    /** Tập hợp các Track tạo nên bản nhạc. */
-    // trackLabels: string[];
+  /** Tập hợp các Track tạo nên bản nhạc. */
+  // trackLabels: string[];
 
-    /** Timestamp tạo bản nhạc (ISO string). */
-    createdTimestamp?: string;
+  /** Timestamp tạo bản nhạc (ISO string). */
+  createdTimestamp?: string;
 
-    /** Timestamp cập nhật cuối cùng (ISO string). */
-    updatedTimestamp?: string;
+  /** Timestamp cập nhật cuối cùng (ISO string). */
+  updatedTimestamp?: string;
 }

@@ -1,0 +1,37 @@
+{
+    "name": "Electronic Groove",
+    "description": "Synth bassline with drums",
+    "totalDuration": 180,
+    "trackLabels": [
+        "Lead Synth",
+        "Bass",
+        "Kick",
+        "Snare",
+        "Hi-Hat",
+        "Pad",
+        "Arp",
+        "FX"
+    ],
+    "notes": [
+        {
+            "track": 3,
+            "time": 0,
+            "title": "Kick",
+            "color": "#EF4444"
+        },
+        {
+            "track": 2,
+            "time": 0.5,
+            "title": "Bass C",
+            "description": "Root note",
+            "color": "#8B5CF6"
+        },
+        {
+            "track": 1,
+            "time": 2,
+            "title": "Lead",
+            "description": "Melody line",
+            "color": "#06B6D4"
+        }
+    ]
+}

@@ -1,59 +1,60 @@
-// src/infrastructure/storage/LocalStorageSongRepository.ts
-
-import { ISongRepository } from '../../domain/repositories/ISongRepository';
 import { Song } from '../../domain/entities/Song';
-import { v4 as uuidv4 } from 'uuid';
-import { MIDI_EDITOR_SONGS } from '../config/localStorageKeys';
+import { Track } from '../../domain/entities/Track';
+import { ISongRepository } from '../../domain/repositories/ISongRepository';
+import { createSong, deleteSong, fetchAllSongs, fetchSongDetails, updateSong, updateTrackLabel } from '../services/api';
+import { SongMapper, TrackMapper } from './mapper';
 
 export class LocalStorageSongRepository implements ISongRepository {
-    private getSongsFromStorage(): Song[] {
-        const json = localStorage.getItem(MIDI_EDITOR_SONGS);
-        // Xử lý deserialization và trả về mảng Song
-        return json ? (JSON.parse(json) as Song[]) : [];
-    }
+  async create(song: Song): Promise<Song> {
+    const response = await createSong({
+      name: song.name,
+      description: song.description,
+      totalDuration: song.totalDuration,
+      tags: song.tags,
+      tracks: song.tracks.map(track => ({
+        label: track.label,
+        order: track.order,
+        instrument: track.instrument,
+        notes: track.notes
+      }))
+    });
 
-    private saveSongsToStorage(songs: Song[]): void {
-        // Xử lý serialization và lưu vào localStorage
-        localStorage.setItem(MIDI_EDITOR_SONGS, JSON.stringify(songs));
-    }
+    return SongMapper.toDomain(response);
+  }
 
-    // --- Implementations từ ISongRepository ---
+  async update(song: Partial<Song> & Required<Pick<Song, 'id'>>): Promise<Song> {
+    const response = await updateSong({
+      id: song.id,
+      name: song.name,
+      description: song.description,
+      totalDuration: song.totalDuration,
+      tags: song.tags,
+      tracks: song.tracks?.map(track => ({
+        id: track.id as string,
+        label: track.label,
+        order: track.order,
+        instrument: track.instrument,
+      }))
+    });
+    return SongMapper.toDomain(response);
+  }
 
-    async save(song: Song): Promise<Song> {
-        const songs = this.getSongsFromStorage();
-        const now = new Date().toISOString();
+  async findById(id: string): Promise<Song | null> {
+    const song = await fetchSongDetails(id);
+    return SongMapper.toDomain(song);
+  }
 
-        if (song.id) {
-            // Cập nhật Song hiện có
-            const index = songs.findIndex(s => s.id === song.id);
-            if (index !== -1) {
-                songs[index] = { ...song, updatedTimestamp: now };
-            }
-            // Nếu không tìm thấy, coi như tạo mới (tùy thuộc quy tắc nghiệp vụ)
-        } else {
-            // Tạo Song mới
-            song.id = uuidv4();
-            song.createdTimestamp = now;
-            song.updatedTimestamp = now;
-            songs.push(song);
-        }
+  async findAll(): Promise<Song[]> {
+    const response = await fetchAllSongs()
+    return response.map(song => SongMapper.toDomain(song))
+  }
 
-        this.saveSongsToStorage(songs);
-        return song;
-    }
+  async deleteById(id: string): Promise<void> {
+    await deleteSong(id);
+  }
 
-    async findById(id: string): Promise<Song | null> {
-        const songs = this.getSongsFromStorage();
-        return songs.find(song => song.id === id) || null;
-    }
-
-    async findAll(): Promise<Song[]> {
-        return this.getSongsFromStorage();
-    }
-
-    async deleteById(id: string): Promise<void> {
-        let songs = this.getSongsFromStorage();
-        songs = songs.filter(song => song.id !== id);
-        this.saveSongsToStorage(songs);
-    }
+  async updateTrackLabel(songId: string, trackId: string, label: string): Promise<Track> {
+    const response = await updateTrackLabel(songId, trackId, label);
+    return TrackMapper.toDomain(response);
+  }
 }
