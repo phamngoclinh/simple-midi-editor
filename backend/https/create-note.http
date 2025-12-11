@@ -1,0 +1,10 @@
+POST http://localhost:3001/2c16b743-bb16-419a-a0bc-a6e88eaa239d/tracks/e3d132f9-dad1-4156-8559-3f1096db1dd3/notes HTTP/1.1
+content-type: application/json
+
+{
+    "time": 0,
+    "title": "C4",
+    "description": "Des",
+    "color": "#ff00ff",
+    "icon": ""
+}

@@ -1,0 +1,18 @@
+PUT http://localhost:3001/e366b01b-b027-4e75-8fc6-ed59e04b406c HTTP/1.1
+content-type: application/json
+
+{
+    "name": "test 3",
+    "description": "dếc 3",
+    "totalDuration": 121,
+    "tags": ["abc", "sd", "xx"],
+    "tracks": [
+        {
+            "id": "e39e1e49-ffe0-42b7-9cca-54e0f641be64",
+            "label": "track 11",
+            "order": 1,
+            "instrument": "Flute 1",
+            "notes": []
+        }
+    ]
+}
