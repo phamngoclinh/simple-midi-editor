@@ -75,30 +75,27 @@ const SongManagerContent: React.FC = () => {
 
   return (
     <div className="song-manager-page" style={pageStyle}>
-      <h2>🎶 Quản Lý Bài Hát</h2>
-
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-        <button onClick={openCreateModal} style={createButtonStyle}>+ Tạo Bài Hát Mới</button>
-        <button onClick={importSong} style={{ ...createButtonStyle, backgroundColor: '#6f42c1' }}>Import Song (JSON)</button>
-      </div>
-
-      <hr style={{ margin: '20px 0' }} />
-
       <div className="section song-list">
-        <h3>Danh Sách Bài Hát ({songs.length})</h3>
+        <h2>Danh Sách Bài Hát ({songs.length})</h2>
 
-        <div style={sortControlStyle}>
-          <label htmlFor="sort-by-select">Sắp xếp theo:</label>
-          <select id="sort-by-select" onChange={handleSortChange} value={`${sortState.by}:${sortState.order}`} style={selectStyle}>
-            <option value="updated:desc">Cập nhật gần nhất</option>
-            <option value="updated:asc">Cập nhật cũ nhất</option>
-            <option value="name:asc">Tên (A-Z)</option>
-            <option value="name:desc">Tên (Z-A)</option>
-            <option value="created:desc">Ngày tạo (mới nhất)</option>
-            <option value="created:asc">Ngày tạo (cũ nhất)</option>
-            <option value="tempo:desc">Tempo (cao nhất)</option>
-            <option value="tempo:asc">Tempo (thấp nhất)</option>
-          </select>
+        <div style={{ 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'space-between' }}>
+          <div style={sortControlStyle}>
+            <label htmlFor="sort-by-select">Sắp xếp theo:</label>
+            <select id="sort-by-select" onChange={handleSortChange} value={`${sortState.by}:${sortState.order}`} style={selectStyle}>
+              <option value="updated:desc">Cập nhật gần nhất</option>
+              <option value="updated:asc">Cập nhật cũ nhất</option>
+              <option value="name:asc">Tên (A-Z)</option>
+              <option value="name:desc">Tên (Z-A)</option>
+              <option value="created:desc">Ngày tạo (mới nhất)</option>
+              <option value="created:asc">Ngày tạo (cũ nhất)</option>
+              <option value="tempo:desc">Tempo (cao nhất)</option>
+              <option value="tempo:asc">Tempo (thấp nhất)</option>
+            </select>
+          </div>
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+            <button onClick={importSong} style={{ ...createButtonStyle, backgroundColor: 'rgb(60 112 169)' }}>⬆️ Import</button>
+            <button onClick={openCreateModal} style={createButtonStyle} title="Tạo Bài Hát Mới">+ Thêm</button>
+          </div>
         </div>
 
         {songs.length === 0 ? (

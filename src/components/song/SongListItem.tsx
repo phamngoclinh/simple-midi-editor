@@ -1,7 +1,8 @@
 // src/components/song/SongListItem.tsx
 import React from 'react';
 import { Song } from '../../domain/entities/Song'; // Import Entity Song
-import { actionsStyle, buttonStyle, infoStyle, itemContainerStyle, metadataStyle, titleStyle } from './SongListItem.styles';
+import DropdownMenu, { DropdownItem } from '../common/DropdownMenu';
+import { actionsStyle, infoStyle, itemContainerStyle, metadataStyle, titleStyle } from './SongListItem.styles';
 
 // Định nghĩa Props cho component
 interface SongListItemProps {
@@ -19,31 +20,62 @@ interface SongListItemProps {
   onExport: (song: Song) => void;
 }
 
-const SongListItem: React.FC<SongListItemProps> = ({ 
-  song, 
-  onOpen, 
-  onEdit, 
+const SongListItem: React.FC<SongListItemProps> = ({
+  song,
+  onOpen,
+  onEdit,
   onDelete,
   onEditNotes,
   onExport
 }) => {
   // Định dạng timestamp cho dễ đọc
-  const formattedDate = song.updatedTimestamp 
+  const formattedDate = song.updatedTimestamp
     ? new Date(song.updatedTimestamp).toLocaleDateString('vi-VN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      })
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
     : 'Chưa xác định';
-  
+
   // Xử lý các sự kiện click
   const handleOpen = () => song.id && onOpen(song.id);
   const handleEdit = () => song.id && onEdit(song.id);
   const handleDelete = () => song.id && onDelete(song.id);
   const handleEditNotes = () => onEditNotes(song);
   const handleExportSong = () => onExport(song);
+
+  const getDropdownItems = (song: Song): DropdownItem[] => [
+    {
+      label: "Mở Editor",
+      onClick: handleOpen, // Hàm mở trang Editor
+      icon: "▶️",
+    },
+    {
+      label: "Chỉnh sửa Song",
+      onClick: handleEdit, // Hàm mở modal Edit Song
+      icon: "⚙️",
+    },
+    {
+      label: "Quản lý Notes",
+      onClick: handleEditNotes, // Hàm mở modal Note Management
+      icon: "🎼",
+    },
+    // --- Phân cách ---
+    {
+      label: "Export (JSON)",
+      onClick: handleExportSong, // Hàm export đã tạo
+      icon: "⬇️",
+    },
+    // --- Hành động xóa ---
+    {
+      label: "Xóa Song",
+      onClick: handleDelete, // Hàm bắt đầu Confirmation
+      icon: "🗑️",
+      isDestructive: true,
+    },
+  ];
 
   return (
     <div style={itemContainerStyle}>
@@ -59,38 +91,11 @@ const SongListItem: React.FC<SongListItemProps> = ({
 
       {/* Các Nút Thao tác */}
       <div style={actionsStyle}>
-        <button 
-          onClick={handleExportSong} 
-          style={{ ...buttonStyle, backgroundColor: '#ffc107' }}
-          title="Export Song này thành JSON"
-        >
-          Export
-        </button>
-        <button 
-          onClick={handleEditNotes} 
-          style={{ ...buttonStyle, backgroundColor: '#17a2b8' }}
-          title="Thêm/Sửa Notes cho Song"
-        >
-          Sửa Notes
-        </button>
-        <button 
-          onClick={handleOpen} 
-          style={{ ...buttonStyle, backgroundColor: '#28a745' }}
-        >
-          Mở Editor
-        </button>
-        <button 
-          onClick={handleEdit} 
-          style={{ ...buttonStyle, backgroundColor: '#ffc107', color: '#333' }}
-        >
-          Chỉnh Sửa
-        </button>
-        <button 
-          onClick={handleDelete} 
-          style={{ ...buttonStyle, backgroundColor: '#dc3545' }}
-        >
-          Xóa
-        </button>
+        <DropdownMenu
+          items={getDropdownItems(song)}
+          triggerIcon="⚙️"
+          align="right"
+        />
       </div>
     </div>
   );

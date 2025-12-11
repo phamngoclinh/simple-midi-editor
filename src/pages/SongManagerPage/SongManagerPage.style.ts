@@ -5,14 +5,14 @@ export const pageStyle: React.CSSProperties = {
 };
 
 export const createButtonStyle: React.CSSProperties = {
-  padding: '12px 20px',
+  padding: '4px 8px',
   fontSize: '1.1em',
   backgroundColor: '#007bff',
   color: 'white',
   border: 'none',
-  borderRadius: '6px',
+  borderRadius: '4px',
   cursor: 'pointer',
-  marginBottom: '10px',
+  margin: '10px 0px',
 };
 
 // --- Style bổ sung cho Sắp xếp ---
