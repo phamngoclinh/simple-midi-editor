@@ -1,16 +1,17 @@
 // src/components/note/NoteEditForm.tsx
-import React, { useEffect } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { Song } from '../../domain/entities/Song'; // Import Song để lấy tracks và totalDuration
-import { MUSIC_ICONS } from '../../utils/icons';
+import { DEFAULT_COLORS, MUSIC_ICONS } from '../../utils/icons';
 import { buttonGroupStyle, cancelButtonStyle, errorStyle, formStyle, inputStyle, labelStyle, submitButtonStyle, textareaStyle } from './NoteEditForm.styles';
+import { ChildFormHandles } from '../../utils/types';
 
 // Định nghĩa dữ liệu Note tối thiểu để form xử lý
 export interface NoteFormData {
   songId: string;
   trackId: string;
   track: number;
-  time: number; 
+  time: number;
   title: string;
   description: string;
   color: string;
@@ -45,124 +46,176 @@ const getDefaultNoteFormData = (song: Song, initialNote: NoteFormData | null): N
   };
 };
 
-const NoteEditForm: React.FC<NoteEditFormProps> = ({ 
-  currentSong, 
-  initialNote, 
-  onSubmit, 
-  onCancel, 
-  buttonLabel 
-}) => {
-  const { tracks, totalDuration } = currentSong;
+const NoteEditForm = forwardRef<ChildFormHandles, NoteEditFormProps>(
+  ({
+    currentSong,
+    initialNote,
+    onSubmit,
+  }, ref) => {
+    const { tracks, totalDuration } = currentSong;
 
-  // 💥 Khởi tạo useForm
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<NoteFormData>({
-    defaultValues: getDefaultNoteFormData(currentSong, initialNote),
-  });
+    // 💥 Khởi tạo useForm
+    const { register, handleSubmit, reset, formState: { errors }, control } = useForm<NoteFormData>({
+      defaultValues: getDefaultNoteFormData(currentSong, initialNote),
+    });
 
-  // Reset form khi initialNote hoặc currentSong thay đổi
-  useEffect(() => {
-    reset(getDefaultNoteFormData(currentSong, initialNote));
-  }, [currentSong, initialNote, reset]);
+    // Reset form khi initialNote hoặc currentSong thay đổi
+    useEffect(() => {
+      reset(getDefaultNoteFormData(currentSong, initialNote));
+    }, [currentSong, initialNote, reset]);
 
-  const handleRHFSubmit: SubmitHandler<NoteFormData> = (data) => {
-    const processedData: NoteFormData = { ...data };
+    useImperativeHandle(ref, () => ({
+      submitForm() {
+        handleSubmit(handleRHFSubmit)(); 
+      }
+    }));
 
-    processedData.track = currentSong.tracks.findIndex(x => x.id === processedData.trackId) + 1;
-    
-    onSubmit(processedData);
-  };
+    const handleRHFSubmit: SubmitHandler<NoteFormData> = (data) => {
+      const processedData: NoteFormData = { ...data };
 
-  const submitButtonLabel = buttonLabel || (initialNote ? 'Lưu Note' : 'Tạo Note');
+      processedData.track = currentSong.tracks.findIndex(x => x.id === processedData.trackId) + 1;
 
-  return (
-    <form onSubmit={handleSubmit(handleRHFSubmit)} style={formStyle}>
-      <label style={labelStyle}>Track:</label>
-      <select
-        {...register("trackId", { required: "Vui lòng chọn Track" })}
-        style={inputStyle}
-      >
-        {tracks.map(track => (
-          <option key={track.id} value={track.id as string}>
-            {track.label} (No: #{track.order || track.id})
-          </option>
-        ))}
-      </select>
-      {errors.trackId && <p style={errorStyle}>{errors.trackId.message}</p>}
+      onSubmit(processedData);
+    };
 
-      <label style={labelStyle}>Time (0 đến {totalDuration}):</label>
-      <input
-        type="number"
-        // 💥 Sử dụng register với Validation
-        {...register("time", {
-          required: "Thời gian là bắt buộc",
-          valueAsNumber: true,
-          min: { value: 0, message: "Thời gian phải >= 0" },
-          max: { value: totalDuration, message: `Thời gian phải <= ${totalDuration}` }
-        })}
-        style={inputStyle}
-      />
-      {errors.time && <p style={errorStyle}>{errors.time.message}</p>}
-      
-      
-      {/* 3. Title Input */}
-      <label style={labelStyle}>Tiêu đề Note:</label>
-      <input
-        type="text"
-        // 💥 Sử dụng register
-        {...register("title", { required: "Tiêu đề là bắt buộc" })}
-        style={inputStyle}
-        placeholder="Tiêu đề gợi nhớ"
-      />
-      {errors.title && <p style={errorStyle}>{errors.title.message}</p>}
+    return (
+      <form onSubmit={handleSubmit(handleRHFSubmit)} className='@container'>
+        <div className="flex flex-col gap-4">
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-[#9da6b9]">Title</label>
+            <input
+              className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a] text-sm"
+              type="text"
+              {...register("title", { required: "Tên note là bắt buộc", maxLength: 100 })}
+            />
+            {errors.title && <p style={errorStyle}>{errors.title.message}</p>}
+          </div>
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-[#9da6b9]">Description</label>
+            <textarea
+              className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a] text-sm resize-none"
+              rows={3}
+              {...register("description", { maxLength: 500 })}
+            />
+            {errors.description && <p style={errorStyle}>{errors.description.message}</p>}
+          </div>
 
-      
-      {/* 4. Description Textarea */}
-      <label style={labelStyle}>Mô tả Note:</label>
-      <textarea
-        rows={3}
-        // 💥 Sử dụng register
-        {...register("description")}
-        style={textareaStyle}
-        placeholder="Ghi chú chi tiết cho Note này..."
-      />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-[#9da6b9]">Track</label>
+              <select
+                {...register("trackId", { required: "Vui lòng chọn Track" })}
+                className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary text-sm appearance-none cursor-pointer"
+              >
+                {tracks.map(track => (
+                  <option key={track.id} value={track.id as string}>
+                    {track.label} (No: #{track.order || track.id})
+                  </option>
+                ))}
+              </select>
+              {errors.trackId && <p style={errorStyle}>{errors.trackId.message}</p>}
+            </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-[#9da6b9]">Time (s)</label>
+              <div className="flex items-center bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2">
+                <span className="material-symbols-outlined text-[#58627a] text-sm mr-2">timer</span>
+                <input
+                  className="w-full bg-transparent border-none p-0 text-white focus:ring-0 text-sm"
+                  type="number"
+                  {...register("time", {
+                    required: "Thời gian là bắt buộc",
+                    valueAsNumber: true,
+                    min: { value: 0, message: "Thời gian phải >= 0" },
+                    max: { value: totalDuration, message: `Thời gian phải <= ${totalDuration}` }
+                  })}
+                />
+                {errors.time && <p style={errorStyle}>{errors.time.message}</p>}
+              </div>
+            </div>
+          </div>
 
-      {/* 5. Color Input */}
-      <label style={labelStyle}>Màu sắc:</label>
-      <input
-        type="color"
-        // 💥 Sử dụng register
-        {...register("color")}
-        style={{ ...inputStyle, height: '40px' }}
-      />
+          <div className="space-y-3 pt-2">
+            <label className="block text-sm font-medium text-[#9da6b9]">Note Color</label>
+            <div className="flex gap-2 flex-wrap">
+              <Controller
+                name="color"
+                control={control}
+                render={({ field }) => {
+                  // field chứa { onChange, onBlur, value, name, ref }
+                  return (
+                    <>
+                      {DEFAULT_COLORS.map((color, index) => {
+                        const activeClass = color === field.value ? 'ring-2 ring-offset-2 ring-offset-[#111318]' : '';
+                        return (
+                          <div key={`color-${index}`}>
+                            <input
+                              id={color}
+                              type="radio"
+                              value={color}
+                              className="appearance-none hidden"
+                            />
+                            <label
+                              htmlFor={`color-${color}`}
+                              className={`block w-8 h-8 rounded-full bg-[${color}] ${activeClass} hover:ring-2 hover:ring-offset-2 hover:ring-offset-[#111318] transition-all`}
+                              onClick={() => field.onChange(color)}
+                            >
+                            </label>
+                          </div>
+                        )
+                      })}
+                    </>
+                  )
+                }}
+              />
+              <button
+                className="w-8 h-8 rounded-full bg-[#3b4354] flex items-center justify-center text-white hover:bg-[#4b5563]"
+                type='button'
+              >
+                <span className="material-symbols-outlined text-sm">add</span>
+              </button>
+            </div>
+          </div>
 
-      {/* 6. Icon Input */}
-      <label style={labelStyle}>Icon:</label>
-      <select
-        {...register("icon")}
-        style={inputStyle}
-      >
-        {MUSIC_ICONS.map(icon => (
-          <option 
-            key={icon.key} 
-            value={icon.key} 
-            // Có thể hiển thị symbol trong option nếu trình duyệt hỗ trợ tốt
-          >
-            {icon.symbol} {icon.description}
-          </option>
-        ))}
-      </select>
-      
-      {/* Action Buttons */}
-      <div style={buttonGroupStyle}>
-        <button type="submit" style={submitButtonStyle}>
-          {submitButtonLabel}
-        </button>
-        <button type="button" onClick={onCancel} style={cancelButtonStyle}>
-          Hủy
-        </button>
-      </div>
-    </form>
-  );
-};
+          <div className="space-y-3 pt-2">
+            <label className="block text-sm font-medium text-[#9da6b9]">Icon</label>
+            <div className="grid grid-cols-5 @sm:grid-cols-10 gap-2">
+              <Controller
+                name="icon"
+                control={control}
+                render={({ field }) => {
+                  // field chứa { onChange, onBlur, value, name, ref }
+                  return (
+                    <>
+                      {MUSIC_ICONS.map(icon => {
+                        const activeClass = icon.key === field.value ? 'bg-primary' : 'bg-[#1c1f27]';
+                        return (
+                          <div key={`icon-${icon.key}`}>
+                            <input
+                              id={icon.key}
+                              type="radio"
+                              value={icon.key}
+                              className="appearance-none hidden"
+                            />
+                            <label
+                              htmlFor={`icon-${icon.key}`}
+                              className={`aspect-square rounded ${activeClass} text-white flex items-center justify-center border border-transparent cursor-pointer`}
+                              onClick={() => field.onChange(icon.key)}
+                            >
+                              <span className="material-symbols-outlined text-lg">{icon.key}</span>
+                            </label>
+                          </div>
+                        )
+                      })}
+                    </>
+                  )
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+    )
+  }
+);
 
 export default NoteEditForm;

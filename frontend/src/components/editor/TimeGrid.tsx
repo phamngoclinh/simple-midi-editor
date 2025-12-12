@@ -1,9 +1,6 @@
 // src/components/editor/TimeGrid.tsx
 import React, { useMemo } from 'react';
 import {
-  TRACK_WIDTH_PX,
-  TIME_UNIT_HEIGHT_PX,
-  SECONDS_PER_UNIT,
   PRIMARY_GRID_COLOR,
   SECONDARY_GRID_COLOR,
   HEADER_BOTTOM_GAP,
@@ -11,70 +8,54 @@ import {
 import { gridStyle, horizontalLineStyle, verticalLineStyle } from './TimeGrid.styles';
 
 interface TimeGridProps {
-  numTracks: number;
   totalHeight: number;
-  totalDuration: number;
+  timeLines: { key: string; top: number; isMajorInterval: boolean }[]
+  trackLines: { key: string; left: number; }[]
 }
 
-const TimeGrid: React.FC<TimeGridProps> = ({ numTracks, totalHeight, totalDuration }) => {
+const TimeGrid: React.FC<TimeGridProps> = ({ totalHeight, timeLines, trackLines }) => {
 
-  // Tạo các đường kẻ ngang (Timeline) và nhãn thời gian
-  const timeLines = useMemo(() => {
+  const timeLinesRenderer = useMemo(() => {
     const lines = [];
-    const interval = SECONDS_PER_UNIT;
-
-    // Tính số lượng đơn vị thời gian
-    const totalUnits = totalDuration / interval;
-
-    for (let i = 0; i <= totalUnits; i++) {
-      const timeInSeconds = i * interval;
-      const yPos = i * TIME_UNIT_HEIGHT_PX;
-
-      // Đường vạch 10 giây sẽ đậm hơn (major interval)
-      const isMajorInterval = timeInSeconds % 10 === 0;
-
+    for (let i = 0; i < timeLines.length; i++) {
       lines.push(
-        <React.Fragment key={`time-${i}`}>
-          {/* Đường kẻ ngang */}
+        <React.Fragment key={timeLines[i].key}>
           <div
             style={{
               ...horizontalLineStyle,
-              top: yPos + HEADER_BOTTOM_GAP,
-              borderBottomColor: isMajorInterval ? PRIMARY_GRID_COLOR : SECONDARY_GRID_COLOR,
-              borderBottomWidth: isMajorInterval ? 1.5 : 1,
-              opacity: isMajorInterval ? 1.0 : 0.6,
+              top: timeLines[i].top,
+              borderBottomColor: timeLines[i].isMajorInterval ? PRIMARY_GRID_COLOR : SECONDARY_GRID_COLOR,
+              borderBottomWidth: timeLines[i].isMajorInterval ? 1.5 : 1,
+              opacity: timeLines[i].isMajorInterval ? 1.0 : 0.6,
             }}
           />
         </React.Fragment>
       );
     }
     return lines;
-  }, [totalDuration]);
+  }, [timeLines]);
 
-  // Tạo các đường kẻ dọc (Track Boundaries)
-  const trackLines = useMemo(() => {
+  const trackLinesRenderer = useMemo(() => {
     const lines = [];
-    for (let i = 0; i <= numTracks; i++) {
-      const xPos = i * TRACK_WIDTH_PX;
+    for (let i = 0; i < trackLines.length; i++) {
       lines.push(
         <div
-          key={`track-${i}`}
+          key={trackLines[i].key}
           style={{
             ...(i !== 0 ? verticalLineStyle : {}),
-            left: xPos,
-            // Đường phân chia Track rõ ràng
+            left: trackLines[i].left,
             borderLeftColor: PRIMARY_GRID_COLOR,
           }}
         />
       );
     }
     return lines;
-  }, [numTracks]);
+  }, [trackLines]);
 
   return (
-    <div style={{ ...gridStyle, height: totalHeight + HEADER_BOTTOM_GAP }}>
-      {timeLines}
-      {trackLines}
+    <div style={{ ...gridStyle, height: totalHeight }}>
+      {timeLinesRenderer}
+      {trackLinesRenderer}
     </div>
   );
 };

@@ -1,19 +1,12 @@
 // src/components/editor/MidiEditorContainer.tsx
-import React, { useCallback, useMemo, useRef } from 'react';
-import { useModal } from '../../contexts/ModalContext';
-import { editTrackLabelUseCase, loadSongByIdUseCase } from '../../dependencies';
+import React, { useCallback } from 'react';
+import { loadSongByIdUseCase } from '../../dependencies';
 import { Note } from '../../domain/entities/Note';
 import { Song } from '../../domain/entities/Song';
-import {
-  HEADER_BOTTOM_GAP,
-  MAX_DURATION_DEFAULT,
-  SECONDS_PER_UNIT,
-  TIME_UNIT_HEIGHT_PX,
-  TRACK_WIDTH_PX
-} from './constants';
-import { containerStyle, cornerBlockStyle, editorWrapperStyle, headerRulerWrapperStyle, scrollAreaContentStyle } from './MidiEditorContainer.styles';
+import useEditorGrid from '../../hooks/useEditorGrid';
+import useTrackManager from '../../hooks/useTrackManager';
+import { RULER_WIDTH_PX, TIME_UNIT_HEIGHT_PX } from './constants';
 import NoteRenderer from './NoteRenderer';
-import TimeGrid from './TimeGrid';
 import TimeRuler from './TimeRuler';
 import TrackHeader from './TrackHeader';
 
@@ -25,120 +18,72 @@ interface MidiEditorContainerProps {
 }
 
 const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, onNoteClick, onSongUpdate }) => {
-  const editorRef = useRef<HTMLDivElement>(null);
+  const {
+    totalDuration,
+    totalEditorHeight,
+    totalEditorWidth,
+    timeLines,
+    allNotes
+  } = useEditorGrid({ currentSong });
+  const { editTrackLabel } = useTrackManager();
 
-  const { showToast } = useModal();
-
-  // Tính toán kích thước Editor
-  const totalDuration = currentSong.totalDuration || MAX_DURATION_DEFAULT; // Giả định totalDuration tính bằng giây
-  const numTracks = currentSong.tracks.length;
-
-  // Tính tổng chiều cao và chiều rộng của khu vực cuộn
-  const totalEditorHeight = (totalDuration / SECONDS_PER_UNIT) * TIME_UNIT_HEIGHT_PX;
-  const totalEditorWidth = numTracks * TRACK_WIDTH_PX;
-
-  // --- Logic Chuyển đổi Tọa độ ---
-
-  // Ánh xạ Track ID sang vị trí Index (0, 1, 2...)
-  const trackIdToIndex = useMemo(() => {
-    return currentSong.tracks.reduce((map, track, index) => {
-      map.set(track.order, index);
-      return map;
-    }, new Map<string | number, number>());
-  }, [currentSong.tracks]);
-
-  // Hàm chuyển đổi thời gian (giây) sang vị trí Y (pixel)
-  const timeToY = useCallback((time: number): number => {
-    return (time / SECONDS_PER_UNIT) * TIME_UNIT_HEIGHT_PX;
-  }, []);
-
-  // Hàm chuyển đổi Track Index sang vị trí X (pixel)
-  const trackIndexToX = useCallback((index: number): number => {
-    // Vị trí X là điểm giữa của Track
-    return index * TRACK_WIDTH_PX + (TRACK_WIDTH_PX / 2);
-  }, []);
-
-  // --- Thu thập tất cả Notes ---
-
-  const allNotes = useMemo(() => {
-    return currentSong.tracks.flatMap(track =>
-      (track.notes || []).map(note => ({
-        ...note,
-        // Gán thêm tọa độ X, Y cho Note để NoteRenderer dễ dàng render
-        x: trackIndexToX(trackIdToIndex.get(track.order)!),
-        y: timeToY(note.time),
-      }))
-    );
-  }, [currentSong.tracks, trackIdToIndex, trackIndexToX, timeToY]);
-
-  // --- Hàm xử lý Chỉnh sửa Track Label ---
   const handleTrackLabelEdit = useCallback(async (trackId: string, newLabel: string) => {
     if (!currentSong.id) return;
-    
-    // Tìm Track hiện tại để đảm bảo các giá trị khác không thay đổi
-    const trackToUpdate = currentSong.tracks.find(t => t.id === trackId);
-    if (!trackToUpdate) return;
-    
-    console.log(`Đang cố gắng cập nhật Track ID ${trackId} với Label: "${newLabel}"`);
 
-    // 💥 LOGIC GỌI USE CASE:
-    try {
-      await editTrackLabelUseCase.execute({
-        songId: currentSong.id,
-        trackId: trackId,
-        newLabel: newLabel
-      });
-      onSongUpdate(await loadSongByIdUseCase.execute(currentSong.id));
-    } catch (error) {
-      console.error("Lỗi khi cập nhật Track Label:", error);
-      showToast({
-        type: 'error',
-        message: "Cập nhật nhãn Track thất bại."
-      });
-    }
-    
-  }, [currentSong, onSongUpdate, showToast]);
+    await editTrackLabel(currentSong.id, trackId, newLabel, async () => {
+      onSongUpdate(await loadSongByIdUseCase.execute(currentSong.id as string))
+    })
+  }, [currentSong, editTrackLabel, onSongUpdate]);
 
   return (
-    <div style={containerStyle}>
-      <div style={headerRulerWrapperStyle}>
-        {/* 1. Góc trên bên trái (Giao điểm của Ruler và Header) */}
-        <div style={cornerBlockStyle} />
+    <div className="flex-1 flex flex-col min-w-0 bg-[#0f1115] relative overflow-hidden">
+      <div className="flex-1 overflow-auto relative">
+        <div className="flex flex-col p-8">
+          <div className="sticky top-0 z-10 flex border-b border-[#3b4354] bg-[#111318] shadow-md">
+            <div
+              className={`shrink-0 w-[${RULER_WIDTH_PX}px] px-4 py-3 text-left text-[#9da6b9] text-xs font-bold uppercase tracking-wider border-r border-[#282e39] bg-[#111318]`}>
+              Time
+            </div>
+            {/* Track Header */}
+            <TrackHeader
+              currentSong={currentSong}
+              totalWidth={totalEditorWidth}
+              onTrackLabelEdit={handleTrackLabelEdit}
+            />
+          </div>
 
-        {/* 2. Track Header (Cuộn ngang cùng Editor) */}
-        <div>
-          <TrackHeader
-            currentSong={currentSong}
-            totalWidth={totalEditorWidth}
-            onTrackLabelEdit={handleTrackLabelEdit}
-          />
-        </div>
-      </div>
-      <div style={editorWrapperStyle}>
-        <TimeRuler
-          totalDuration={totalDuration}
-          totalHeight={totalEditorHeight}
-        />
-        <div
-          ref={editorRef}
-          style={{ width: '100%' }} // Chiều rộng 100% của container cha
-        >
-          {/* Khu vực có thể cuộn */}
-          <div style={{ ...scrollAreaContentStyle, width: totalEditorWidth, height: totalEditorHeight + HEADER_BOTTOM_GAP }}>
-
-            {/* 1. Grid và Timeline */}
-            <TimeGrid
-              numTracks={numTracks}
-              totalHeight={totalEditorHeight}
+          {/* Grid and Ruler */}
+          <div className={`flex relative flex-1 bg-[#101216]`}>
+            {/* Time Ruler */}
+            <TimeRuler
               totalDuration={totalDuration}
+              totalHeight={totalEditorHeight}
             />
 
-            {/* 2. Notes Renderer */}
+            <div className={`absolute inset-0 left-[${RULER_WIDTH_PX}px] flex pointer-events-none`}>
+              {currentSong.tracks?.map((track, index) => {
+                return index % 2 ? (
+                  <div className={`w-[${RULER_WIDTH_PX}px] border-r border-[#1c1f27]/50 bg-[#1c1f27]/10`}></div>
+                ) : (
+                  <div className={`w-[${RULER_WIDTH_PX}px] border-r border-[#1c1f27]/50`}></div>
+                );
+              })}
+            </div>
+            <div className={`absolute inset-0 left-[${RULER_WIDTH_PX}px] pointer-events-none`}>
+              {timeLines.map((timeLine, index) => {
+                const colors = ['#393d45ff', '#935656ff', '#393d45ff', '#279999ff']
+                const color = colors[index % colors.length];
+                return (
+                  <div className={`h-[${TIME_UNIT_HEIGHT_PX}px] w-full border-b border-[${color}]/50`}></div>
+                )
+              })}
+            </div>
+
+            {/* Notes */}
             <NoteRenderer
               notes={allNotes}
               onNoteClick={onNoteClick}
             />
-
           </div>
         </div>
       </div>

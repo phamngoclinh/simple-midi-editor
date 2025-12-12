@@ -4,18 +4,20 @@ import React, { useState, useRef, useEffect } from 'react';
 export interface DropdownItem {
   label: string;
   onClick: () => void;
-  icon?: string; // Ví dụ: "✏️", "🗑️", "⚙️"
+  icon?: React.ReactElement | string; // Ví dụ: "✏️", "🗑️", "⚙️"
   isDestructive?: boolean; // Nếu là hành động xóa
 }
 
 interface DropdownMenuProps {
+  CustomButton?: React.ReactElement,
   items: DropdownItem[];
-  triggerIcon?: string; // Icon cho nút mở menu
+  triggerIcon?: React.ReactElement | string; // Icon cho nút mở menu
   triggerLabel?: string;
   align?: 'left' | 'right'; // Vị trí menu
 }
 
 const DropdownMenu: React.FC<DropdownMenuProps> = ({
+  CustomButton,
   items,
   triggerIcon = '⋮',
   triggerLabel,
@@ -52,7 +54,6 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
       {/* Nút Trigger (Mở menu) */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        style={triggerButtonStyle}
         title={triggerLabel || "Tùy chọn"}
       >
         {triggerIcon}
@@ -68,12 +69,11 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
               onClick={() => handleItemClick(item.onClick)}
               style={{
                 ...itemStyle,
-                color: item.isDestructive ? '#dc3545' : '#333',
-                // Thêm hover effect
-                backgroundColor: item.isDestructive ? 'rgba(220, 53, 69, 0.1)' : '#f8f9fa',
+                color: item.isDestructive ? 'red' : '#dbdbdb',
+                backgroundColor: '#151617',
               }}
             >
-              {item.icon && <span style={{ marginRight: '8px' }}>{item.icon}</span>}
+              {item.icon && <span style={{ marginRight: '8px' }} className='flex'>{item.icon}</span>}
               {item.label}
             </button>
           ))}

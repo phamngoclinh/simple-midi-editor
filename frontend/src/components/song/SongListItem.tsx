@@ -50,54 +50,56 @@ const SongListItem: React.FC<SongListItemProps> = ({
     {
       label: "Mở Editor",
       onClick: handleOpen, // Hàm mở trang Editor
-      icon: "▶️",
-    },
-    {
-      label: "Chỉnh sửa Song",
-      onClick: handleEdit, // Hàm mở modal Edit Song
-      icon: "⚙️",
+      icon: <span className="material-symbols-outlined text-[20px]">open_in_new</span>,
     },
     {
       label: "Quản lý Notes",
       onClick: handleEditNotes, // Hàm mở modal Note Management
-      icon: "🎼",
+      icon: <span className="material-symbols-outlined text-[20px]">music_note</span>,
     },
     // --- Phân cách ---
     {
       label: "Export (JSON)",
       onClick: handleExportSong, // Hàm export đã tạo
-      icon: "⬇️",
+      icon: <span className="material-symbols-outlined text-[20px]">arrow_downward</span>,
     },
     // --- Hành động xóa ---
     {
       label: "Xóa Song",
       onClick: handleDelete, // Hàm bắt đầu Confirmation
-      icon: "🗑️",
+      icon: <span className="material-symbols-outlined text-[20px]">delete</span>,
       isDestructive: true,
     },
   ];
 
   return (
-    <div style={itemContainerStyle}>
-      {/* Thông tin Song */}
-      <div style={infoStyle}>
-        <span style={titleStyle} onClick={handleOpen} title="Mở Editor">
-          {song.name}
-        </span>
-        <span style={metadataStyle}>
-          Cập nhật: {formattedDate}
-        </span>
+    <>
+      <div className="relative aspect-video bg-[#101622] p-4 flex items-center justify-center group-hover:bg-[#151b26] transition-colors" onClick={handleEdit}>
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-[1px]">
+          <button className="size-12 rounded-full bg-white dark:bg-white text-primary flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+            <span className="material-symbols-outlined text-[28px] ml-1">edit</span>
+          </button>
+        </div>
       </div>
-
-      {/* Các Nút Thao tác */}
-      <div style={actionsStyle}>
-        <DropdownMenu
-          items={getDropdownItems(song)}
-          triggerIcon="⚙️"
-          align="right"
-        />
+      <div className="p-4 flex flex-col gap-3">
+        <div className="flex justify-between items-start">
+          <div>
+            <h3 className="text-slate-900 dark:text-white font-bold text-lg leading-tight mb-1 group-hover:text-primary transition-colors">{song.name}</h3>
+            <p className="text-slate-500 dark:text-[#9da6b9] text-xs">{formattedDate}</p>
+          </div>
+          <DropdownMenu
+            items={getDropdownItems(song)}
+            triggerIcon={<button className="text-slate-400 dark:text-[#637083] hover:text-slate-900 dark:hover:text-white">
+              <span className="material-symbols-outlined text-[20px]">more_vert</span>
+            </button>}
+            align="right"
+          />
+        </div>
+        <div className="flex items-center gap-3 mt-1">
+          <span className="px-2 py-1 rounded bg-slate-100 dark:bg-[#282e39] text-slate-600 dark:text-[#9da6b9] text-xs font-mono font-medium">Duration: {song.totalDuration}s</span>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

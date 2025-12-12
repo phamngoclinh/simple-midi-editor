@@ -1,5 +1,3 @@
-export const NOTE_SIZE_PX = 20; // Kích thước (đường kính) của chấm tròn Note
-
 export const rendererStyle: React.CSSProperties = {
   position: 'absolute',
   top: 0,
@@ -12,8 +10,6 @@ export const noteStyle: React.CSSProperties = {
   position: 'absolute',
   pointerEvents: 'auto', // Bắt sự kiện click trên Note
   borderRadius: '100%',
-  width: NOTE_SIZE_PX,
-  height: NOTE_SIZE_PX,
   opacity: 0.9,
   cursor: 'pointer',
   boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
@@ -35,7 +31,7 @@ export const contentStyle: React.CSSProperties = {
 };
 
 export const iconSymbolStyle: React.CSSProperties = {
-  fontSize: '1.5em', // Icon lớn hơn để dễ nhìn
+  fontSize: '1em',
   lineHeight: 1,
   textShadow: '0 0 2px rgba(0,0,0,0.5)',
 };

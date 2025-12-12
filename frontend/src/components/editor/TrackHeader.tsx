@@ -52,14 +52,18 @@ const TrackHeader: React.FC<TrackHeaderProps> = ({ currentSong, totalWidth, onTr
     const trackId = track.id || index;
     const isEditing = editingTrackId === trackId;
 
+    let intervalClasses = 'bg-[#111318]';
+    if (index % 2) intervalClasses = 'bg-[#1c1f27]';
+
     return (
       <div 
-        key={trackId} 
-        style={{ ...trackHeaderItemStyle, width: TRACK_WIDTH_PX }}
+        key={trackId}
+        style={trackHeaderItemStyle}
         title={`Click để chỉnh sửa: ${track.label}`}
+        className={`w-[${TRACK_WIDTH_PX}px] px-2 py-3 text-center text-white text-xs font-bold uppercase cursor-pointer border-r border-[#282e39] ${intervalClasses}`}
+        onClick={() => handleStartEdit(track)}
       >
         {isEditing ? (
-          // Chế độ Input
           <input
             type="text"
             value={tempLabel}
@@ -70,18 +74,17 @@ const TrackHeader: React.FC<TrackHeaderProps> = ({ currentSong, totalWidth, onTr
             autoFocus
           />
         ) : (
-          // Chế độ Hiển thị (Clickable)
-          <div onClick={() => handleStartEdit(track)} style={labelWrapperStyle}>
-            <span style={labelStyle}>{track.label} ✎</span>
-            <span style={orderStyle}>#{track.order || index + 1}</span>
-          </div>
+          <>
+            <span>{track.label} ✎</span>
+            <span>#{track.order || index + 1}</span>
+          </>
         )}
       </div>
     );
   };
 
   return (
-    <div style={{ ...headerContainerStyle, width: totalWidth }}>
+    <div className="flex-1 flex">
       {sortedTracks.map(renderTrackItem)}
     </div>
   );

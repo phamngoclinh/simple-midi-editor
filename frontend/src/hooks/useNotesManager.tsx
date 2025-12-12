@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useModal } from '../contexts/ModalContext';
 import {
   addNoteToSongUseCase,
@@ -19,20 +19,24 @@ interface NoteFormData {
   icon?: string;
 }
 
-export default function useNotesManager(onAfterChange?: () => Promise<void>) {
-  const [selectedSongForNoteEdit, setSelectedSongForNoteEdit] = useState<Song | null>(null);
+export default function useNotesManager(onAfterChange?: () => Promise<void>, song?: Song) {
+  const [selectedSongForNoteEdit, setSelectedSongForNoteEdit] = useState<Song | null>(song || null);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
-
-  const startNoteManagement = (song: Song | null) => {
-    setSelectedSongForNoteEdit(song);
-    setEditingNote(null);
-  };
-
-  const startEditNote = (note: Note | null) => setEditingNote(note);
 
   const { showToast, showConfirmation } = useModal();
 
-  const saveNote = async (noteData: NoteFormData) => {
+  const startNoteManagement = useCallback((song: Song | null) => {
+    setSelectedSongForNoteEdit(song);
+    setEditingNote(null);
+  }, []);
+
+  const startEditNote = useCallback((note: Note | null) => {
+    setEditingNote(note);
+  }, [])
+
+  const stopEditNote = useCallback(() => setEditingNote(null), [])
+
+  const saveNote = useCallback(async (noteData: NoteFormData) => {
     if (!selectedSongForNoteEdit) return;
     try {
       if (editingNote && editingNote.id) {
@@ -53,9 +57,9 @@ export default function useNotesManager(onAfterChange?: () => Promise<void>) {
         message: 'Lưu Note thất bại. ' + (err?.message || ''),
       });
     }
-  };
+  }, [selectedSongForNoteEdit, editingNote, onAfterChange, showToast]);
 
-  const deleteNote = async (noteId: string) => {
+  const deleteNote = useCallback(async (noteId: string) => {
     if (!selectedSongForNoteEdit) return;
     const confirmed = await showConfirmation({
       message: 'Bạn có chắc chắn muốn xóa Note này không?',
@@ -80,12 +84,12 @@ export default function useNotesManager(onAfterChange?: () => Promise<void>) {
         });
       }
     }
-  };
+  }, [selectedSongForNoteEdit, onAfterChange, showToast, showConfirmation]);
 
-  const resetNotes = () => {
+  const resetNotes = useCallback(() => {
     setSelectedSongForNoteEdit(null);
     setEditingNote(null);
-  };
+  }, []);
 
   const initialNote = useMemo(() => {
     return selectedSongForNoteEdit && editingNote ? {
@@ -105,6 +109,7 @@ export default function useNotesManager(onAfterChange?: () => Promise<void>) {
     startNoteManagement,
     editingNote,
     startEditNote,
+    stopEditNote,
     saveNote,
     deleteNote,
     resetNotes,

@@ -23,7 +23,7 @@ const Confirmation: React.FC<ConfirmationProps> = ({
 
   return (
     <div style={confirmationModalStyle}>
-      <div style={modalContentStyle}>
+      <div style={modalContentStyle} className='bg-white dark:bg-[#111318]'>
 
         {/* Header Xác nhận */}
         <div style={modalHeaderStyleWarning}>

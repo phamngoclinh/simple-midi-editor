@@ -23,7 +23,7 @@ export default function useSongEditor(onAfterChange?: () => Promise<void>) {
   const openCreateModal = () => setIsCreateModalOpen(true);
   const startEditSong = (song: Song | null) => setEditingSong(song);
 
-  const { showConfirmation } = useModal();
+  const { showConfirmation, showToast } = useModal();
 
   const createSong = async (data: SongFormData) => {
     const createData = {
@@ -50,6 +50,10 @@ export default function useSongEditor(onAfterChange?: () => Promise<void>) {
     const updated = await editSongUseCase.execute(updateData);
     if (onAfterChange) await onAfterChange();
     setEditingSong(null);
+    showToast({
+      type: 'success',
+      message: 'Cập nhật Song thành công'
+    })
     return updated;
   };
 

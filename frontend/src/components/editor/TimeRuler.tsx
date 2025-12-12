@@ -3,9 +3,9 @@ import React, { useMemo } from 'react';
 import {
   TIME_UNIT_HEIGHT_PX,
   SECONDS_PER_UNIT,
-  HEADER_BOTTOM_GAP
+  HEADER_BOTTOM_GAP,
+  RULER_WIDTH_PX
 } from './constants';
-import { labelStyle, RULER_WIDTH_PX, rulerStyle } from './TimeRuler.styles';
 
 interface TimeRulerProps {
   totalDuration: number;
@@ -18,7 +18,7 @@ const TimeRuler: React.FC<TimeRulerProps> = ({ totalDuration, totalHeight }) => 
   const timeLabels = useMemo(() => {
     const labels = [];
     // Chỉ đánh dấu các vạch 10 giây (Major Interval)
-    const majorInterval = 10;
+    const majorInterval = 5;
     const intervalHeight = (majorInterval / SECONDS_PER_UNIT) * TIME_UNIT_HEIGHT_PX;
 
     // Tính số lần lặp 10 giây
@@ -28,15 +28,19 @@ const TimeRuler: React.FC<TimeRulerProps> = ({ totalDuration, totalHeight }) => 
       const timeInSeconds = i * majorInterval;
       const yPos = i * intervalHeight;
 
-      if (yPos > totalHeight + HEADER_BOTTOM_GAP) break; // Ngăn chặn nhãn vượt quá chiều cao
+      if (yPos > totalHeight) break;
+
+      const colors = ['#393d45ff', '#935656ff', '#393d45ff', '#279999ff']
+      const color = colors[i % colors.length];
 
       labels.push(
         <div
           key={`ruler-${i}`}
           style={{
-            ...labelStyle,
-            top: yPos + HEADER_BOTTOM_GAP,
+            // ...labelStyle,
+            top: yPos,
           }}
+          className={`h-[${TIME_UNIT_HEIGHT_PX}px] border-b border-[${color}]/50 px-4 pt-2`}
         >
           {timeInSeconds}s
         </div>
@@ -46,7 +50,7 @@ const TimeRuler: React.FC<TimeRulerProps> = ({ totalDuration, totalHeight }) => 
   }, [totalDuration, totalHeight]);
 
   return (
-    <div style={{ ...rulerStyle, height: totalHeight + HEADER_BOTTOM_GAP, width: RULER_WIDTH_PX }}>
+    <div className={`w-[${RULER_WIDTH_PX}px] flex-none border-r border-[#282e39] bg-[#111318] flex flex-col text-[#58627a] text-xs font-mono select-none`}>
       {timeLabels}
     </div>
   );

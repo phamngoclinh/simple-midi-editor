@@ -12,7 +12,7 @@ const EditorPage = () => {
   const handleLoadData = useCallback((songId?: string) => {
     if (songId) {
       // 1. Dùng Use Case để tải dữ liệu
-      loadSongByIdUseCase.execute(songId).then(setSong); 
+      loadSongByIdUseCase.execute(songId).then(setSong);
       console.log(`Đang tải Song có ID: ${songId}`);
     }
   }, [])
@@ -22,11 +22,9 @@ const EditorPage = () => {
   }, [songId, handleLoadData]);
 
   return (
-    <div>
-      <h2>Chỉnh sửa Song: {song?.name || songId}</h2>
-      {/* ... Giao diện Timeline và Notes ... */}
+    <>
       {song && <MidiEditorManager currentSong={song} reload={() => handleLoadData(songId)} />}
-    </div>
+    </>
   );
 };
 

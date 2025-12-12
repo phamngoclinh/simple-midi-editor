@@ -1,6 +1,6 @@
 
 export const backdropStyle: React.CSSProperties = {
-  position: 'fixed',
+  position: 'absolute',
   top: 0,
   left: 0,
   width: '100%',
@@ -13,7 +13,7 @@ export const backdropStyle: React.CSSProperties = {
 };
 
 export const modalContentStyle: React.CSSProperties = {
-  backgroundColor: '#fff',
+  // backgroundColor: '#fff',
   padding: '20px',
   borderRadius: '8px',
   maxWidth: '500px',

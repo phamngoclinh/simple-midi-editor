@@ -1,11 +1,11 @@
 // src/components/song/SongForm.tsx
-import React, { useEffect } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { Song } from '../../domain/entities/Song'; // Import Entity Song
 import { Track } from '../../domain/entities/Track';
-import { errorStyle, formStyle, inputStyle, labelStyle, textareaStyle, trackInputStyle, trackItemStyle, trackListStyle } from './SongForm.styles';
+import { errorStyle } from './SongForm.styles';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
-import { buttonGroupStyle, cancelButtonStyle, submitButtonStyle } from '../note/NoteEditForm.styles';
 import TagsInput from '../common/TagsInput';
+import { ChildFormHandles } from '../../utils/types';
 
 
 // Định nghĩa dữ liệu form đầu vào
@@ -20,7 +20,7 @@ interface SongFormData {
 
 interface SongFormProps {
   /** Dữ liệu Song khởi tạo (nếu đang ở chế độ Edit/Tạo mới). */
-  initialSong?: Song; 
+  initialSong?: Song;
   /** Hàm được gọi khi form được gửi. */
   onSubmit: (data: SongFormData) => void;
   onCancel?: () => void;
@@ -30,7 +30,7 @@ interface SongFormProps {
 
 const getDefaultFormData = (song?: Song): SongFormData => {
   let tracks: Track[] = [];
-  
+
   if (song && song.tracks.length > 0) {
     // Nếu có Song, lấy dữ liệu Track hiện có, đảm bảo có order
     tracks = song.tracks.map((t, index) => ({
@@ -65,123 +65,144 @@ const getDefaultFormData = (song?: Song): SongFormData => {
   }
 };
 
-const SongForm: React.FC<SongFormProps> = ({ 
-  onSubmit, 
-  onCancel,
-  initialSong, 
-  buttonLabel 
-}) => {
-  // 💥 Khởi tạo useForm
-  const { register, handleSubmit, control, reset, formState: { errors } } = useForm<SongFormData>({
-    // Thiết lập giá trị mặc định/khởi tạo
-    defaultValues: getDefaultFormData(initialSong),
-  });
+const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
+  ({
+    onSubmit,
+    onCancel,
+    initialSong,
+    buttonLabel
+  }, ref) => {
+    // 💥 Khởi tạo useForm
+    const { register, handleSubmit, control, reset, formState: { errors } } = useForm<SongFormData>({
+      // Thiết lập giá trị mặc định/khởi tạo
+      defaultValues: getDefaultFormData(initialSong),
+    });
 
-  const { fields: trackFields } = useFieldArray({
-    control,
-    name: 'tracks'
-  });
+    const { fields: trackFields } = useFieldArray({
+      control,
+      name: 'tracks'
+    });
 
-  // Reset form khi initialSong thay đổi (khi chuyển từ tạo mới sang chỉnh sửa)
-  useEffect(() => {
-    reset(getDefaultFormData(initialSong));
-  }, [initialSong, reset]);
+    // Reset form khi initialSong thay đổi (khi chuyển từ tạo mới sang chỉnh sửa)
+    useEffect(() => {
+      reset(getDefaultFormData(initialSong));
+    }, [initialSong, reset]);
 
-  // Hàm được gọi khi form submit hợp lệ
-  const handleRHFSubmit: SubmitHandler<SongFormData> = (data) => {
-    // 1. Xử lý Tags (Chuỗi -> Mảng)
-    const processedTags = data.tags.filter(tag => tag.length > 0);
+    useImperativeHandle(ref, () => ({
+      submitForm() {
+        handleSubmit(handleRHFSubmit)(); 
+      }
+    }));
 
-    // 2. Xử lý Tracks (Sắp xếp theo order một lần nữa trước khi gửi)
-    const processedTracks = data.tracks.sort((a, b) => a.order - b.order);
-    
-    // 3. Chuẩn bị dữ liệu cuối cùng
-    const finalData = {
+    // Hàm được gọi khi form submit hợp lệ
+    const handleRHFSubmit: SubmitHandler<SongFormData> = (data) => {
+      // 1. Xử lý Tags (Chuỗi -> Mảng)
+      const processedTags = data.tags.filter(tag => tag.length > 0);
+
+      // 2. Xử lý Tracks (Sắp xếp theo order một lần nữa trước khi gửi)
+      const processedTracks = data.tracks.sort((a, b) => a.order - b.order);
+
+      // 3. Chuẩn bị dữ liệu cuối cùng
+      const finalData = {
         ...data,
         tags: processedTags, // Thay thế chuỗi tags bằng mảng đã xử lý
         tracks: processedTracks,
         // Đảm bảo các trường number được parse chính xác (sử dụng valueAsNumber trong register)
+      };
+
+      onSubmit(finalData as any);
     };
 
-    onSubmit(finalData as any);
-  };
+    return (
+      <form onSubmit={handleSubmit(handleRHFSubmit)}>
 
-  const submitButtonLabel = buttonLabel || (initialSong ? 'Lưu Thay Đổi Song' : 'Tạo Song');
-
-  return (
-    <form onSubmit={handleSubmit(handleRHFSubmit)} style={formStyle}>
-      {/* Input: Tên Song */}
-      <label style={labelStyle}>Tên Song:</label>
-      <input
-        type="text"
-        {...register("name", { required: "Tên bài hát là bắt buộc", maxLength: 100 })}
-        style={inputStyle}
-        placeholder="Nhập tên bài hát"
-      />
-      {errors.name && <p style={errorStyle}>{errors.name.message}</p>}
-      
-      {/* Textarea: Mô tả */}
-      <label style={labelStyle}>Mô tả:</label>
-      <textarea
-        {...register("description", { maxLength: 500 })}
-        rows={3}
-        style={textareaStyle}
-        placeholder="Mô tả chi tiết bài hát..."
-      />
-      {errors.description && <p style={errorStyle}>{errors.description.message}</p>}
-
-      {/* Input: Total Duration */}
-      <label style={labelStyle}>Total Duration:</label>
-      <input
-        type="number"
-        {...register("totalDuration", { 
-          required: "Thời lượng là bắt buộc", 
-          min: { value: 1, message: "Thời lượng phải lớn hơn 0" },
-          valueAsNumber: true, // RHF sẽ tự chuyển sang number nếu type là number
-        })}
-        min="1"
-        max="300"
-        style={inputStyle}
-      />
-      {errors.totalDuration && <p style={errorStyle}>{errors.totalDuration.message}</p>}
-
-      <label style={labelStyle}>Tags:</label>
-      <TagsInput
-        name="tags"
-        control={control}
-        placeholder="rock, drums, simple"
-        maxTags={10}
-      />
-
-      {/* Input: Track Labels */}
-      <label style={labelStyle}>**Quản Lý Tracks**:</label>
-      <div style={trackListStyle}>
-        {trackFields.map((field, index) => (
-          <div key={field.id} style={trackItemStyle}>
-            {/* Input Label */}
-            <input
-              type="text"
-              {...register(`tracks.${index}.label`, { required: "Nhãn Track là bắt buộc" })}
-              placeholder="Track Label"
-              style={trackInputStyle}
-            />
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="material-symbols-outlined text-primary !text-[20px]">info</span>
+            <h3 className="text-white text-lg font-bold leading-tight tracking-[-0.015em]">Thông tin chung</h3>
           </div>
-        ))}
-        {errors.tracks?.message && <p style={errorStyle}>{errors.tracks.message}</p>}
-      </div>
 
-      <div style={buttonGroupStyle}>
-        <button type="submit" style={submitButtonStyle}>
-          {submitButtonLabel}
-        </button>
-        {onCancel && (
-          <button type="button" onClick={onCancel} style={cancelButtonStyle}>
-            Hủy
-          </button>
-        )}
-      </div>
-    </form>
-  );
-};
+          <div className="flex flex-col gap-2">
+            <label className="text-white text-base font-medium leading-normal">Tên bài hát</label>
+            <input
+              className="form-input flex w-full resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-dark bg-surface-input focus:border-primary h-12 placeholder:text-text-subtle px-4 text-base font-normal transition-all"
+              placeholder="Ví dụ: Giai điệu mùa hè"
+              {...register("name", { required: "Tên bài hát là bắt buộc", maxLength: 100 })}
+            />
+            {errors.name && <p style={errorStyle}>{errors.name.message}</p>}
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-white text-base font-medium leading-normal">Mô tả</label>
+            <textarea
+              {...register("description", { maxLength: 500 })}
+              className="form-input flex w-full resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-dark bg-surface-input focus:border-primary min-h-[100px] placeholder:text-text-subtle p-4 text-base font-normal transition-all"
+              placeholder="Ghi chú về nhịp điệu, cảm xúc..."></textarea>
+            {errors.description && <p style={errorStyle}>{errors.description.message}</p>}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label className="flex flex-col gap-2">
+              <span className="text-white text-base font-medium leading-normal">Tổng thời lượng (phút)</span>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-3 top-3 text-text-subtle !text-[20px]">schedule</span>
+                <input
+                  type='number'
+                  className="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-dark bg-surface-input focus:border-primary h-12 placeholder:text-text-subtle px-4 pl-10 text-base font-normal transition-all"
+                  placeholder="3:00"
+                  {...register("totalDuration", {
+                    required: "Thời lượng là bắt buộc",
+                    min: { value: 1, message: "Thời lượng phải lớn hơn 0" },
+                    valueAsNumber: true, // RHF sẽ tự chuyển sang number nếu type là number
+                  })}
+                />
+                {errors.totalDuration && <p style={errorStyle}>{errors.totalDuration.message}</p>}
+
+              </div>
+            </label>
+            <label className="flex flex-col gap-2">
+              <span className="text-white text-base font-medium leading-normal">Thẻ (Tags)</span>
+              <div className="relative">
+                <TagsInput
+                  name="tags"
+                  control={control}
+                  placeholder="rock, drums, simple"
+                  maxTags={10}
+                />
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div className="h-px w-full bg-border-dark/50 mt-8 mb-8"></div>
+
+        <div className="space-y-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary !text-[20px]">piano</span>
+              <h3 className="text-white text-lg font-bold leading-tight tracking-[-0.015em]">Cấu hình Track</h3>
+            </div>
+            <span
+              className="text-xs font-medium text-text-subtle bg-surface-input px-2 py-1 rounded border border-border-dark">{trackFields.length} Tracks</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+            {trackFields.map((field, index) => (
+              <div className="flex items-center gap-3">
+                <span className="text-text-subtle text-sm font-mono w-6">{index + 1}</span>
+                <input
+                  className="form-input flex-1 rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-border-dark bg-surface-input focus:border-primary h-10 px-3 text-sm font-normal"
+                  placeholder="Track Label"
+                  {...register(`tracks.${index}.label`, { required: "Nhãn Track là bắt buộc" })}
+                />
+                <span className="material-symbols-outlined text-text-subtle !text-[18px]">drag_indicator</span>
+              </div>
+            ))}
+            {errors.tracks?.message && <p style={errorStyle}>{errors.tracks.message}</p>}
+          </div>
+        </div>
+      </form>
+    );
+  }
+)
 
 export default SongForm;

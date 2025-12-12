@@ -1,56 +1,39 @@
 // src/components/editor/NoteRenderer.tsx
 import React from 'react';
 import { Note } from '../../domain/entities/Note';
-import { MUSIC_ICONS } from '../../utils/icons';
-import { HEADER_BOTTOM_GAP } from './constants';
-import { contentStyle, iconSymbolStyle, NOTE_SIZE_PX, noteStyle, rendererStyle } from './NoteRenderer.styles';
-
-// Note entity cần có thêm tọa độ x, y sau khi qua MidiEditorContainer
-interface RenderableNote extends Note {
-  x: number; // Tọa độ x (pixel)
-  y: number; // Tọa độ y (pixel)
-}
+import { iconSymbolStyle } from './NoteRenderer.styles';
+import { RenderableNote } from '../../hooks/useEditorGrid';
+import { NOTE_SIZE_PX, RULER_WIDTH_PX } from './constants';
 
 interface NoteRendererProps {
   notes: RenderableNote[];
   onNoteClick: (note: Note) => void;
 }
 
-const getIconSymbol = (iconKey: string | undefined): string | null => {
-  if (!iconKey || iconKey === 'none') return null;
-  
-  const iconData = MUSIC_ICONS.find(i => i.key === iconKey);
-  return iconData?.symbol || null;
-};
-
 const NoteRenderer: React.FC<NoteRendererProps> = ({ notes, onNoteClick }) => {
   return (
-    <div style={rendererStyle}>
-      {notes.map((note) => {
-        const iconSymbol = getIconSymbol(note.icon);
-        return (
-          <div
-            key={note.id || `${note.trackId}-${note.time}`}
-            style={{
-              ...noteStyle,
-              left: note.x - (NOTE_SIZE_PX / 2), // Căn giữa X
-              top: note.y + HEADER_BOTTOM_GAP - (NOTE_SIZE_PX / 2), // Căn giữa Y
-              backgroundColor: note.color || '#007bff',
-            }}
-            onClick={() => onNoteClick(note)}
-            title={`Note: ${note.title || 'Untitled'} @ ${note.time}s`}
-          >
-            <div style={contentStyle}>
-              {iconSymbol ? (
-                // Hiển thị Icon (lớn)
-                <span style={iconSymbolStyle}>{iconSymbol}</span>
-              ) : (
-                <></>
+    <div className={`absolute inset-0 left-[${RULER_WIDTH_PX}px] flex`}>
+      <div className='relative'>
+        {notes.map((note) => {
+          return (
+            <div
+              key={note.id || `${note.trackId}-${note.time}`}
+              onClick={() => onNoteClick(note)}
+              title={`Note: ${note.title || 'Untitled'} @ ${note.time}s`}
+              className={`absolute top-[${note.y}px] left-[${note.x}px] w-[${NOTE_SIZE_PX}px] h-[${NOTE_SIZE_PX}px] -translate-x-[${NOTE_SIZE_PX/2}px] -translate-y-[${NOTE_SIZE_PX/2}px] rounded-full bg-[${note.color}] shadow-[0_0_15px_rgba(99,102,241,0.5)] cursor-pointer hover:scale-110 transition-transform flex items-center justify-center group`}
+            >
+              {note.icon && note.icon !== 'deselect' && (
+                <span
+                  style={iconSymbolStyle}
+                  className="material-symbols-outlined text-white text-lg opacity-80"
+                >
+                  {note.icon}
+                </span>
               )}
             </div>
-          </div>
-        )
-      })}
+          )
+        })}
+      </div>
     </div>
   );
 };

@@ -14,9 +14,6 @@ export const labelWrapperStyle: React.CSSProperties = {
 };
 
 export const labelStyle: React.CSSProperties = {
-  fontSize: '0.9em',
-  fontWeight: 'bold',
-  color: '#333',
   maxWidth: '90%',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
@@ -31,6 +28,7 @@ export const inputStyle: React.CSSProperties = {
   border: '1px solid #007bff',
   borderRadius: '3px',
   boxSizing: 'border-box',
+  color: 'black',
   height: '80%', // Chiếm gần hết chiều cao
 };
 
