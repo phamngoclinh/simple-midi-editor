@@ -1,30 +1,24 @@
-// src/components/song/SongForm.tsx
-import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
-import { Song } from '../../domain/entities/Song'; // Import Entity Song
+import { forwardRef, useEffect, useImperativeHandle } from 'react';
+import { Song } from '../../domain/entities/Song'; 
 import { Track } from '../../domain/entities/Track';
 import { errorStyle } from './SongForm.styles';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import TagsInput from '../common/TagsInput';
 import { ChildFormHandles } from '../../utils/types';
 
-
-// Định nghĩa dữ liệu form đầu vào
 interface SongFormData {
   id: string | undefined;
   name: string;
   description: string;
   totalDuration: number;
-  tracks: Track[]; // Chuỗi các nhãn Track, ngăn cách bằng dấu phẩy
+  tracks: Track[]; 
   tags: string[];
 }
 
 interface SongFormProps {
-  /** Dữ liệu Song khởi tạo (nếu đang ở chế độ Edit/Tạo mới). */
   initialSong?: Song;
-  /** Hàm được gọi khi form được gửi. */
   onSubmit: (data: SongFormData) => void;
   onCancel?: () => void;
-  /** Tiêu đề của nút submit. */
   buttonLabel?: string;
 }
 
@@ -32,17 +26,17 @@ const getDefaultFormData = (song?: Song): SongFormData => {
   let tracks: Track[] = [];
 
   if (song && song.tracks.length > 0) {
-    // Nếu có Song, lấy dữ liệu Track hiện có, đảm bảo có order
+    
     tracks = song.tracks.map((t, index) => ({
       id: t.id,
       label: t.label,
-      order: t.order ?? (index + 1), // Đảm bảo có order
+      order: t.order ?? (index + 1), 
       instrument: t.instrument,
       songId: t.songId,
       notes: t.notes
-    })).sort((a, b) => a.order - b.order); // Sắp xếp theo order
+    })).sort((a, b) => a.order - b.order); 
   } else {
-    // Nếu là tạo mới, cung cấp track mặc định
+    
     tracks = [
       { id: '1', label: 'Track 1', order: 1, instrument: 'Instrument 1', notes: [] },
       { id: '2', label: 'Track 2', order: 2, instrument: 'Instrument 2', notes: [] },
@@ -72,9 +66,9 @@ const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
     initialSong,
     buttonLabel
   }, ref) => {
-    // 💥 Khởi tạo useForm
+    
     const { register, handleSubmit, control, reset, formState: { errors } } = useForm<SongFormData>({
-      // Thiết lập giá trị mặc định/khởi tạo
+      
       defaultValues: getDefaultFormData(initialSong),
     });
 
@@ -83,7 +77,7 @@ const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
       name: 'tracks'
     });
 
-    // Reset form khi initialSong thay đổi (khi chuyển từ tạo mới sang chỉnh sửa)
+    
     useEffect(() => {
       reset(getDefaultFormData(initialSong));
     }, [initialSong, reset]);
@@ -94,28 +88,27 @@ const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
       }
     }));
 
-    // Hàm được gọi khi form submit hợp lệ
+    
     const handleRHFSubmit: SubmitHandler<SongFormData> = (data) => {
-      // 1. Xử lý Tags (Chuỗi -> Mảng)
+      
       const processedTags = data.tags.filter(tag => tag.length > 0);
 
-      // 2. Xử lý Tracks (Sắp xếp theo order một lần nữa trước khi gửi)
+      
       const processedTracks = data.tracks.sort((a, b) => a.order - b.order);
 
-      // 3. Chuẩn bị dữ liệu cuối cùng
+      
       const finalData = {
         ...data,
-        tags: processedTags, // Thay thế chuỗi tags bằng mảng đã xử lý
+        tags: processedTags, 
         tracks: processedTracks,
-        // Đảm bảo các trường number được parse chính xác (sử dụng valueAsNumber trong register)
+        
       };
 
       onSubmit(finalData as any);
     };
 
     return (
-      <form onSubmit={handleSubmit(handleRHFSubmit)}>
-
+      <form name='edit-song-form' onSubmit={handleSubmit(handleRHFSubmit)}>
         <div className="space-y-4">
           <div className="flex items-center gap-2 mb-2">
             <span className="material-symbols-outlined text-primary !text-[20px]">info</span>
@@ -123,18 +116,21 @@ const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-white text-base font-medium leading-normal">Tên bài hát</label>
+            <label htmlFor='name' className="text-white text-base font-medium leading-normal">Tên bài hát</label>
             <input
+              id='name'
               className="form-input flex w-full resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-dark bg-surface-input focus:border-primary h-12 placeholder:text-text-subtle px-4 text-base font-normal transition-all"
               placeholder="Ví dụ: Giai điệu mùa hè"
+              autoComplete='false'
               {...register("name", { required: "Tên bài hát là bắt buộc", maxLength: 100 })}
             />
             {errors.name && <p style={errorStyle}>{errors.name.message}</p>}
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-white text-base font-medium leading-normal">Mô tả</label>
+            <label htmlFor='desc' className="text-white text-base font-medium leading-normal">Mô tả</label>
             <textarea
+              id='desc'
               {...register("description", { maxLength: 500 })}
               className="form-input flex w-full resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-dark bg-surface-input focus:border-primary min-h-[100px] placeholder:text-text-subtle p-4 text-base font-normal transition-all"
               placeholder="Ghi chú về nhịp điệu, cảm xúc..."></textarea>
@@ -153,7 +149,7 @@ const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
                   {...register("totalDuration", {
                     required: "Thời lượng là bắt buộc",
                     min: { value: 1, message: "Thời lượng phải lớn hơn 0" },
-                    valueAsNumber: true, // RHF sẽ tự chuyển sang number nếu type là number
+                    valueAsNumber: true, 
                   })}
                 />
                 {errors.totalDuration && <p style={errorStyle}>{errors.totalDuration.message}</p>}
@@ -187,7 +183,7 @@ const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
             {trackFields.map((field, index) => (
-              <div className="flex items-center gap-3">
+              <div key={field.id} className="flex items-center gap-3">
                 <span className="text-text-subtle text-sm font-mono w-6">{index + 1}</span>
                 <input
                   className="form-input flex-1 rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-border-dark bg-surface-input focus:border-primary h-10 px-3 text-sm font-normal"

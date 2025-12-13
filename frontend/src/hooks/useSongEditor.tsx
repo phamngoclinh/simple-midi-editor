@@ -7,6 +7,7 @@ import {
 } from '../dependencies';
 import { Song } from '../domain/entities/Song';
 import { Track } from '../domain/entities/Track';
+import { SongTriggerAction } from '../utils/types';
 
 interface SongFormData {
   name: string;
@@ -16,7 +17,7 @@ interface SongFormData {
   tags: string[];
 }
 
-export default function useSongEditor(onAfterChange?: () => Promise<void>) {
+export default function useSongEditor(onAfterChange?: (song: Song, action: SongTriggerAction) => Promise<void>) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingSong, setEditingSong] = useState<Song | null>(null);
 
@@ -34,7 +35,7 @@ export default function useSongEditor(onAfterChange?: () => Promise<void>) {
       tags: data.tags
     };
     const newSong = await createNewSongUseCase.execute(createData);
-    if (onAfterChange) await onAfterChange();
+    if (onAfterChange) await onAfterChange(newSong, 'create');
     return newSong;
   };
 
@@ -48,7 +49,7 @@ export default function useSongEditor(onAfterChange?: () => Promise<void>) {
       tags: data.tags,
     };
     const updated = await editSongUseCase.execute(updateData);
-    if (onAfterChange) await onAfterChange();
+    if (onAfterChange) await onAfterChange(updated, 'update');
     setEditingSong(null);
     showToast({
       type: 'success',
@@ -65,7 +66,7 @@ export default function useSongEditor(onAfterChange?: () => Promise<void>) {
     });
     if (confirmed) {
       await deleteSongUseCase.execute(songId);
-      if (onAfterChange) await onAfterChange();
+      if (onAfterChange) await onAfterChange({ id: songId } as Song, 'delete');
     }
   };
 

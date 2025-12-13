@@ -28,27 +28,6 @@ export const trackOrderInputStyle: React.CSSProperties = {
   textAlign: 'center',
 };
 
-// export const addButtonFormStyle: React.CSSProperties = {
-//   padding: '8px 12px',
-//   fontSize: '0.9em',
-//   backgroundColor: '#28a745',
-//   color: 'white',
-//   border: 'none',
-//   borderRadius: '4px',
-//   cursor: 'pointer',
-//   marginTop: '5px',
-// };
-
-// export const removeButtonStyle: React.CSSProperties = {
-//   padding: '6px 10px',
-//   fontSize: '1em',
-//   backgroundColor: '#dc3545',
-//   color: 'white',
-//   border: 'none',
-//   borderRadius: '4px',
-//   cursor: 'pointer',
-// };
-
 export const formStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',

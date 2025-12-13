@@ -1,4 +1,3 @@
-// src/components/common/Confirmation.tsx
 import React from 'react';
 import { backdropStyle, bodyStyle, closeButtonStyle, headerStyle, modalContentStyle, modalFooterStyle } from './Modal.styles';
 
@@ -25,18 +24,15 @@ const Confirmation: React.FC<ConfirmationProps> = ({
     <div style={confirmationModalStyle}>
       <div style={modalContentStyle} className='bg-white dark:bg-[#111318]'>
 
-        {/* Header Xác nhận */}
         <div style={modalHeaderStyleWarning}>
           <h3>{title}</h3>
           <button onClick={onCancel} style={closeButtonStyleWarning}>&times;</button>
         </div>
 
-        {/* Nội dung Xác nhận */}
         <div style={bodyStyle}>
           <p>{message}</p>
         </div>
 
-        {/* Footer (Nút Xác nhận & Hủy) */}
         <div style={modalFooterStyle}>
           <button onClick={onCancel} style={cancelActionButtonStyle}>
             Hủy
@@ -51,8 +47,6 @@ const Confirmation: React.FC<ConfirmationProps> = ({
 };
 
 export default Confirmation;
-
-// --- Styles Bổ sung (Tái sử dụng các styles chung từ Alert) ---
 
 const confirmationModalStyle: React.CSSProperties = {
   ...backdropStyle,
@@ -86,6 +80,3 @@ const cancelActionButtonStyle: React.CSSProperties = {
   borderRadius: '4px',
   cursor: 'pointer',
 };
-
-// Tái sử dụng: modalOverlayStyle, modalContentStyle, titleStyle, modalBodyStyle, modalFooterStyle
-// (Lưu ý: Trong dự án thực tế, nên định nghĩa các styles chung này trong một file riêng như `styles/modalStyles.ts`)

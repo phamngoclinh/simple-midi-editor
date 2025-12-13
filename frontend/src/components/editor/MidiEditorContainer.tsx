@@ -1,4 +1,3 @@
-// src/components/editor/MidiEditorContainer.tsx
 import React, { useCallback } from 'react';
 import { loadSongByIdUseCase } from '../../dependencies';
 import { Note } from '../../domain/entities/Note';
@@ -12,7 +11,6 @@ import TrackHeader from './TrackHeader';
 
 interface MidiEditorContainerProps {
   currentSong: Song;
-  // Giả định có hàm để xử lý Note click (ví dụ: mở Modal Edit)
   onNoteClick: (note: Note) => void;
   onSongUpdate: (updatedSong: Song) => void;
 }
@@ -44,7 +42,7 @@ const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, 
               className={`shrink-0 w-[${RULER_WIDTH_PX}px] px-4 py-3 text-left text-[#9da6b9] text-xs font-bold uppercase tracking-wider border-r border-[#282e39] bg-[#111318]`}>
               Time
             </div>
-            {/* Track Header */}
+
             <TrackHeader
               currentSong={currentSong}
               totalWidth={totalEditorWidth}
@@ -52,9 +50,9 @@ const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, 
             />
           </div>
 
-          {/* Grid and Ruler */}
+
           <div className={`flex relative flex-1 bg-[#101216]`}>
-            {/* Time Ruler */}
+
             <TimeRuler
               totalDuration={totalDuration}
               totalHeight={totalEditorHeight}
@@ -63,9 +61,9 @@ const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, 
             <div className={`absolute inset-0 left-[${RULER_WIDTH_PX}px] flex pointer-events-none`}>
               {currentSong.tracks?.map((track, index) => {
                 return index % 2 ? (
-                  <div className={`w-[${RULER_WIDTH_PX}px] border-r border-[#1c1f27]/50 bg-[#1c1f27]/10`}></div>
+                  <div key={track.id} className={`w-[${RULER_WIDTH_PX}px] border-r border-[#1c1f27]/50 bg-[#1c1f27]/10`}></div>
                 ) : (
-                  <div className={`w-[${RULER_WIDTH_PX}px] border-r border-[#1c1f27]/50`}></div>
+                  <div key={track.id} className={`w-[${RULER_WIDTH_PX}px] border-r border-[#1c1f27]/50`}></div>
                 );
               })}
             </div>
@@ -74,12 +72,11 @@ const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, 
                 const colors = ['#393d45ff', '#935656ff', '#393d45ff', '#279999ff']
                 const color = colors[index % colors.length];
                 return (
-                  <div className={`h-[${TIME_UNIT_HEIGHT_PX}px] w-full border-b border-[${color}]/50`}></div>
+                  <div key={timeLine.key} className={`h-[${TIME_UNIT_HEIGHT_PX}px] w-full border-b border-[${color}]/50`}></div>
                 )
               })}
             </div>
 
-            {/* Notes */}
             <NoteRenderer
               notes={allNotes}
               onNoteClick={onNoteClick}

@@ -1,9 +1,7 @@
-// src/components/editor/TimeGrid.tsx
 import React, { useMemo } from 'react';
 import {
   PRIMARY_GRID_COLOR,
   SECONDARY_GRID_COLOR,
-  HEADER_BOTTOM_GAP,
 } from './constants';
 import { gridStyle, horizontalLineStyle, verticalLineStyle } from './TimeGrid.styles';
 

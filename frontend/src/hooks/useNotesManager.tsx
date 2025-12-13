@@ -60,29 +60,29 @@ export default function useNotesManager(onAfterChange?: () => Promise<void>, son
   }, [selectedSongForNoteEdit, editingNote, onAfterChange, showToast]);
 
   const deleteNote = useCallback(async (noteId: string) => {
-    if (!selectedSongForNoteEdit) return;
+    if (!selectedSongForNoteEdit) return false;
     const confirmed = await showConfirmation({
       message: 'Bạn có chắc chắn muốn xóa Note này không?',
       title: "Xác nhận Xóa",
       confirmButtonLabel: "XÓA VĨNH VIỄN",
     });
-    if (confirmed) {
-      try {
-        const trackId = selectedSongForNoteEdit.tracks.find(t => t.notes.some(n => n.id === noteId))?.id;
-        if (!trackId) throw new Error('Track ID không tìm thấy');
-        await deleteExistingNoteUseCase.execute(noteId, selectedSongForNoteEdit.id!, trackId);
-        showToast({
-          type: 'success',
-          message: 'Note đã được xóa.',
-        });
-        if (onAfterChange) await onAfterChange();
-      } catch (err) {
-        console.error('Lỗi khi xóa Note:', err);
-        showToast({
-          type: 'error',
-          message: 'Xóa Note thất bại.',
-        });
-      }
+    if (!confirmed) return false;
+    try {
+      await deleteExistingNoteUseCase.execute(noteId);
+      showToast({
+        type: 'success',
+        message: 'Note đã được xóa.',
+      });
+      if (onAfterChange) await onAfterChange();
+      setEditingNote(null);
+      return true;
+    } catch (err) {
+      console.error('Lỗi khi xóa Note:', err);
+      showToast({
+        type: 'error',
+        message: 'Xóa Note thất bại.',
+      });
+      return false
     }
   }, [selectedSongForNoteEdit, onAfterChange, showToast, showConfirmation]);
 
@@ -93,6 +93,7 @@ export default function useNotesManager(onAfterChange?: () => Promise<void>, son
 
   const initialNote = useMemo(() => {
     return selectedSongForNoteEdit && editingNote ? {
+      id: editingNote.id,
       songId: selectedSongForNoteEdit.id as string,
       trackId: editingNote.trackId as string,
       track: editingNote.track,

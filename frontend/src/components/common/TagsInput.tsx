@@ -1,41 +1,31 @@
 import React, { ChangeEvent, KeyboardEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { useController, UseControllerProps } from 'react-hook-form';
 
-// Interface cho TagsInputProps, mở rộng từ RHF Controller Props
 interface TagsInputProps extends UseControllerProps<any> {
   placeholder?: string;
   maxTags?: number;
 }
 
-/**
- * Component nhập Tags (Mảng String) tích hợp với React Hook Form
- * @param props UseControllerProps (name, control) và các props tùy chỉnh
- */
 const TagsInput: React.FC<TagsInputProps> = (props) => {
-  // Lấy ra control, field (value/onChange) từ RHF
   const { field } = useController(props);
   
-  // Giá trị hiện tại của Tags (luôn là mảng string)
   const tags: string[] = useMemo(() => Array.isArray(field.value) ? field.value : [], [field.value]);
 
-  // State cục bộ cho input đang gõ
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const maxTags = props.maxTags || 10;
   
-  // --- Thêm Tag mới ---
   const addTag = useCallback((tagLabel: string) => {
     const newTag = tagLabel.trim();
     if (!newTag || tags.length >= maxTags) return;
 
-    // Kiểm tra trùng lặp và thêm vào danh sách
     if (!tags.includes(newTag)) {
       const newTags = [...tags, newTag];
-      field.onChange(newTags); // 💥 Cập nhật giá trị RHF
+      field.onChange(newTags);
     }
     
-    setInputValue(''); // Xóa input
+    setInputValue('');
   }, [tags, maxTags, field]);
 
   const removeTag = useCallback((tagToRemove: string) => {
@@ -80,6 +70,8 @@ const TagsInput: React.FC<TagsInputProps> = (props) => {
           </div>
         ))}
         <input
+          id='tag-input'
+          name='tag-input'
           ref={inputRef}
           type="text"
           value={inputValue}

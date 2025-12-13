@@ -1,14 +1,9 @@
-// src/application/song/ListAllSongs.ts
 import { ISongRepository } from '../../domain/repositories/ISongRepository';
 import { Song } from '../../domain/entities/Song';
 
-// Định nghĩa các tiêu chí sắp xếp hợp lệ
 export type SongSortBy = 'name' | 'updated' | 'created' | 'totalDuration';
-export type SortOrder = 'asc' | 'desc'; // Ascending (tăng dần) hoặc Descending (giảm dần)
+export type SortOrder = 'asc' | 'desc';
 
-/**
- * Lớp Use Case: Tải tất cả các Song hiện có trong hệ thống.
- */
 export class ListAllSongs {
   private songRepository: ISongRepository;
 
@@ -16,21 +11,15 @@ export class ListAllSongs {
     this.songRepository = songRepository;
   }
 
-  /**
-   * Thực thi Use Case.
-   * @returns Promise trả về mảng tất cả các Song.
-   */
   async execute(sortBy: SongSortBy = 'updated', order: SortOrder = 'desc'): Promise<Song[]> {
     const songs = await this.songRepository.findAll();
 
     const direction = order === 'asc' ? 1 : -1;
 
-    // 1. Áp dụng logic sắp xếp
     songs.sort((a, b) => {
       let aValue: any;
       let bValue: any;
 
-      // Chuẩn bị giá trị để so sánh dựa trên tiêu chí
       switch (sortBy) {
         case 'name':
           aValue = a.name.toLowerCase();
@@ -51,10 +40,9 @@ export class ListAllSongs {
           break;
       }
 
-      // 2. Thực hiện so sánh
       if (aValue < bValue) return -1 * direction;
       if (aValue > bValue) return 1 * direction;
-      return 0; // Bằng nhau
+      return 0;
     });
     return songs;
   }

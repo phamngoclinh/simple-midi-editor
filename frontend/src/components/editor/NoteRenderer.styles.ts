@@ -8,7 +8,7 @@ export const rendererStyle: React.CSSProperties = {
 
 export const noteStyle: React.CSSProperties = {
   position: 'absolute',
-  pointerEvents: 'auto', // Bắt sự kiện click trên Note
+  pointerEvents: 'auto',
   borderRadius: '100%',
   opacity: 0.9,
   cursor: 'pointer',
@@ -17,8 +17,6 @@ export const noteStyle: React.CSSProperties = {
   alignItems: 'center',
   justifyContent: 'center',
   overflow: 'hidden',
-  // Giả định cần một border nhỏ hơn
-  // border: '1px solid',
 };
 
 export const contentStyle: React.CSSProperties = {

@@ -1,13 +1,12 @@
-// src/components/editor/TrackHeader.tsx
 import React, { useState } from 'react';
 import { Song } from '../../domain/entities/Song';
 import { TRACK_WIDTH_PX } from './constants';
 import { Track } from '../../domain/entities/Track';
-import { headerContainerStyle, inputStyle, labelStyle, labelWrapperStyle, orderStyle, trackHeaderItemStyle } from './TrackHeader.styles';
+import { inputStyle, trackHeaderItemStyle } from './TrackHeader.styles';
 
 interface TrackHeaderProps {
   currentSong: Song;
-  totalWidth: number; // Tổng chiều rộng của khu vực Tracks
+  totalWidth: number;
   onTrackLabelEdit: (trackId: string, newLabel: string) => void;
 }
 
@@ -15,26 +14,21 @@ const TrackHeader: React.FC<TrackHeaderProps> = ({ currentSong, totalWidth, onTr
   const [editingTrackId, setEditingTrackId] = useState<string | number | null>(null);
   const [tempLabel, setTempLabel] = useState('');
 
-  // --- Hàm xử lý Bắt đầu Chỉnh sửa ---
   const handleStartEdit = (track: Track) => {
-    if (!track.id) return; // Không cho chỉnh sửa nếu Track không có ID
+    if (!track.id) return;
     setEditingTrackId(track.id);
     setTempLabel(track.label);
   };
 
-  // --- Hàm xử lý Lưu nhãn ---
   const handleSaveEdit = (trackId: string) => {
     const newLabel = tempLabel.trim();
     if (newLabel && newLabel !== currentSong.tracks.find(t => t.id === trackId)?.label) {
-      // Gọi hàm callback từ component cha (MidiEditorContainer)
       onTrackLabelEdit(trackId, newLabel);
     }
-    // Dù có thay đổi hay không, thoát khỏi chế độ chỉnh sửa
     setEditingTrackId(null);
     setTempLabel('');
   };
 
-  // --- Hàm xử lý Keyboard (Nhấn Enter) ---
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, trackId: string) => {
     if (e.key === 'Enter') {
       handleSaveEdit(trackId);
@@ -45,7 +39,6 @@ const TrackHeader: React.FC<TrackHeaderProps> = ({ currentSong, totalWidth, onTr
     }
   };
 
-  // Lấy danh sách Tracks và sắp xếp theo order
   const sortedTracks = [...currentSong.tracks].sort((a, b) => (a.order || 0) - (b.order || 0));
 
   const renderTrackItem = (track: Track, index: number) => {

@@ -14,8 +14,6 @@ const SongManagerPage: React.FC = () => {
   const {
     songs,
     loading,
-    sortState,
-    setSortState,
     isCreateModalOpen,
     openCreateModal,
     closeAllModals,
@@ -32,16 +30,10 @@ const SongManagerPage: React.FC = () => {
     startEditNote,
     saveNote,
     deleteNote,
-    importSong,
     exportSong,
   } = useSongManager();
   const { showToast } = useModal();
   const formRef = useRef<ChildFormHandles>(null);
-
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const [by, order] = e.target.value.split(':') as [any, any];
-    setSortState({ by, order });
-  };
 
   const handleCreate = async (data: any) => {
     try {
@@ -93,22 +85,6 @@ const SongManagerPage: React.FC = () => {
               <p className="text-slate-500 dark:text-[#9da6b9] text-base">Manage your MIDI projects or start a new idea.</p>
             </div>
             <div className="flex items-center gap-3">
-              <select
-                id="sort-by-select"
-                onChange={handleSortChange}
-                value={`${sortState.by}:${sortState.order}`}
-                className="h-10 px-4 rounded-lg bg-white dark:bg-[#282e39] border border-slate-200 dark:border-transparent text-slate-700 dark:text-white text-sm font-bold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-[#323945] transition-colors"
-              >
-                <option value="updated:desc">Cập nhật gần nhất</option>
-                <option value="updated:asc">Cập nhật cũ nhất</option>
-                <option value="name:asc">Tên (A-Z)</option>
-                <option value="name:desc">Tên (Z-A)</option>
-                <option value="created:desc">Ngày tạo (mới nhất)</option>
-                <option value="created:asc">Ngày tạo (cũ nhất)</option>
-                <option value="tempo:desc">Tempo (cao nhất)</option>
-                <option value="tempo:asc">Tempo (thấp nhất)</option>
-              </select>
-
               <button onClick={openCreateModal} className="h-10 px-5 rounded-lg bg-primary hover:bg-blue-600 text-white text-sm font-bold shadow-lg shadow-blue-500/20 flex items-center gap-2 transition-all">
                 <span className="material-symbols-outlined text-[20px]">add</span>
                 <span>New Song</span>
@@ -118,7 +94,7 @@ const SongManagerPage: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
             <>
-              {songs.length && songs.map(song => (
+              {songs?.map(song => (
                 <div key={song.id} className="group relative flex flex-col bg-white dark:bg-[#1e2430] rounded-xl border border-slate-200 dark:border-[#282e39] hover:border-primary/50 dark:hover:border-primary/50 transition-all hover:shadow-xl hover:shadow-primary/5">
                   <SongListItem
                     song={song}

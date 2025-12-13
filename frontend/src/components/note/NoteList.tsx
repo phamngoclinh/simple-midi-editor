@@ -1,22 +1,17 @@
-// src/components/note/NoteList.tsx
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useState } from 'react';
-import { listNotesInSongUseCase } from '../../dependencies'; // Use Case
-import { Note } from '../../domain/entities/Note'; // Import Entity Note
-import { Song } from '../../domain/entities/Song'; // Import Song để lấy track label
-import { actionsStyle, containerStyle, deleteButtonStyle, editButtonStyle, listItemStyle, listStyle, noteDetailsStyle, noteInfoStyle, noteTitleStyle, refreshButtonStyle } from './NoteList.styles';
+import { listNotesInSongUseCase } from '../../dependencies';
+import { Note } from '../../domain/entities/Note';
+import { Song } from '../../domain/entities/Song';
 import { toMMSS } from '../../utils/helper';
 import DropdownMenu from '../common/DropdownMenu';
 
 // Định nghĩa Props
 interface NoteListProps {
-  /** ID của Song để tải Notes. */
   songId: string;
-  /** Toàn bộ Song để map Track ID sang Track Label. */
   currentSong: Song;
-  /** Hàm được gọi khi người dùng muốn chỉnh sửa một Note. */
   onEditNote: (note: Note) => void;
-  /** Hàm được gọi khi người dùng muốn xóa một Note. */
-  onDeleteNote: (noteId: string) => void;
+  onDeleteNote: (noteId: string) => Promise<boolean>;
 }
 
 const NoteList: React.FC<NoteListProps> = ({
@@ -28,12 +23,10 @@ const NoteList: React.FC<NoteListProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // --- Hàm Tải Notes ---
   const loadNotes = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      // Gọi Use Case để tải danh sách Notes
       const fetchedNotes = await listNotesInSongUseCase.execute(songId);
       setNotes(fetchedNotes);
     } catch (err) {
@@ -44,9 +37,16 @@ const NoteList: React.FC<NoteListProps> = ({
     }
   }, [songId]);
 
+  const handleDelete = useCallback(async (noteId: string) => {
+    const result = await onDeleteNote(noteId);
+    if (result) {
+      setNotes(prev => prev.filter(n => n.id !== noteId));
+    }
+  }, [])
+
   useEffect(() => {
     loadNotes();
-  }, [loadNotes]); // Tải lại khi Song ID thay đổi
+  }, []);
 
   if (loading) return <div>Đang tải Notes...</div>;
   if (error) return <div style={{ color: 'red' }}>Lỗi: {error}</div>;
@@ -70,7 +70,7 @@ const NoteList: React.FC<NoteListProps> = ({
             <div className="flex flex-col min-w-[700px]">
               {notes.map((note, index) => {
                 return (
-                  <div className="group grid grid-cols-[48px_1fr_1fr_1fr_2fr_1fr] md:grid-cols-[48px_1.5fr_1fr_1fr_2.5fr_2fr_1fr] gap-4 px-6 py-3 border-b border-slate-200 dark:border-border-dark hover:bg-slate-100 dark:hover:bg-[#1c1f27] items-center transition-colors cursor-pointer text-sm">
+                  <div key={note.id} className="group grid grid-cols-[48px_1fr_1fr_1fr_2fr_1fr] md:grid-cols-[48px_1.5fr_1fr_1fr_2.5fr_2fr_1fr] gap-4 px-6 py-3 border-b border-slate-200 dark:border-border-dark hover:bg-slate-100 dark:hover:bg-[#1c1f27] items-center transition-colors cursor-pointer text-sm">
                     <div className="flex justify-center text-slate-400 dark:text-slate-500 font-mono">{index + 1}</div>
                     <div className="font-mono text-slate-600 dark:text-slate-300">{toMMSS(note.time)}</div>
                     <div className="flex items-center gap-2">
@@ -95,15 +95,15 @@ const NoteList: React.FC<NoteListProps> = ({
                           },
                           {
                             label: "Xóa",
-                            onClick: () => onDeleteNote(note.id!),
+                            onClick: () => handleDelete(note.id!),
                             icon: <span className="material-symbols-outlined text-[20px]">delete</span>,
                             isDestructive: true,
                           },
                         ]}
-                        triggerIcon={<button
+                        triggerIcon={<span
                           className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-border-dark text-slate-500 hover:text-primary">
                           <span className="material-symbols-outlined text-[18px]">more_vert</span>
-                        </button>}
+                        </span>}
                         align="right"
                       />
                     </div>

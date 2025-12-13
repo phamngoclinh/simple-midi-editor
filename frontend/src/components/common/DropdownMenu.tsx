@@ -1,23 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-// Định nghĩa cấu trúc cho mỗi Item trong Menu
 export interface DropdownItem {
   label: string;
   onClick: () => void;
-  icon?: React.ReactElement | string; // Ví dụ: "✏️", "🗑️", "⚙️"
-  isDestructive?: boolean; // Nếu là hành động xóa
+  icon?: React.ReactElement | string;
+  isDestructive?: boolean;
 }
 
 interface DropdownMenuProps {
-  CustomButton?: React.ReactElement,
   items: DropdownItem[];
-  triggerIcon?: React.ReactElement | string; // Icon cho nút mở menu
+  triggerIcon?: React.ReactElement | string;
   triggerLabel?: string;
-  align?: 'left' | 'right'; // Vị trí menu
+  align?: 'left' | 'right';
 }
 
 const DropdownMenu: React.FC<DropdownMenuProps> = ({
-  CustomButton,
   items,
   triggerIcon = '⋮',
   triggerLabel,
@@ -26,7 +23,6 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Xử lý click ngoài (Click Away) để đóng menu
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -42,16 +38,14 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
 
   const handleItemClick = (onClick: () => void) => {
     onClick();
-    setIsOpen(false); // Đóng menu sau khi chọn
+    setIsOpen(false);
   };
 
-  // Tính toán vị trí menu (left hoặc right)
   const menuPositionStyle: React.CSSProperties =
     align === 'right' ? { right: 0, left: 'auto' } : { left: 0, right: 'auto' };
 
   return (
     <div style={containerStyle} ref={dropdownRef}>
-      {/* Nút Trigger (Mở menu) */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         title={triggerLabel || "Tùy chọn"}
@@ -60,7 +54,6 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
         {triggerLabel && <span style={{ marginLeft: '5px' }}>{triggerLabel}</span>}
       </button>
 
-      {/* Menu thả xuống */}
       {isOpen && (
         <div style={{ ...menuStyle, ...menuPositionStyle }}>
           {items.map((item, index) => (
@@ -85,22 +78,9 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
 
 export default DropdownMenu;
 
-// --- Styles ---
-
 const containerStyle: React.CSSProperties = {
   position: 'relative',
   display: 'inline-block',
-};
-
-const triggerButtonStyle: React.CSSProperties = {
-  backgroundColor: '#f1f3f5',
-  color: '#333',
-  border: '1px solid #ccc',
-  borderRadius: '4px',
-  padding: '8px 12px',
-  fontSize: '1em',
-  cursor: 'pointer',
-  minWidth: '40px',
 };
 
 const menuStyle: React.CSSProperties = {
@@ -111,7 +91,7 @@ const menuStyle: React.CSSProperties = {
   minWidth: '175px',
   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
   borderRadius: '4px',
-  zIndex: 50, // Đảm bảo nằm trên các phần tử khác
+  zIndex: 50,
   display: 'flex',
   flexDirection: 'column',
   overflow: 'hidden'

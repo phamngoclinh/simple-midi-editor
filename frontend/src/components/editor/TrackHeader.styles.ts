@@ -29,16 +29,16 @@ export const inputStyle: React.CSSProperties = {
   borderRadius: '3px',
   boxSizing: 'border-box',
   color: 'black',
-  height: '80%', // Chiếm gần hết chiều cao
+  height: '80%',
 };
 
 export const headerContainerStyle: React.CSSProperties = {
   display: 'flex',
-  flexShrink: 0, // Quan trọng: Ngăn không cho container co lại
+  flexShrink: 0,
   height: HEADER_HEIGHT_PX,
-  backgroundColor: '#f1f3f5', // Nền sáng
+  backgroundColor: '#f1f3f5',
   borderBottom: `1px solid ${PRIMARY_GRID_COLOR}`,
-  position: 'relative', // Relative để chứa các items
+  position: 'relative',
 };
 
 export const trackHeaderItemStyle: React.CSSProperties = {

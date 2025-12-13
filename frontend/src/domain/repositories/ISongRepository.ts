@@ -1,12 +1,6 @@
-// src/domain/repositories/ISongRepository.ts
-
-import { Song } from '../entities/Song'; // Giả sử đã định nghĩa
+import { Song } from '../entities/Song';
 import { Track } from '../entities/Track';
 
-/**
- * Interface Repository cho thực thể Song.
- * Đây là "Hợp đồng" mà lớp Infrastructure phải thực thi.
- */
 export interface ISongRepository {
   create(song: Song): Promise<Song>;
 

@@ -1,4 +1,3 @@
-// src/components/common/Toast.tsx
 import React, { memo, useEffect, useState } from 'react';
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';
@@ -7,7 +6,7 @@ interface ToastProps {
   id: number;
   type: ToastType;
   message: string;
-  duration?: number; // Thời gian hiển thị (ms)
+  duration?: number;
   onClose: (id: number) => void;
 }
 
@@ -29,17 +28,14 @@ const Toast: React.FC<ToastProps> = memo(({ id, type, message, duration = 3000, 
   const [isFading, setIsFading] = useState(false);
   const styles = getStyles(type);
 
-  // Xử lý tự động đóng và hiệu ứng mờ dần
   useEffect(() => {
-    // Bắt đầu đếm ngược thời gian đóng
     const timer = setTimeout(() => {
-      setIsFading(true); // Bắt đầu hiệu ứng mờ dần
+      setIsFading(true);
     }, duration);
 
-    // Sau khi mờ dần, thực hiện đóng hoàn toàn
     const fadeTimer = setTimeout(() => {
       onClose(id);
-    }, duration + 500); // 500ms là thời gian chuyển đổi opacity
+    }, duration + 500);
 
     return () => {
       clearTimeout(timer);
@@ -57,10 +53,10 @@ const Toast: React.FC<ToastProps> = memo(({ id, type, message, duration = 3000, 
       style={{
         ...toastStyle,
         backgroundColor: styles.backgroundColor,
-        opacity: isFading ? 0 : 1, // Hiệu ứng mờ dần
+        opacity: isFading ? 0 : 1,
         transition: 'opacity 0.5s ease-out',
       }}
-      onClick={handleClose} // Cho phép click để đóng
+      onClick={handleClose}
     >
       <span style={iconStyle}>{styles.icon}</span>
       <p style={messageStyle}>{message}</p>
@@ -70,8 +66,6 @@ const Toast: React.FC<ToastProps> = memo(({ id, type, message, duration = 3000, 
 });
 
 export default Toast;
-
-// --- Styles cho Toast ---
 
 const toastStyle: React.CSSProperties = {
   display: 'flex',

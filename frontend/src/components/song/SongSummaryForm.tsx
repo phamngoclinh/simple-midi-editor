@@ -1,14 +1,11 @@
-// src/components/song/SongForm.tsx
-import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
-import { Song } from '../../domain/entities/Song'; // Import Entity Song
+import { forwardRef, useEffect, useImperativeHandle } from 'react';
+import { Song } from '../../domain/entities/Song'; 
 import { Track } from '../../domain/entities/Track';
-import { errorStyle, formStyle, inputStyle, labelStyle, textareaStyle } from './SongForm.styles';
+import { errorStyle } from './SongForm.styles';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import TagsInput from '../common/TagsInput';
 import { ChildFormHandles } from '../../utils/types';
 
-
-// Định nghĩa dữ liệu form đầu vào
 interface SongSummaryFormData {
   id: string | undefined;
   name: string;
@@ -22,33 +19,27 @@ interface SongSummaryFormProps {
   initialSong: Song;
   onSubmit: (data: SongSummaryFormData) => void;
   onCancel?: () => void;
-  buttonLabel?: string;
 }
 
 const SongForm = forwardRef<ChildFormHandles, SongSummaryFormProps>(
   ({ 
     onSubmit, 
-    onCancel,
-    initialSong, 
-    buttonLabel 
+    initialSong,  
   }, ref) => {
-    // 💥 Khởi tạo useForm
     const { register, handleSubmit, control, reset, formState: { errors } } = useForm<SongSummaryFormData>({
       defaultValues: initialSong,
     });
-
-    // Reset form khi initialSong thay đổi (khi chuyển từ tạo mới sang chỉnh sửa)
+    
     useEffect(() => {
       reset(initialSong);
     }, [initialSong, reset]);
 
     useImperativeHandle(ref, () => ({
       submitForm() {
-        handleSubmit(handleRHFSubmit)(); 
+        handleSubmit(handleRHFSubmit)();
       }
     }));
-
-    // Hàm được gọi khi form submit hợp lệ
+    
     const handleRHFSubmit: SubmitHandler<SongSummaryFormData> = (data) => {
       const processedTags = data.tags?.filter(tag => tag.length > 0) || [];
       const finalData = {
@@ -59,7 +50,7 @@ const SongForm = forwardRef<ChildFormHandles, SongSummaryFormProps>(
     };
 
     return (
-      <form onSubmit={handleSubmit(handleRHFSubmit)}>
+      <form name='edit-song-summary-form' onSubmit={handleSubmit(handleRHFSubmit)}>
         <div className="flex flex-col gap-4">
           <div className="bg-gradient-to-br from-[#1c1f27] to-[#111318] p-4 rounded-xl border border-[#282e39] shadow-lg relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
@@ -74,22 +65,24 @@ const SongForm = forwardRef<ChildFormHandles, SongSummaryFormProps>(
               </div>
             <div className="relative z-10">
               <h4 className="text-white text-xl font-bold mb-1">{initialSong.name}</h4>
-              {/* <p className="text-[#9da6b9] text-xs">Track 5 • 00:15:00</p> */}
             </div>
           </div>
 
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-[#9da6b9]">Title</label>
+            <label htmlFor='name' className="block text-sm font-medium text-[#9da6b9]">Name</label>
             <input
+              id='name'
               className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a] text-sm"
               type="text"
+              autoComplete='false'
               {...register("name", { required: "Tên bài hát là bắt buộc", maxLength: 100 })}
             />
             {errors.name && <p style={errorStyle}>{errors.name.message}</p>}
           </div>
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-[#9da6b9]">Description</label>
+            <label htmlFor='desc' className="block text-sm font-medium text-[#9da6b9]">Description</label>
             <textarea
+              id='desc'
               className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a] text-sm resize-none"
               rows={3}
               {...register("description", { maxLength: 500 })}
@@ -97,14 +90,15 @@ const SongForm = forwardRef<ChildFormHandles, SongSummaryFormProps>(
             {errors.description && <p style={errorStyle}>{errors.description.message}</p>}
           </div>
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-[#9da6b9]">Duration</label>
+            <label htmlFor='time' className="block text-sm font-medium text-[#9da6b9]">Duration (second)</label>
             <input
+              id='time'
               className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a] text-sm"
               type="number"
               {...register("totalDuration", { 
                 required: "Thời lượng là bắt buộc", 
                 min: { value: 1, message: "Thời lượng phải lớn hơn 0" },
-                valueAsNumber: true, // RHF sẽ tự chuyển sang number nếu type là number
+                valueAsNumber: true, 
               })}
               min="1"
               max="300"
@@ -112,7 +106,7 @@ const SongForm = forwardRef<ChildFormHandles, SongSummaryFormProps>(
             {errors.totalDuration && <p style={errorStyle}>{errors.totalDuration.message}</p>}
           </div>
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-[#9da6b9]">Tags</label>
+            <label htmlFor='tag-input' className="block text-sm font-medium text-[#9da6b9]">Tags</label>
             <TagsInput
               name="tags"
               control={control}

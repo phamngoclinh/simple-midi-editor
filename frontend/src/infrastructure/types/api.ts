@@ -4,7 +4,6 @@ export interface ApiResponse<T> {
   data: T;
 }
 
-// Giả định các types cơ bản từ Entities Backend
 export interface Track {
   id: string;
   label: string;
@@ -34,7 +33,6 @@ export interface Note {
   icon?: string;
 }
 
-// DTOs cho việc tạo/cập nhật
 export interface CreateSongDTO {
   name: string;
   description?: string;
@@ -56,4 +54,5 @@ export interface UpdateSongDTO extends Partial<Omit<CreateSongDTO, 'tracks'>> {
 }
 
 export interface UpdateNoteDTO extends Partial<Note> { }
+
 export interface CreateNoteDTO extends Omit<Note, 'id'> { }

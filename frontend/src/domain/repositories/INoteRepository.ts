@@ -1,10 +1,5 @@
-// src/domain/repositories/INoteRepository.ts
-
 import { Note } from '../entities/Note'; // Giả sử đã định nghĩa
 
-/**
- * Interface Repository cho thực thể Note.
- */
 export interface INoteRepository {
   create(songId: string, trackId: string, note: Omit<Note, 'id' | 'track'>): Promise<Note>;
 
@@ -12,5 +7,5 @@ export interface INoteRepository {
 
   findBySongId(songId: string): Promise<Note[]>;
 
-  deleteById(id: string, songId: string): Promise<void>;
+  deleteById(id: string): Promise<void>;
 }

@@ -1,4 +1,3 @@
-// src/components/editor/NoteRenderer.tsx
 import React from 'react';
 import { Note } from '../../domain/entities/Note';
 import { iconSymbolStyle } from './NoteRenderer.styles';

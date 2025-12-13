@@ -1,5 +1,3 @@
-// src/application/song/CreateNewSong.ts
-
 import { ISongRepository } from '../../domain/repositories/ISongRepository';
 import { Song } from '../../domain/entities/Song';
 import { Track } from '../../domain/entities/Track';
@@ -20,29 +18,17 @@ export interface CreateSongData {
   name: string;
   description: string;
   totalDuration: number;
-  tracks: Track[]; // Mảng labels
+  tracks: Track[];
   tags: string[];
 }
 
-/**
- * Lớp Use Case: Tạo một bài hát mới với các giá trị mặc định.
- */
 export class CreateNewSong {
   private songRepository: ISongRepository;
 
-  /**
-   * Dependency Injection: Nhận ISongRepository.
-   * Lớp này không biết Repository được triển khai bằng LocalStorage hay Database.
-   */
   constructor(songRepository: ISongRepository) {
     this.songRepository = songRepository;
   }
 
-  /**
-   * Thực thi Use Case.
-   * @param name Tên ban đầu của bài hát.
-   * @returns Promise trả về thực thể Song đã được tạo và lưu.
-   */
   async execute(data: CreateSongData): Promise<Song> {
     return this.songRepository.create({
       name: data.name,

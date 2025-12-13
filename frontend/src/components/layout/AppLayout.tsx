@@ -1,12 +1,9 @@
-// src/components/layout/AppLayout.tsx
 import React from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import { footerStyle } from './AppLayout.styles';
 import useSongManager from '../../hooks/useSongManager';
 
-interface AppLayoutProps {
-  // Có thể truyền các actions chung vào đây nếu cần
-}
+interface AppLayoutProps {}
 
 const AppLayout: React.FC<AppLayoutProps> = () => {
   const { importSong } = useSongManager();
@@ -30,12 +27,10 @@ const AppLayout: React.FC<AppLayoutProps> = () => {
         </div>
       </header>
 
-      {/* --- Nội dung chính của Page (được render bởi Router) --- */}
       <div className="flex flex-1 overflow-hidden">
         <Outlet /> 
       </div>
       
-      {/* Footer (Tùy chọn) */}
       <footer style={footerStyle}>
         <p>&copy; 2025 Simple Midi Editor</p>
       </footer>

@@ -1,5 +1,3 @@
-// src/infrastructure/storage/LocalStorageNoteRepository.ts
-
 import { INoteRepository } from '../../domain/repositories/INoteRepository';
 import { Note } from '../../domain/entities/Note';
 import { createNote, deleteNote, findNotesBySong, updateNote } from '../services/api';

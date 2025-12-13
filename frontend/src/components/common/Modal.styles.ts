@@ -13,7 +13,6 @@ export const backdropStyle: React.CSSProperties = {
 };
 
 export const modalContentStyle: React.CSSProperties = {
-  // backgroundColor: '#fff',
   padding: '20px',
   borderRadius: '8px',
   maxWidth: '500px',

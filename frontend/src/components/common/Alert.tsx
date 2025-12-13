@@ -1,4 +1,3 @@
-// src/components/common/Alert.tsx
 import React from 'react';
 
 type AlertType = 'success' | 'error' | 'warning' | 'info';
@@ -34,18 +33,15 @@ const Alert: React.FC<AlertProps> = ({ isVisible, type, message, onClose, title 
     <div style={modalOverlayStyle}>
       <div style={modalContentStyle}>
         
-        {/* Header Thông báo */}
         <div style={{ ...modalHeaderStyle, ...headerStyle }}>
           <h3 style={titleStyle}>{title || type.toUpperCase()}</h3>
           <button onClick={onClose} style={closeButtonStyle}>&times;</button>
         </div>
         
-        {/* Nội dung Thông báo */}
         <div style={modalBodyStyle}>
           <p>{message}</p>
         </div>
         
-        {/* Footer (Nút đóng) */}
         <div style={modalFooterStyle}>
           <button onClick={onClose} style={actionButtonStyle}>
             Đã hiểu

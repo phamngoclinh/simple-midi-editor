@@ -1,7 +1,6 @@
-import React, { createContext } from 'react';
+import React, { createContext, useCallback } from 'react';
 import { Song } from '../domain/entities/Song';
 import { Note } from '../domain/entities/Note';
-import { SongSortBy, SortOrder } from '../application/song/ListAllSong';
 import useSongsList from '../hooks/useSongsList';
 import useSongEditor from '../hooks/useSongEditor';
 import useNotesManager from '../hooks/useNotesManager';
@@ -25,20 +24,15 @@ interface NoteFormData {
   icon?: string;
 }
 
-interface SortState {
-  by: SongSortBy;
-  order: SortOrder;
-}
-
 interface SongManagerContextValue {
+  song: Song | null;
   songs: Song[];
   loading: boolean;
-  sortState: SortState;
   selectedSongForNoteEdit: Song | null;
   editingNote: Note | null;
   initialNote: NoteFormData | null;
+  loadSong: (songId: string) => Promise<Song | null>;
   loadSongs: () => Promise<void>;
-  setSortState: (s: SortState) => void;
   openCreateModal: () => void;
   closeAllModals: () => void;
   createSong: (data: SongFormData) => Promise<Song | void>;
@@ -48,8 +42,9 @@ interface SongManagerContextValue {
   openSong: (songId: string) => void;
   startNoteManagement: (song: Song | null) => void;
   startEditNote: (note: Note | null) => void;
+  stopEditNote: () => void;
   saveNote: (data: NoteFormData) => Promise<void>;
-  deleteNote: (noteId: string) => Promise<void>;
+  deleteNote: (noteId: string) => Promise<boolean>;
   importSong: () => void;
   exportSong: (song: Song) => void;
   isCreateModalOpen: boolean;
@@ -61,8 +56,8 @@ export const SongManagerContext = createContext<SongManagerContextValue>(default
 
 export const SongManagerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const songsHook = useSongsList();
-  const editorHook = useSongEditor(songsHook.loadSongs);
-  const notesHook = useNotesManager(songsHook.loadSongs);
+  const editorHook = useSongEditor(songsHook.triggerSong);
+  const notesHook = useNotesManager();
 
   const closeAllModals = () => {
     editorHook.resetEditor();
@@ -73,26 +68,33 @@ export const SongManagerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     window.location.href = `/editor/${songId}`;
   };
 
+  const editSongProxy = useCallback(async (songId: string, songData: SongFormData) => {
+    const song = await editorHook.editSong(songId, songData)
+    songsHook.setSong(song);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <SongManagerContext.Provider
       value={{
+        song: songsHook.song,
         songs: songsHook.songs,
         loading: songsHook.loading,
-        sortState: songsHook.sortState,
         selectedSongForNoteEdit: notesHook.selectedSongForNoteEdit,
         editingNote: notesHook.editingNote,
         initialNote: notesHook.initialNote,
+        loadSong: songsHook.loadSong,
         loadSongs: songsHook.loadSongs,
-        setSortState: songsHook.setSortState,
         openCreateModal: editorHook.openCreateModal,
         closeAllModals,
         createSong: editorHook.createSong,
         startEditSong: editorHook.startEditSong,
-        editSong: editorHook.editSong,
+        editSong: editSongProxy,
         deleteSong: editorHook.deleteSong,
         openSong,
         startNoteManagement: notesHook.startNoteManagement,
         startEditNote: notesHook.startEditNote,
+        stopEditNote: notesHook.stopEditNote,
         saveNote: notesHook.saveNote,
         deleteNote: notesHook.deleteNote,
         importSong: songsHook.importSong,

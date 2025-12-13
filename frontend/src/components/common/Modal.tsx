@@ -1,20 +1,15 @@
-// src/components/common/Modal.tsx
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { backdropStyle, bodyStyle, closeButtonStyle, headerStyle, modalContentStyle } from './Modal.styles';
+import { backdropStyle } from './Modal.styles';
 
 interface ModalProps {
-  /** Trạng thái hiển thị Modal (true/false). */
   isOpen: boolean;
-  /** Hàm được gọi khi người dùng muốn đóng Modal (ví dụ: click overlay hoặc nút đóng). */
   onClose: () => void;
   onOk?: () => void;
-  /** Tiêu đề của Modal. */
   title: string;
   subTitle?: string;
   textOk?: string;
   textClose?: string;
-  /** Nội dung Modal (thường là SongForm). */
   children: React.ReactNode;
   actionsRight?: React.ReactElement[]
 }
@@ -22,7 +17,6 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onOk, title, subTitle, textOk, textClose, actionsRight, children }) => {
   if (!isOpen) return null;
 
-  // Render Modal ra ngoài root DOM element bằng Portal
   return ReactDOM.createPortal(
     <div style={backdropStyle}>
       <div className="absolute inset-0 bg-background-dark/80 backdrop-blur-sm z-0"></div>
@@ -51,26 +45,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onOk, title, subTitle, t
             className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-600 shadow-lg shadow-blue-900/20 transition-all">
             <span className="truncate">{textOk}</span>
           </button>}
-          {actionsRight && actionsRight.map(actions => actions)}
+          {actionsRight && actionsRight.map((action, index) => <React.Fragment key={index}>{action}</React.Fragment>)}
         </div>
       </div>
     </div>,
-
-
-    // <div style={backdropStyle} onClick={onClose}>
-    //   <div style={modalContentStyle} onClick={(e) => e.stopPropagation()} className='bg-white dark:bg-[#111318]'>
-    //     <div style={headerStyle}>
-    //       <h3>{title}</h3>
-    //       <button onClick={onClose} style={closeButtonStyle}>
-    //         &times;
-    //       </button>
-    //     </div>
-    //     <div style={bodyStyle}>
-    //       {children}
-    //     </div>
-    //   </div>
-    // </div>,
-    document.body // Thường là document.body để đảm bảo Modal nằm trên tất cả
+    document.body
   );
 };
 

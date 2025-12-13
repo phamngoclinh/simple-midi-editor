@@ -1,25 +1,20 @@
 import { useCallback, useEffect, useState } from 'react';
-import { SongSortBy, SortOrder } from '../application/song/ListAllSong';
 import { useModal } from '../contexts/ModalContext';
-import { exportSongToJsonUseCase, importSongFromJsonUseCase, listAllSongsUseCase } from '../dependencies';
+import { exportSongToJsonUseCase, importSongFromJsonUseCase, listAllSongsUseCase, loadSongByIdUseCase } from '../dependencies';
 import { Song } from '../domain/entities/Song';
+import { SongTriggerAction } from '../utils/types';
 
-interface SortState {
-  by: SongSortBy;
-  order: SortOrder;
-}
-
-export default function useSongsList(initialSort: SortState = { by: 'updated', order: 'desc' }) {
+export default function useSongsList() {
+  const [song, setSong] = useState<Song | null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [sortState, setSortState] = useState<SortState>(initialSort);
 
   const { showToast } = useModal();
 
   const loadSongs = useCallback(async () => {
     setLoading(true);
     try {
-      const all = await listAllSongsUseCase.execute(sortState.by, sortState.order);
+      const all = await listAllSongsUseCase.execute('created', 'asc');
       setSongs(all);
     } catch (err) {
       console.error('Lỗi khi tải Songs:', err);
@@ -30,7 +25,58 @@ export default function useSongsList(initialSort: SortState = { by: 'updated', o
     } finally {
       setLoading(false);
     }
-  }, [sortState, showToast]);
+  }, [showToast]);
+
+  const loadSong = useCallback(async (songId: string) => {
+    let song = null;
+    setLoading(true);
+    try {
+      song = await loadSongByIdUseCase.execute(songId);
+      setSong(song);
+      return song;
+    } catch (err) {
+      console.error('Lỗi khi tải Songs:', err);
+    } finally {
+      setLoading(false);
+    }
+    return song;
+  }, []);
+
+  const triggerSong = useCallback(async (songData: Song, action: SongTriggerAction) => {
+    console.log(`Trigger Song có ID: ${songData.id}. Action ${action}`);
+    switch (action) {
+      case 'delete':
+        setSong(null)
+        setSongs(prev => prev.filter(s => s.id !== songData.id))
+        break;
+      case 'update':
+        setSong(songData);
+        setSongs(prev => {
+          return prev.map(song => {
+            if (song.id === songData.id) {
+              return songData;
+            }
+            return song;
+          });
+        });
+        break;
+      case 'create':
+        setSong(songData);
+        setSongs(prev => [...prev, songData]);
+        break;
+      case 'fetch':
+        await loadSong(songData.id as string);
+        break;
+      case 'set':
+        setSong(songData);
+        break;
+      case 'unset':
+        setSong(null);
+        break;
+      default:
+        break;
+    }
+  }, [loadSong])
 
   useEffect(() => {
     loadSongs();
@@ -92,13 +138,15 @@ export default function useSongsList(initialSort: SortState = { by: 'updated', o
   };
 
   return {
+    song,
     songs,
     loading,
-    sortState,
-    setSortState,
+    loadSong,
     loadSongs,
     importSong,
     exportSong,
-    setSongs, // exported in case callers want local updates (like delete optimistically)
+    setSongs,
+    setSong,
+    triggerSong,
   };
 }

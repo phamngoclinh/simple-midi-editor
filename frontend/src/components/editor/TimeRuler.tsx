@@ -1,9 +1,7 @@
-// src/components/editor/TimeRuler.tsx
 import React, { useMemo } from 'react';
 import {
   TIME_UNIT_HEIGHT_PX,
   SECONDS_PER_UNIT,
-  HEADER_BOTTOM_GAP,
   RULER_WIDTH_PX
 } from './constants';
 
@@ -14,14 +12,11 @@ interface TimeRulerProps {
 
 const TimeRuler: React.FC<TimeRulerProps> = ({ totalDuration, totalHeight }) => {
 
-  // Tạo các nhãn thời gian (chỉ hiển thị vạch 10 giây)
   const timeLabels = useMemo(() => {
     const labels = [];
-    // Chỉ đánh dấu các vạch 10 giây (Major Interval)
     const majorInterval = 5;
     const intervalHeight = (majorInterval / SECONDS_PER_UNIT) * TIME_UNIT_HEIGHT_PX;
 
-    // Tính số lần lặp 10 giây
     const totalIterations = Math.ceil(totalDuration / majorInterval);
 
     for (let i = 0; i <= totalIterations; i++) {
@@ -37,7 +32,6 @@ const TimeRuler: React.FC<TimeRulerProps> = ({ totalDuration, totalHeight }) => 
         <div
           key={`ruler-${i}`}
           style={{
-            // ...labelStyle,
             top: yPos,
           }}
           className={`h-[${TIME_UNIT_HEIGHT_PX}px] border-b border-[${color}]/50 px-4 pt-2`}

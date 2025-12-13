@@ -1,4 +1,3 @@
-// src/utils/icons.ts
 export const MUSIC_ICONS: { key: string, symbol: string, description: string }[] = [
   { key: 'deselect', symbol: '—', description: 'Không có Icon' },
   { key: 'album', symbol: '🥁', description: 'Kick Drum' },
