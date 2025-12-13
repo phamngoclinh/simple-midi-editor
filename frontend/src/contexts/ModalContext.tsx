@@ -167,4 +167,5 @@ const toastContainerStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column-reverse',
   alignItems: 'flex-end',
+  gap: '10px',
 };

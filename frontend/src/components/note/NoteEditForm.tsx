@@ -72,20 +72,20 @@ const NoteEditForm = forwardRef<ChildFormHandles, NoteEditFormProps>(
       <form name='edit-note-form' onSubmit={handleSubmit(handleRHFSubmit)} className='@container'>
         <div className="flex flex-col gap-4">
           <div className="space-y-3">
-            <label htmlFor='title' className="block text-sm font-medium text-[#9da6b9]">Title</label>
+            <label htmlFor='title' className="block font-medium text-[#9da6b9]">Title</label>
             <input
               id='title'
-              className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a] text-sm"
+              className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a]"
               type="text"
               {...register("title", { required: "Tên note là bắt buộc", maxLength: 100 })}
             />
             {errors.title && <p style={errorStyle}>{errors.title.message}</p>}
           </div>
           <div className="space-y-3">
-            <label htmlFor='desc' className="block text-sm font-medium text-[#9da6b9]">Description</label>
+            <label htmlFor='desc' className="block font-medium text-[#9da6b9]">Description</label>
             <textarea
               id='desc'
-              className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a] text-sm resize-none"
+              className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a] resize-none"
               rows={3}
               {...register("description", { maxLength: 500 })}
             />
@@ -94,11 +94,11 @@ const NoteEditForm = forwardRef<ChildFormHandles, NoteEditFormProps>(
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <label htmlFor='track' className="block text-sm font-medium text-[#9da6b9]">Track</label>
+              <label htmlFor='track' className="block font-medium text-[#9da6b9]">Track</label>
               <select
                 id='track'
                 {...register("trackId", { required: "Vui lòng chọn Track" })}
-                className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary text-sm appearance-none cursor-pointer"
+                className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary appearance-none cursor-pointer"
               >
                 {tracks.map(track => (
                   <option key={track.id} value={track.id as string}>
@@ -109,12 +109,12 @@ const NoteEditForm = forwardRef<ChildFormHandles, NoteEditFormProps>(
               {errors.trackId && <p style={errorStyle}>{errors.trackId.message}</p>}
             </div>
             <div className="space-y-2">
-              <label htmlFor='time' className="block text-sm font-medium text-[#9da6b9]">Time (s)</label>
+              <label htmlFor='time' className="block font-medium text-[#9da6b9]">Time (s)</label>
               <div className="flex items-center bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2">
-                <span className="material-symbols-outlined text-[#58627a] text-sm mr-2">timer</span>
+                <span className="material-symbols-outlined text-[#58627a] mr-2">timer</span>
                 <input
                   id='time'
-                  className="w-full bg-transparent border-none p-0 text-white focus:ring-0 text-sm"
+                  className="w-full bg-transparent border-none p-0 text-white focus:ring-0"
                   type="number"
                   {...register("time", {
                     required: "Thời gian là bắt buộc",
@@ -129,7 +129,7 @@ const NoteEditForm = forwardRef<ChildFormHandles, NoteEditFormProps>(
           </div>
 
           <div className="space-y-3 pt-2">
-            <span className="block text-sm font-medium text-[#9da6b9]">Note Color</span>
+            <span className="block font-medium text-[#9da6b9]">Note Color</span>
             <div className="flex gap-2 flex-wrap">
               <Controller
                 name="color"
@@ -163,7 +163,7 @@ const NoteEditForm = forwardRef<ChildFormHandles, NoteEditFormProps>(
                           htmlFor='color-custom'
                           className={`w-8 h-8 border-[${DEFAULT_COLORS.includes(field.value) ? '#3b4354': field.value}] border-4 rounded-full bg-[#3b4354] flex items-center justify-center text-white hover:bg-[#4b5563]`}
                         >
-                          <span className="material-symbols-outlined text-sm">add</span>
+                          <span className="material-symbols-outlined">add</span>
                         </label>
                         <input
                           id='color-custom'
@@ -180,7 +180,7 @@ const NoteEditForm = forwardRef<ChildFormHandles, NoteEditFormProps>(
           </div>
 
           <div className="space-y-3 pt-2">
-            <span className="block text-sm font-medium text-[#9da6b9]">Icon</span>
+            <span className="block font-medium text-[#9da6b9]">Icon</span>
             <div className="grid grid-cols-5 @sm:grid-cols-10 gap-2">
               <Controller
                 name="icon"

@@ -23,7 +23,7 @@ const AsideNoteForm = ({ song, initialNote, onCancel, onSubmit, onDelete }: Asid
       subTitle="Edit note details"
       actions={[
         <button
-          className="flex-1 h-10 flex items-center justify-center rounded-lg border border-red-500/30 text-red-500 hover:bg-red-500/10 transition-colors font-medium text-sm"
+          className="flex-1 h-10 flex items-center justify-center rounded-lg border border-red-500/30 text-red-500 hover:bg-red-500/10 transition-colors font-medium"
           onClick={() => onDelete(initialNote.id as string)}
         >
           <span className="material-symbols-outlined text-lg mr-2">delete</span>
@@ -31,7 +31,7 @@ const AsideNoteForm = ({ song, initialNote, onCancel, onSubmit, onDelete }: Asid
         </button>,
         <button
           type="submit"
-          className="flex-1 h-10 flex items-center justify-center bg-primary rounded-lg bg-[#282e39] text-white hover:bg-[#3b4354] transition-colors font-medium text-sm"
+          className="flex-1 h-10 flex items-center justify-center bg-primary rounded-lg bg-[#282e39] text-white hover:bg-[#3b4354] transition-colors font-medium"
           onClick={() => propertiesFormRef.current?.submitForm()}
         >
           <span className="material-symbols-outlined text-lg mr-2">save</span>
@@ -41,7 +41,7 @@ const AsideNoteForm = ({ song, initialNote, onCancel, onSubmit, onDelete }: Asid
     >
       {song
         ? <>
-            <div className="flex items-center transition-colors font-medium text-sm text-white cursor-pointer" onClick={onCancel}>
+            <div className="flex items-center transition-colors font-medium text-white cursor-pointer" onClick={onCancel}>
               <span className="material-symbols-outlined text-lg mr-2">arrow_back</span>
               Quay lại
             </div>

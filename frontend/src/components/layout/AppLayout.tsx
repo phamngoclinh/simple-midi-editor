@@ -19,7 +19,7 @@ const AppLayout: React.FC<AppLayoutProps> = () => {
         
         <div className="flex items-center gap-4">
           <button
-            className="flex h-10 items-center justify-center rounded-lg bg-primary px-4 text-white text-sm font-bold hover:bg-blue-600 transition-colors"
+            className="flex h-10 items-center justify-center bg-[#282e39] rounded-lg px-4 text-white text-sm font-bold hover:bg-[#394457] transition-colors"
             onClick={importSong}
           >
             <span className="material-symbols-outlined text-sm mr-2">ios_share</span> Import

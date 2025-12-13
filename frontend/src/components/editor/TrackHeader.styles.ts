@@ -48,7 +48,7 @@ export const trackHeaderItemStyle: React.CSSProperties = {
   alignItems: 'center',
   padding: '5px 0',
   boxSizing: 'border-box',
-  borderRight: `1px solid ${PRIMARY_GRID_COLOR}`,
+  // borderRight: `1px solid ${PRIMARY_GRID_COLOR}`,
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',

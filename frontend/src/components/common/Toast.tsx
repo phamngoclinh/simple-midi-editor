@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect } from 'react';
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -6,6 +6,7 @@ interface ToastProps {
   id: number;
   type: ToastType;
   message: string;
+  extraMessage?: string;
   duration?: number;
   onClose: (id: number) => void;
 }
@@ -13,90 +14,50 @@ interface ToastProps {
 const getStyles = (type: ToastType) => {
   switch (type) {
     case 'success':
-      return { backgroundColor: '#4CAF50', icon: '✔️' };
+      return { backgroundColor: 'green', icon: 'check_circle' };
     case 'error':
-      return { backgroundColor: '#f44336', icon: '❌' };
+      return { backgroundColor: 'red', icon: 'close' };
     case 'warning':
-      return { backgroundColor: '#ff9800', icon: '⚠️' };
+      return { backgroundColor: 'yellow', icon: 'warning' };
     case 'info':
     default:
-      return { backgroundColor: '#2196F3', icon: 'ℹ️' };
+      return { backgroundColor: 'blue', icon: 'info' };
   }
 };
 
-const Toast: React.FC<ToastProps> = memo(({ id, type, message, duration = 3000, onClose }) => {
-  const [isFading, setIsFading] = useState(false);
+const Toast: React.FC<ToastProps> = memo(({ id, type, message, extraMessage, duration = 3000, onClose }) => {
   const styles = getStyles(type);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsFading(true);
-    }, duration);
-
     const fadeTimer = setTimeout(() => {
       onClose(id);
     }, duration + 500);
 
     return () => {
-      clearTimeout(timer);
       clearTimeout(fadeTimer);
     };
   }, [duration, id, onClose]);
 
   const handleClose = () => {
-      setIsFading(true);
-      setTimeout(() => onClose(id), 500);
+    setTimeout(() => onClose(id), 500);
   };
 
   return (
-    <div 
-      style={{
-        ...toastStyle,
-        backgroundColor: styles.backgroundColor,
-        opacity: isFading ? 0 : 1,
-        transition: 'opacity 0.5s ease-out',
-      }}
-      onClick={handleClose}
-    >
-      <span style={iconStyle}>{styles.icon}</span>
-      <p style={messageStyle}>{message}</p>
-      <button style={closeButtonStyle} onClick={handleClose}>&times;</button>
+    <div className="group relative flex flex-col overflow-hidden rounded-lg bg-surface-dark border border-[#3b4354] shadow-2xl shadow-black/50 animate-in slide-in-from-bottom-5 fade-in duration-300">
+      <div className="flex items-center gap-3 p-4">
+        <div className={`flex items-center justify-center shrink-0 size-8 rounded-full bg-${styles.backgroundColor}-500/10 text-${styles.backgroundColor}-500`}>
+          <span className="material-symbols-outlined text-[20px]">{styles.icon}</span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-white font-medium leading-normal truncate">{message}</p>
+          {extraMessage && <p className="text-gray-400 text-sm leading-normal truncate">{extraMessage}</p>}
+        </div>
+        <button onClick={handleClose} className="shrink-0 flex text-gray-400 hover:text-white transition-colors p-1 rounded hover:bg-white/10">
+          <span className="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
     </div>
-  );
+  )
 });
 
 export default Toast;
-
-const toastStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  padding: '12px 15px',
-  borderRadius: '4px',
-  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-  color: 'white',
-  marginBottom: '10px',
-  cursor: 'pointer',
-  maxWidth: '350px',
-};
-
-const iconStyle: React.CSSProperties = {
-  fontSize: '1.2em',
-  marginRight: '10px',
-};
-
-const messageStyle: React.CSSProperties = {
-  margin: 0,
-  flexGrow: 1,
-  fontSize: '0.95em',
-  fontWeight: '500',
-};
-
-const closeButtonStyle: React.CSSProperties = {
-  background: 'none',
-  border: 'none',
-  color: 'white',
-  fontSize: '1.2em',
-  cursor: 'pointer',
-  marginLeft: '15px',
-  padding: 0,
-};

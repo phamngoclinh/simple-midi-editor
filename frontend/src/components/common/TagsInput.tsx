@@ -56,7 +56,7 @@ const TagsInput: React.FC<TagsInputProps> = (props) => {
 
 
   return (
-    <div className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a] text-sm">
+    <div className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a]">
       <div className='flex items-center justify-start gap-2 flex-wrap'>
         {tags.map(tag => (
           <div key={tag} className='flex items-center justify-center gap-2 bg-primary p-1 rounded-xl'>
@@ -78,7 +78,7 @@ const TagsInput: React.FC<TagsInputProps> = (props) => {
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder={tags.length === 0 ? props.placeholder || 'Thêm tags...' : ''}
-          className='h-[30px] w-full bg-[#1c1f27] border-none px-3 py-2 text-white focus:outline-none focus:border-none placeholder-[#58627a] text-sm'
+          className='h-[30px] w-full bg-[#1c1f27] border-none px-3 py-2 text-white focus:outline-none focus:border-none placeholder-[#58627a]'
           disabled={tags.length >= maxTags}
         />
       </div>

@@ -139,7 +139,7 @@ const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <label className="flex flex-col gap-2">
-              <span className="text-white text-base font-medium leading-normal">Tổng thời lượng (phút)</span>
+              <span className="text-white text-base font-medium leading-normal">Tổng thời lượng (giây)</span>
               <div className="relative">
                 <span className="material-symbols-outlined absolute left-3 top-3 text-text-subtle !text-[20px]">schedule</span>
                 <input
@@ -186,7 +186,7 @@ const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
               <div key={field.id} className="flex items-center gap-3">
                 <span className="text-text-subtle text-sm font-mono w-6">{index + 1}</span>
                 <input
-                  className="form-input flex-1 rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-border-dark bg-surface-input focus:border-primary h-10 px-3 text-sm font-normal"
+                  className="form-input flex-1 rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-border-dark bg-surface-input focus:border-primary h-10 px-3 font-normal"
                   placeholder="Track Label"
                   {...register(`tracks.${index}.label`, { required: "Nhãn Track là bắt buộc" })}
                 />

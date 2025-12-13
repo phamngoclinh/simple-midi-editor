@@ -1,6 +1,6 @@
-export const TRACK_WIDTH_PX = 100;
-export const RULER_WIDTH_PX = 100;
-export const TIME_UNIT_HEIGHT_PX = 50;
+export const TRACK_WIDTH_PX = 120;
+export const RULER_WIDTH_PX = 70;
+export const TIME_UNIT_HEIGHT_PX = 60;
 export const NOTE_SIZE_PX = 24;
 
 export const SECONDS_PER_UNIT = 5;

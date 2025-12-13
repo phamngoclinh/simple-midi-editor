@@ -30,6 +30,7 @@ const SongManagerPage: React.FC = () => {
     editingNote,
     initialNote,
     startEditNote,
+    stopEditNote,
     saveNote,
     deleteNote,
     exportSong,
@@ -68,7 +69,7 @@ const SongManagerPage: React.FC = () => {
         color: '',
         icon: ''
       })}
-      className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-600 shadow-lg shadow-blue-900/20 transition-all"
+      className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white font-bold leading-normal tracking-[0.015em] hover:bg-blue-600 shadow-lg shadow-blue-900/20 transition-all"
     >
       + Tạo Note Mới
     </button> : <></>
@@ -77,8 +78,6 @@ const SongManagerPage: React.FC = () => {
   useEffect(() => {
     loadSongs();
   }, [])
-
-  if (loading) return <div>Đang tải danh sách bài hát...</div>;
 
   return (
     <main className='flex-1 flex overflow-hidden'>
@@ -97,6 +96,8 @@ const SongManagerPage: React.FC = () => {
               </button>
             </div>
           </div>
+
+          {loading && <span>Đang tải danh sách bài hát...</span>}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
             <>
@@ -126,11 +127,6 @@ const SongManagerPage: React.FC = () => {
         </div>
       </div>
 
-      {isCreateModalOpen && (
-        <></>
-
-      )}
-
       <Modal isOpen={isCreateModalOpen} onClose={closeAllModals} title="Tạo bài hát mới" textOk='Lưu bài hát' onOk={() => formRef.current?.submitForm()}>
         <SongForm onSubmit={handleCreate} ref={formRef} />
       </Modal>
@@ -147,10 +143,10 @@ const SongManagerPage: React.FC = () => {
 
       <Modal
         isOpen={!!selectedSongForNoteEdit}
-        onClose={closeAllModals}
+        onClose={editingNote ? stopEditNote : closeAllModals}
         title={editingNote ? (editingNote.id ? `Sửa Note: ${editingNote.title}` : 'Tạo Note') : `Quản Lý Notes cho: ${selectedSongForNoteEdit?.name || ''}`}
         textOk={editingNote ? 'Lưu note' : ''}
-        textClose='Đóng'
+        textClose={editingNote ? 'Quay lại' : 'Đóng'}
         onOk={() => formRef.current?.submitForm()}
         actionsRight={actionsRight}
       >
@@ -161,8 +157,7 @@ const SongManagerPage: React.FC = () => {
                 currentSong={selectedSongForNoteEdit}
                 initialNote={initialNote}
                 onSubmit={saveNote}
-                onCancel={() => startEditNote(null)}
-                buttonLabel="Lưu Note"
+                onCancel={() => stopEditNote()}
                 ref={formRef}
               />
             ) : (

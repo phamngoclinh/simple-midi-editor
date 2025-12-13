@@ -53,7 +53,7 @@ const TrackHeader: React.FC<TrackHeaderProps> = ({ currentSong, totalWidth, onTr
         key={trackId}
         style={trackHeaderItemStyle}
         title={`Click để chỉnh sửa: ${track.label}`}
-        className={`w-[${TRACK_WIDTH_PX}px] px-2 py-3 text-center text-white text-xs font-bold uppercase cursor-pointer border-r border-[#282e39] ${intervalClasses}`}
+        className={`w-[${TRACK_WIDTH_PX}px] px-2 py-3 text-center text-white text-sm font-bold uppercase cursor-pointer ${intervalClasses}`}
         onClick={() => handleStartEdit(track)}
       >
         {isEditing ? (

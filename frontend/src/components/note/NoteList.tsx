@@ -57,35 +57,42 @@ const NoteList: React.FC<NoteListProps> = ({
         <p style={{ fontStyle: 'italic' }}>Chưa có Notes nào trong bài hát này.</p>
       ) : (
         <>
-          <div className="grid grid-cols-[48px_1fr_1fr_1fr_2fr_1fr] md:grid-cols-[48px_1.5fr_1fr_1fr_2.5fr_2fr_1fr] gap-4 px-6 py-3 border-b border-slate-200 dark:border-border-dark bg-slate-50 dark:bg-[#151921] text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 items-center sticky top-0 z-0">
+          <div className="hidden md:grid md:grid-cols-[20px_80px_60px_70px_50px_80px_1fr_50px] gap-4 px-6 py-3 border-b border-slate-200 dark:border-border-dark bg-slate-50 dark:bg-[#151921] text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 items-center sticky top-0 z-0">
             <div className="flex justify-center">#</div>
-            <div>Start Time</div>
-            <div>Title</div>
+            <div>Time</div>
+            <div>Track</div>
             <div>Color</div>
             <div>Icon</div>
-            <div className="hidden md:block">Meta / Description</div>
+            <div>Title</div>
+            <div className="hidden md:block">Description</div>
             <div className="text-right">Action</div>
           </div>
-          <div className="flex-1 overflow-y-auto overflow-x-hidden">
-            <div className="flex flex-col min-w-[700px]">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-[200px]">
+            <div className="flex flex-col md:min-w-[700px]">
               {notes.map((note, index) => {
                 return (
-                  <div key={note.id} className="group grid grid-cols-[48px_1fr_1fr_1fr_2fr_1fr] md:grid-cols-[48px_1.5fr_1fr_1fr_2.5fr_2fr_1fr] gap-4 px-6 py-3 border-b border-slate-200 dark:border-border-dark hover:bg-slate-100 dark:hover:bg-[#1c1f27] items-center transition-colors cursor-pointer text-sm">
-                    <div className="flex justify-center text-slate-400 dark:text-slate-500 font-mono">{index + 1}</div>
-                    <div className="font-mono text-slate-600 dark:text-slate-300">{toMMSS(note.time)}</div>
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="w-8 h-6 flex items-center justify-center font-bold text-slate-700 dark:text-slate-300 font-mono">{note.title}</span>
-                    </div>
+                  <div key={note.id} className="group grid grid-cols-[150px_1fr] md:grid-cols-[20px_80px_60px_70px_50px_80px_1fr_50px] gap-4 px-6 py-3 border-b border-slate-200 dark:border-border-dark hover:bg-slate-100 dark:hover:bg-[#1c1f27] items-center transition-colors cursor-pointer">
+                    <div className="flex md:hidden">#</div>
+                    <div className="text-slate-400 dark:text-slate-500 font-mono">{index + 1}</div>
+                    <div className="flex md:hidden">Time</div>
+                    <div className="text-slate-400 dark:text-slate-500 font-mono">{toMMSS(note.time)}</div>
+                    <div className="flex md:hidden">Track</div>
+                    <div className="text-slate-400 dark:text-slate-500 font-mono">{note.track}</div>
+                    <div className="flex md:hidden">Color</div>
                     <div className="flex items-center gap-3">
                       <div className={`size-2 rounded-full bg-[${note.color}]`}></div>
-                      <span className="truncate font-medium text-slate-700 dark:text-slate-200">{note.color}</span>
+                      <span className="truncate text-slate-400 dark:text-slate-500 font-mono">{note.color}</span>
                     </div>
+                    <div className="flex md:hidden">Icon</div>
                     <div className="flex items-center gap-3">
-                        {note.icon && <span className="material-symbols-outlined">{note.icon}</span>}
+                      {note.icon && <span className="material-symbols-outlined">{note.icon === 'none' ? 'deselect' : note.icon}</span>}
                     </div>
-                    <div className="hidden md:block truncate text-slate-500 dark:text-slate-400">{note.description || '-'}</div>
-                    <div className="flex justify-end opacity-50 group-hover:opacity-100 transition-opacity">
+                    <div className="flex md:hidden">Title</div>
+                    <div className="truncate text-slate-400 dark:text-slate-500 font-mono" title={note.title}>{note.title}</div>
+                    <div className="flex md:hidden">Description</div>
+                    <div className="truncate text-slate-400 dark:text-slate-500 font-mono" title={note.description}>{note.description || '-'}</div>
+                    <div className="flex md:hidden">Action</div>
+                    <div className="text-slate-400 dark:text-slate-500 font-mono">
                       <DropdownMenu
                         items={[
                           {

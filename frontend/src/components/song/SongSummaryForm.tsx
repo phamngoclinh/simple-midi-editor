@@ -69,10 +69,10 @@ const SongForm = forwardRef<ChildFormHandles, SongSummaryFormProps>(
           </div>
 
           <div className="space-y-3">
-            <label htmlFor='name' className="block text-sm font-medium text-[#9da6b9]">Name</label>
+            <label htmlFor='name' className="block font-medium text-[#9da6b9]">Name</label>
             <input
               id='name'
-              className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a] text-sm"
+              className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a]"
               type="text"
               autoComplete='false'
               {...register("name", { required: "Tên bài hát là bắt buộc", maxLength: 100 })}
@@ -80,20 +80,20 @@ const SongForm = forwardRef<ChildFormHandles, SongSummaryFormProps>(
             {errors.name && <p style={errorStyle}>{errors.name.message}</p>}
           </div>
           <div className="space-y-3">
-            <label htmlFor='desc' className="block text-sm font-medium text-[#9da6b9]">Description</label>
+            <label htmlFor='desc' className="block font-medium text-[#9da6b9]">Description</label>
             <textarea
               id='desc'
-              className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a] text-sm resize-none"
+              className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a] resize-none"
               rows={3}
               {...register("description", { maxLength: 500 })}
             />
             {errors.description && <p style={errorStyle}>{errors.description.message}</p>}
           </div>
           <div className="space-y-3">
-            <label htmlFor='time' className="block text-sm font-medium text-[#9da6b9]">Duration (second)</label>
+            <label htmlFor='time' className="block font-medium text-[#9da6b9]">Duration (second)</label>
             <input
               id='time'
-              className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a] text-sm"
+              className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a]"
               type="number"
               {...register("totalDuration", { 
                 required: "Thời lượng là bắt buộc", 
@@ -106,7 +106,7 @@ const SongForm = forwardRef<ChildFormHandles, SongSummaryFormProps>(
             {errors.totalDuration && <p style={errorStyle}>{errors.totalDuration.message}</p>}
           </div>
           <div className="space-y-3">
-            <label htmlFor='tag-input' className="block text-sm font-medium text-[#9da6b9]">Tags</label>
+            <label htmlFor='tag-input' className="block font-medium text-[#9da6b9]">Tags</label>
             <TagsInput
               name="tags"
               control={control}
