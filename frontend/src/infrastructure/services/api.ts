@@ -20,7 +20,7 @@ const fetchData = async (path: string = '', method: string = 'GET', data?: any) 
         'Content-Type': 'application/json',
       }
     }
-    if (data) request['data'] = JSON.stringify(data);
+    if (data) request['body'] = JSON.stringify(data);
     return await fetch(`${BASE_API_URL}${path}`, request);
   } catch (e: any) {
     throw new Error('Server gặp sự cố hoặc lỗi đường truyền mạng.');

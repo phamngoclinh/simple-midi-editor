@@ -37,7 +37,7 @@ const Confirmation: React.FC<ConfirmationProps> = ({
           <button onClick={onCancel} style={cancelActionButtonStyle}>
             Hủy
           </button>
-          <button onClick={onConfirm} style={confirmActionButtonStyle}>
+          <button onClick={onConfirm} style={confirmActionButtonStyle} className='focus:border-2 focus:border' autoFocus>
             {confirmButtonLabel}
           </button>
         </div>
