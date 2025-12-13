@@ -1,6 +1,7 @@
 import React from 'react';
 import { Song } from '../../domain/entities/Song';
 import DropdownMenu, { DropdownItem } from '../common/DropdownMenu';
+import VisualizationBar from '../note/VisualizationBar';
 
 interface SongListItemProps {
   song: Song;
@@ -64,6 +65,7 @@ const SongListItem: React.FC<SongListItemProps> = ({
   return (
     <>
       <div className="relative aspect-video bg-[#101622] p-4 flex items-center justify-center group-hover:bg-[#151b26] transition-colors" onClick={handleEdit}>
+        <VisualizationBar notes={song.tracks.flatMap(track => track.notes)} />
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-[1px]">
           <button className="size-12 rounded-full bg-white dark:bg-white text-primary flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
             <span className="material-symbols-outlined text-[28px] ml-1">edit</span>
