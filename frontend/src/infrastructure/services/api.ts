@@ -12,48 +12,43 @@ export async function handleResponse<T>(response: Response): Promise<T> {
   return data.data as T;
 }
 
+const fetchData = async (path: string = '', method: string = 'GET', data?: any) => {
+  try {
+    const request: any = {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    }
+    if (data) request['data'] = JSON.stringify(data);
+    return await fetch(`${BASE_API_URL}${path}`, request);
+  } catch (e: any) {
+    throw new Error('Server gặp sự cố hoặc lỗi đường truyền mạng.');
+  }
+}
+
 export const fetchAllSongs = async (): Promise<Song[]> => {
-  const response = await fetch(BASE_API_URL);
+  const response = await fetchData();
   return handleResponse<Song[]>(response);
 };
 
 export const fetchSongDetails = async (songId: string): Promise<Song> => {
-  const response = await fetch(`${BASE_API_URL}/${songId}`);
+  const response = await fetchData(`/${songId}`);
   return handleResponse<Song>(response);
 };
 
 export const createSong = async (songData: CreateSongDTO): Promise<Song> => {
-  const response = await fetch(BASE_API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(songData),
-  });
+  const response = await fetchData('', 'POST', songData);
   return handleResponse<Song>(response);
 };
 
 export const updateSong = async (songData: UpdateSongDTO): Promise<Song> => {
-  const response = await fetch(`${BASE_API_URL}/${songData.id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(songData),
-  });
+  const response = await fetchData(`/${songData.id}`, 'PUT', songData);
   return handleResponse<Song>(response);
 };
 
 export const deleteSong = async (songId: string): Promise<void> => {
-  const response = await fetch(`${BASE_API_URL}/${songId}`, {
-    method: 'DELETE',
-  });
-
-  if (!response.ok) {
-
-    const errorBody = await response.json();
-    throw new Error(errorBody.message || `Lỗi xóa Song: ${response.status}`);
-  }
+  await fetchData(`/${songId}`, 'DELETE');
   return;
 };
 
@@ -62,11 +57,7 @@ export const updateTrackLabel = async (
   trackId: string,
   newLabel: string
 ): Promise<Track> => {
-  const response = await fetch(`${BASE_API_URL}/${songId}/tracks/${trackId}/label`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ label: newLabel }),
-  });
+  const response = await fetchData(`/${songId}/tracks/${trackId}/label`, 'PUT', { label: newLabel });
   return handleResponse<Track>(response);
 };
 
@@ -75,11 +66,7 @@ export const createNote = async (
   trackId: string,
   noteData: CreateNoteDTO
 ): Promise<Note> => {
-  const response = await fetch(`${BASE_API_URL}/${songId}/tracks/${trackId}/notes`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(noteData),
-  });
+  const response = await fetchData(`/${songId}/tracks/${trackId}/notes`, 'POST', noteData);
   return handleResponse<Note>(response);
 };
 
@@ -87,26 +74,16 @@ export const updateNote = async (
   noteId: string,
   noteData: UpdateNoteDTO
 ): Promise<Note> => {
-  const response = await fetch(`${BASE_API_URL}/notes/${noteId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(noteData),
-  });
+  const response = await fetchData(`/notes/${noteId}`, 'PUT', noteData);
   return handleResponse<Note>(response);
 };
 
 export const deleteNote = async (noteId: string): Promise<void> => {
-  const response = await fetch(`${BASE_API_URL}/notes/${noteId}`, {
-    method: 'DELETE',
-  });
-  if (!response.ok) {
-    const errorBody = await response.json();
-    throw new Error(errorBody.message || `Lỗi xóa Note: ${response.status}`);
-  }
+  await fetchData(`/notes/${noteId}`, 'DELETE');
   return;
 };
 
 export const findNotesBySong = async (songId: string): Promise<Note[]> => {
-  const response = await fetch(`${BASE_API_URL}/${songId}/notes`);
+  const response = await fetchData(`/${songId}/notes`);
   return handleResponse<Note[]>(response);
 };

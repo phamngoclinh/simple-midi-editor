@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useCallback, useState } from 'react';
 import { useModal } from '../contexts/ModalContext';
 import { exportSongToJsonUseCase, importSongFromJsonUseCase, listAllSongsUseCase, loadSongByIdUseCase } from '../dependencies';
 import { Song } from '../domain/entities/Song';
@@ -36,6 +37,10 @@ export default function useSongsList() {
       return song;
     } catch (err) {
       console.error('Lỗi khi tải Songs:', err);
+      showToast({
+        type: 'error',
+        message: 'Không thể tải bài hát'
+      })
     } finally {
       setLoading(false);
     }
@@ -77,10 +82,6 @@ export default function useSongsList() {
         break;
     }
   }, [loadSong])
-
-  useEffect(() => {
-    loadSongs();
-  }, [loadSongs]);
 
   const importSong = () => {
     const input = document.createElement('input');

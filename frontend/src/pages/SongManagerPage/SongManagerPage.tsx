@@ -1,4 +1,5 @@
-import React, { useRef } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../../components/common/Modal';
 import SongForm from '../../components/song/SongForm';
@@ -14,6 +15,7 @@ const SongManagerPage: React.FC = () => {
   const {
     songs,
     loading,
+    loadSongs,
     isCreateModalOpen,
     openCreateModal,
     closeAllModals,
@@ -71,6 +73,10 @@ const SongManagerPage: React.FC = () => {
       + Tạo Note Mới
     </button> : <></>
   ]
+
+  useEffect(() => {
+    loadSongs();
+  }, [])
 
   if (loading) return <div>Đang tải danh sách bài hát...</div>;
 
