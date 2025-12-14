@@ -26,6 +26,8 @@ Ví dụ đường dẫn cục bộ:
 `/Users/linhpham/WorkingPlace/Coding/simple-midi-editor/frontend`  
 `/Users/linhpham/WorkingPlace/Coding/simple-midi-editor/backend`
 
+Live demo: https://mini-editor.linhpham.site/ — Bạn có thể xem bản live demo tại liên kết trên.
+
 ## Yêu cầu
 
 - Node.js v16+ (dùng nvm để quản lý)
