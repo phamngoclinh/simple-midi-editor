@@ -17,9 +17,9 @@ interface SongFormData {
   tags: string[];
 }
 
-export default function useSongEditor(onAfterChange?: (song: Song, action: SongTriggerAction) => Promise<void>) {
+export default function useSongEditor(song: Song | null, onAfterChange?: (song: Song, action: SongTriggerAction) => Promise<void>) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [editingSong, setEditingSong] = useState<Song | null>(null);
+  const [editingSong, setEditingSong] = useState<Song | null>(song);
 
   const openCreateModal = () => setIsCreateModalOpen(true);
   const startEditSong = (song: Song | null) => setEditingSong(song);
@@ -67,6 +67,10 @@ export default function useSongEditor(onAfterChange?: (song: Song, action: SongT
     if (confirmed) {
       await deleteSongUseCase.execute(songId);
       if (onAfterChange) await onAfterChange({ id: songId } as Song, 'delete');
+      showToast({
+        type: 'success',
+        message: <span>Xoá bài hát <b>{songName}</b> thành công</span>
+      });
     }
   };
 

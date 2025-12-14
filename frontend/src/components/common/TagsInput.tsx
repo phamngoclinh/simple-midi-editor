@@ -77,8 +77,8 @@ const TagsInput: React.FC<TagsInputProps> = (props) => {
           value={inputValue}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
-          placeholder={tags.length === 0 ? props.placeholder || 'Thêm tags...' : ''}
-          className='h-[30px] w-full bg-[#1c1f27] border-none px-3 py-2 text-white focus:outline-none focus:border-none placeholder-[#58627a]'
+          placeholder={tags.length === 0 ? props.placeholder : tags.length !== maxTags ? 'Thêm tags...' : ''}
+          className='w-[100px] h-[30px] w-full bg-[#1c1f27] border-none px-2 py-2 text-white focus:outline-none focus:border-none focus:ring-0 placeholder-[#58627a]'
           disabled={tags.length >= maxTags}
         />
       </div>

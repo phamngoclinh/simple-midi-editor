@@ -2,9 +2,9 @@ import { Song } from '../../domain/entities/Song';
 import { Track } from '../../domain/entities/Track';
 import { ISongRepository } from '../../domain/repositories/ISongRepository';
 import { createSong, deleteSong, fetchAllSongs, fetchSongDetails, updateSong, updateTrackLabel } from '../services/api';
-import { SongMapper, TrackMapper } from './mapper';
+import { SongMapper, TrackMapper } from '../mapper/mapper';
 
-export class LocalStorageSongRepository implements ISongRepository {
+export class BackendSongRepository implements ISongRepository {
   async create(song: Song): Promise<Song> {
     const response = await createSong({
       name: song.name,

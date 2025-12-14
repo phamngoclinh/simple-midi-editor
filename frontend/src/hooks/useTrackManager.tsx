@@ -17,11 +17,16 @@ const useTrackManager = () => {
         newLabel: newLabel
       });
       onUpdate?.();
-    } catch (error) {
-      console.error("Lỗi khi cập nhật Track Label:", error);
+      showToast({
+        type: 'success',
+        message: "Cập nhật nhãn Track thành công."
+      });
+    } catch (err: any) {
+      console.error("Lỗi khi cập nhật Track Label:", err);
       showToast({
         type: 'error',
-        message: "Cập nhật nhãn Track thất bại."
+        message: "Cập nhật nhãn Track thất bại.",
+        extraMessage: err?.message
       });
     }
 

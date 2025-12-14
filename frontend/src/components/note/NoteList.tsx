@@ -1,59 +1,36 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback, useEffect, useState } from 'react';
-import { listNotesInSongUseCase } from '../../dependencies';
+import React, { useCallback, useState } from 'react';
 import { Note } from '../../domain/entities/Note';
-import { Song } from '../../domain/entities/Song';
 import { toMMSS } from '../../utils/helper';
 import DropdownMenu from '../common/DropdownMenu';
 
 // Định nghĩa Props
 interface NoteListProps {
-  songId: string;
-  currentSong: Song;
-  onEditNote: (note: Note) => void;
+  notes: Note[];
+  onEditNote: (note: Note) => Promise<void>;
   onDeleteNote: (noteId: string) => Promise<boolean>;
 }
 
 const NoteList: React.FC<NoteListProps> = ({
-  songId,
+  notes,
   onEditNote,
   onDeleteNote
 }) => {
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const loadNotes = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const fetchedNotes = await listNotesInSongUseCase.execute(songId);
-      setNotes(fetchedNotes);
-    } catch (err) {
-      console.error("Lỗi khi tải Notes:", err);
-      setError("Không thể tải danh sách Notes.");
-    } finally {
-      setLoading(false);
-    }
-  }, [songId]);
-
+  const [noteList, setNoteList] = useState<Note[]>(notes);
   const handleDelete = useCallback(async (noteId: string) => {
     const result = await onDeleteNote(noteId);
     if (result) {
-      setNotes(prev => prev.filter(n => n.id !== noteId));
+      setNoteList(prev => prev.filter(n => n.id !== noteId));
     }
   }, [])
 
-  useEffect(() => {
-    loadNotes();
-  }, []);
-
-  if (loading) return <div>Đang tải Notes...</div>;
-  if (error) return <div style={{ color: 'red' }}>Lỗi: {error}</div>;
+  const handleEdit = useCallback(async (note: Note) => {
+    await onEditNote(note);
+  }, [])
 
   return (
     <div>
-      {notes.length === 0 ? (
+      {noteList.length === 0 ? (
         <p style={{ fontStyle: 'italic' }}>Chưa có Notes nào trong bài hát này.</p>
       ) : (
         <>
@@ -97,7 +74,7 @@ const NoteList: React.FC<NoteListProps> = ({
                         items={[
                           {
                             label: "Sửa",
-                            onClick: () => onEditNote(note),
+                            onClick: () => handleEdit(note),
                             icon: <span className="material-symbols-outlined text-[20px]">edit</span>,
                           },
                           {

@@ -4,6 +4,7 @@ import { useModal } from '../contexts/ModalContext';
 import { exportSongToJsonUseCase, importSongFromJsonUseCase, listAllSongsUseCase, loadSongByIdUseCase } from '../dependencies';
 import { Song } from '../domain/entities/Song';
 import { SongTriggerAction } from '../utils/types';
+import { Note } from '../domain/entities/Note';
 
 export default function useSongsList() {
   const [song, setSong] = useState<Song | null>(null);
@@ -17,11 +18,12 @@ export default function useSongsList() {
     try {
       const all = await listAllSongsUseCase.execute('created', 'asc');
       setSongs(all);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Lỗi khi tải Songs:', err);
       showToast({
         type: 'error',
         message: 'Không thể tải danh sách bài hát.',
+        extraMessage: err?.message
       });
     } finally {
       setLoading(false);
@@ -35,11 +37,12 @@ export default function useSongsList() {
       song = await loadSongByIdUseCase.execute(songId);
       setSong(song);
       return song;
-    } catch (err) {
+    } catch (err: any) {
       console.error('Lỗi khi tải Songs:', err);
       showToast({
         type: 'error',
-        message: 'Không thể tải bài hát'
+        message: 'Không thể tải bài hát',
+        extraMessage: err?.message
       })
     } finally {
       setLoading(false);
@@ -83,6 +86,96 @@ export default function useSongsList() {
     }
   }, [loadSong])
 
+  const onNoteChange = useCallback(async (note: Note, action: 'create' | 'update' | 'delete') => {
+    console.log(`On Note change có ID: ${note.id}. Action ${action}`);
+    switch (action) {
+      case 'create':
+        {
+          if (!song) return;
+          const currentSong = song;
+          const currentTrack = currentSong.tracks.find(t => t.id === note.trackId);
+          if (currentTrack) {
+            currentTrack.notes = [...currentTrack.notes, note];
+          }
+          if (song && currentSong.id === song.id) {
+            setSong(currentSong);
+          }
+          if (songs.length) {
+            setSongs(prev => {
+              const index = prev.findIndex(s => s.id === currentSong.id);
+              prev[index] = currentSong;
+              return prev;
+            });
+          }
+        }
+        break;
+      case 'update':
+        {
+          if (!song) return;
+          const currentSong = song;
+          let oldTrack = currentSong.tracks.find(t => t.notes.some(n => n.id === note.id));
+          let targetNote = oldTrack?.notes.find(n => n.id === note.id);
+          if (!targetNote) {
+            console.error("Không tìm thấy Note mục tiêu để cập nhật.");
+            return;
+          }
+          const oldTrackId = targetNote.trackId;
+          const newTrackId = note.trackId;
+          if (oldTrackId === newTrackId) {
+            Object.assign(targetNote, note);
+          } else {
+              const newTrack = currentSong.tracks.find(t => t.id === newTrackId);
+              if (!newTrack) {
+                console.error(`Không tìm thấy Track mới với ID: ${newTrackId}`);
+                return;
+              }
+              if (oldTrack) {
+                oldTrack.notes = oldTrack.notes.filter(n => n.id !== note.id);
+              }
+              const newNote: Note = {
+                ...targetNote,
+                ...note,
+                trackId: newTrackId,
+              } as Note; 
+              newTrack.notes.push(newNote);
+          }
+          if (song && currentSong.id === song.id) {
+            setSong(currentSong);
+          }
+          if (songs.length) {
+            setSongs(prev => {
+              const index = prev.findIndex(s => s.id === currentSong.id);
+              prev[index] = currentSong;
+              return prev;
+            });
+          }
+        }
+        break;
+      case 'delete':
+        {
+          if (!song) return;
+          const currentSong = song;
+          const currentTrack = currentSong.tracks.find(t => t.notes.some(n => n.id === note.id));
+          if (currentTrack) {
+            currentTrack.notes = [...currentTrack.notes.filter(n => n.id !== note.id)];
+          }
+          if (song && currentSong.id === song.id) {
+            setSong(currentSong);
+          }
+          if (songs.length) {
+            setSongs(prev => {
+              const index = prev.findIndex(s => s.id === currentSong.id);
+              prev[index] = currentSong;
+              return prev;
+            });
+          }
+        }
+        break;
+      default:
+        break;
+    }
+  }, [songs, song])
+
   const importSong = () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -104,7 +197,8 @@ export default function useSongsList() {
           console.error('Lỗi khi import Song:', err);
           showToast({
             type: 'error',
-            message: 'Import Song thất bại: ' + (err?.message || ''),
+            message: 'Import Song thất bại',
+            extraMessage: err?.message
           });
         }
       };
@@ -133,7 +227,8 @@ export default function useSongsList() {
       console.error('Lỗi khi export Song:', err);
       showToast({
         type: 'error',
-        message: 'Export Song thất bại: ' + (err?.message || ''),
+        message: 'Export Song thất bại',
+        extraMessage: err?.message
       });
     }
   };
@@ -149,5 +244,6 @@ export default function useSongsList() {
     setSongs,
     setSong,
     triggerSong,
+    onNoteChange,
   };
 }

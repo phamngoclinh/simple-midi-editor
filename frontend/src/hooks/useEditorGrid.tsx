@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { HEADER_BOTTOM_GAP, MAX_DURATION_DEFAULT, NOTE_SIZE_PX, SECONDS_PER_UNIT, TIME_UNIT_HEIGHT_PX, TRACK_WIDTH_PX } from "../components/editor/constants";
 import { Note } from "../domain/entities/Note";
 import { Song } from "../domain/entities/Song";
@@ -20,7 +20,6 @@ const useEditorGrid = ({ currentSong }: { currentSong: Song }) => {
   const timeLines = useMemo(() => {
     const lines = [];
     const interval = SECONDS_PER_UNIT;
-
 
     const totalUnits = totalDuration / interval;
 
@@ -51,35 +50,28 @@ const useEditorGrid = ({ currentSong }: { currentSong: Song }) => {
     return lines;
   }, [numTracks]);
 
+  const trackIdToIndex = currentSong.tracks.reduce((map, track, index) => {
+    map.set(track.order, index);
+    return map;
+  }, new Map<string | number, number>());
 
-  const trackIdToIndex = useMemo(() => {
-    return currentSong.tracks.reduce((map, track, index) => {
-      map.set(track.order, index);
-      return map;
-    }, new Map<string | number, number>());
-  }, [currentSong.tracks]);
-
-  const timeToY = useCallback((time: number): number => {
+  const timeToY = (time: number): number => {
     return (time / SECONDS_PER_UNIT) * TIME_UNIT_HEIGHT_PX;
-  }, []);
+  };
 
-  const trackIndexToX = useCallback((index: number): number => {
-
+  const trackIndexToX = (index: number): number => {
     return index * TRACK_WIDTH_PX + (TRACK_WIDTH_PX / 2);
-  }, []);
+  };
 
-
-  const allNotes: RenderableNote[] = useMemo(() => {
-    return currentSong.tracks.flatMap(track =>
-      (track.notes || []).map(note => ({
-        ...note,
-        x: trackIndexToX(trackIdToIndex.get(track.order)!),
-        y: timeToY(note.time),
-        width: NOTE_SIZE_PX,
-        height: NOTE_SIZE_PX,
-      }))
-    );
-  }, [currentSong.tracks, trackIdToIndex, trackIndexToX, timeToY]);
+  const allNotes: RenderableNote[] = currentSong.tracks.flatMap(track =>
+    (track.notes || []).map(note => ({
+      ...note,
+      x: trackIndexToX(trackIdToIndex.get(track.order)!),
+      y: timeToY(note.time),
+      width: NOTE_SIZE_PX,
+      height: NOTE_SIZE_PX,
+    }))
+  );
 
   return {
     totalDuration,

@@ -3,24 +3,15 @@
  * Handles HTTP requests and delegates to use cases
  */
 
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  Logger,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
-import { SongsUseCase } from 'src/application/usecases/song.usecase';
-import { CreateSongDto } from '../dtos/create-song.dto';
-import { UpdateSongDto } from '../dtos/update-song.dto';
-import { TracksUseCase } from 'src/application/usecases/track.usecase';
+import { Body, Controller, Delete, Get, HttpCode, Logger, Param, Post, Put } from '@nestjs/common';
 import { NotesUseCase } from 'src/application/usecases/note.usecase';
+import { SongsUseCase } from 'src/application/usecases/song.usecase';
+import { TracksUseCase } from 'src/application/usecases/track.usecase';
+import { TrackLabelRequiredException } from 'src/domain/exceptions/TrackLabelRequired.exception';
 import { CreateNoteDto } from '../dtos/create-note.dto';
+import { CreateSongDto } from '../dtos/create-song.dto';
 import { UpdateNoteDto } from '../dtos/update-note.dto';
+import { UpdateSongDto } from '../dtos/update-song.dto';
 
 @Controller()
 export class SongController {
@@ -71,7 +62,7 @@ export class SongController {
   ) {
     // Không cần dùng songId ở đây nếu trackId là unique
     if (!label) {
-      throw new Error('Label field is required');
+      throw new TrackLabelRequiredException();
     }
     return this.tracksUseCase.updateLabel(trackId, label);
   }
@@ -80,10 +71,7 @@ export class SongController {
 
   //#region Notes
   @Post(':songId/tracks/:trackId/notes')
-  createNote(
-    @Param('trackId') trackId: string,
-    @Body() createNoteDto: CreateNoteDto,
-  ) {
+  createNote(@Param('trackId') trackId: string, @Body() createNoteDto: CreateNoteDto) {
     return this.notesUseCase.create(trackId, createNoteDto);
   }
 
@@ -111,10 +99,7 @@ export class SongController {
   // PUT /notes/:noteId
   // Cập nhật một Note
   @Put('notes/:noteId')
-  updateNote(
-    @Param('noteId') noteId: string,
-    @Body() updateNoteDto: UpdateNoteDto,
-  ) {
+  updateNote(@Param('noteId') noteId: string, @Body() updateNoteDto: UpdateNoteDto) {
     return this.notesUseCase.update(noteId, updateNoteDto);
   }
 

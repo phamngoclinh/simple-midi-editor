@@ -1,12 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useState } from 'react';
 import { Song } from '../../domain/entities/Song';
-import useNotesManager from '../../hooks/useNotesManager';
 import MidiEditorContainer from './MidiEditorContainer';
 import AsideNoteForm from './AsideNoteForm';
 import AsideSongForm from './AsideSongForm';
 import { Note } from '../../domain/entities/Note';
-
+import useSongManager from '../../hooks/useSongManager';
 
 interface MidiEditorProps {
   currentSong: Song;
@@ -15,7 +14,6 @@ interface MidiEditorProps {
 
 const MidiEditorManager: React.FC<MidiEditorProps> = ({ currentSong, reload }) => {
   const [isOpenAside, setIsOpenAside] = useState<boolean>(true);
-  const reloadCallback = useCallback(async () => reload(), [reload])
   const {
     initialNote,
     editingNote,
@@ -23,7 +21,7 @@ const MidiEditorManager: React.FC<MidiEditorProps> = ({ currentSong, reload }) =
     stopEditNote,
     saveNote,
     deleteNote,
-  } = useNotesManager(reloadCallback, currentSong);
+  } = useSongManager();
 
   const handleStartEditNote = useCallback((note: Note | null) => {
     setIsOpenAside(true);
@@ -31,7 +29,7 @@ const MidiEditorManager: React.FC<MidiEditorProps> = ({ currentSong, reload }) =
   }, [isOpenAside])
 
   return <>
-    <MidiEditorContainer currentSong={currentSong} onNoteClick={handleStartEditNote} onSongUpdate={() => reload()} />
+    <MidiEditorContainer currentSong={currentSong} onNoteClick={handleStartEditNote} />
 
     <div className={`relative aside flex ${!isOpenAside ? 'w-0 closed' : ''}`}>
       {<span

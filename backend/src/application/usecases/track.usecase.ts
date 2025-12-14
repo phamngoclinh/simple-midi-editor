@@ -3,8 +3,9 @@
  * Retrieves delivery statistics for a given time period
  */
 
-import { ITrackRepository } from 'src/domain/repositories/track.repository';
 import { Track } from 'src/domain/entities/track.entity';
+import { TrackNotFoundException } from 'src/domain/exceptions/TrackNotFound.exception';
+import { ITrackRepository } from 'src/domain/repositories/track.repository';
 
 export class TracksUseCase {
   constructor(private readonly tracksRepository: ITrackRepository) { }
@@ -13,7 +14,7 @@ export class TracksUseCase {
     const track = await this.tracksRepository.findTrackById(trackId);
 
     if (!track) {
-      throw new Error(`Track with ID "${trackId}" not found`);
+      throw new TrackNotFoundException({ id: trackId });
     }
 
     track.label = newLabel;

@@ -1,9 +1,10 @@
 import { INoteRepository } from '../../domain/repositories/INoteRepository';
 import { Note } from '../../domain/entities/Note';
 import { createNote, deleteNote, findNotesBySong, updateNote } from '../services/api';
-import { NoteMapper } from './mapper';
+import { NoteMapper } from '../mapper/mapper';
 import { Track } from '../types/api';
-export class LocalStorageNoteRepository implements INoteRepository {
+
+export class BackendNoteRepository implements INoteRepository {
   async create(songId: string, trackId: string, note: Omit<Note, 'id' | 'track'>): Promise<Note> {
     const response = await createNote(songId, trackId, { ...note, track: { id: trackId } as Track });
     return NoteMapper.toDomain(response);

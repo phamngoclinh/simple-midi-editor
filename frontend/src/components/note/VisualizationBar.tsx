@@ -11,7 +11,7 @@ type Config = {
 }
 
 const CONFIG: Config = {
-  numColumns: 8,
+  numColumns: 12,
   maxHeight: 100,
   // Các bước chiều cao hợp lệ trong Tailwind (ví dụ: 5, 10, 15... 100)
   tailWindsHeightSteps: Array.from({ length: 20 }, (_, i) => (i + 1) * 5),

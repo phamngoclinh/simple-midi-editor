@@ -46,10 +46,13 @@ const AsideNoteForm = ({ song, initialNote, onCancel, onSubmit, onDelete }: Asid
               Quay lại
             </div>
             <NoteEditForm
-              currentSong={song}
+              // currentSong={song}
+              songId={song.id as string}
+              tracks={song.tracks}
+              maxTime={song.totalDuration}
               initialNote={initialNote}
               onSubmit={onSubmit}
-              onCancel={onCancel}
+              // onCancel={onCancel}
               ref={propertiesFormRef}
             />
           </>

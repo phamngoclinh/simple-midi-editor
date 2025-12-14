@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Modal from '../../components/common/Modal';
 import SongForm from '../../components/song/SongForm';
 import SongListItem from '../../components/song/SongListItem';
@@ -11,12 +10,13 @@ import NoteList from '../../components/note/NoteList';
 import NoteEditForm from '../../components/note/NoteEditForm';
 
 const SongManagerPage: React.FC = () => {
-  const navigate = useNavigate();
   const {
+    song,
     songs,
     loading,
     loadSongs,
     isCreateModalOpen,
+    isOpenEditNotes,
     openCreateModal,
     closeAllModals,
     createSong,
@@ -25,11 +25,10 @@ const SongManagerPage: React.FC = () => {
     editSong,
     deleteSong,
     openSong,
-    selectedSongForNoteEdit,
-    startNoteManagement,
     editingNote,
     initialNote,
     startEditNote,
+    startEditNotes,
     stopEditNote,
     saveNote,
     deleteNote,
@@ -43,7 +42,7 @@ const SongManagerPage: React.FC = () => {
       const newSong = await createSong(data);
       closeAllModals();
       if (newSong && newSong.id) {
-        navigate(`/editor/${newSong.id}`);
+        // navigate(`/editor/${newSong.id}`);
         showToast({
           type: 'success',
           message: `Bài hát "${newSong.name}" đã được tạo.`,
@@ -53,7 +52,8 @@ const SongManagerPage: React.FC = () => {
       console.error(err);
       showToast({
         type: 'error',
-        message: `Tạo bài hát thất bại. ${err.message}`,
+        message: `Tạo bài hát thất bại.`,
+        extraMessage: err?.message
       });
     }
   };
@@ -61,7 +61,8 @@ const SongManagerPage: React.FC = () => {
   const actionsRight = [
     editingNote === null ? <button
       onClick={() => startEditNote({
-        trackId: selectedSongForNoteEdit?.tracks[0].id as string,
+        songId: song?.id,
+        trackId: song?.tracks[0].id as string,
         track: 1,
         time: 0,
         title: '',
@@ -76,7 +77,7 @@ const SongManagerPage: React.FC = () => {
   ]
 
   useEffect(() => {
-    loadSongs();
+    if (songs.length === 0) loadSongs();
   }, [])
 
   return (
@@ -99,31 +100,33 @@ const SongManagerPage: React.FC = () => {
 
           {loading && <span>Đang tải danh sách bài hát...</span>}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
-            <>
-              {songs?.map(song => (
-                <div key={song.id} className="group relative flex flex-col bg-white dark:bg-[#1e2430] rounded-xl border border-slate-200 dark:border-[#282e39] hover:border-primary/50 dark:hover:border-primary/50 transition-all hover:shadow-xl hover:shadow-primary/5">
-                  <SongListItem
-                    song={song}
-                    onOpen={() => openSong(song.id!)}
-                    onEdit={() => startEditSong(song)}
-                    onDelete={() => deleteSong(song.id!, song.name)}
-                    onEditNotes={() => startNoteManagement(song)}
-                    onExport={() => exportSong(song)}
-                  />
-                </div>
-              ))}
-            </>
+          {!loading && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+              <>
+                {songs?.map(song => (
+                  <div key={song.id} className="group relative flex flex-col bg-white dark:bg-[#1e2430] rounded-xl border border-slate-200 dark:border-[#282e39] hover:border-primary/50 dark:hover:border-primary/50 transition-all hover:shadow-xl hover:shadow-primary/5">
+                    <SongListItem
+                      song={song}
+                      onOpen={() => openSong(song)}
+                      onEdit={() => startEditSong(song)}
+                      onDelete={() => deleteSong(song.id!, song.name)}
+                      onEditNotes={() => startEditNotes(song)}
+                      onExport={() => exportSong(song)}
+                    />
+                  </div>
+                ))}
+              </>
 
-            <button onClick={openCreateModal} className="group flex flex-col items-center justify-center bg-transparent border-2 border-dashed border-slate-300 dark:border-[#282e39] rounded-xl overflow-hidden hover:border-primary hover:bg-primary/5 transition-all aspect-[4/3] sm:aspect-auto">
-              <div className="flex flex-col items-center gap-3 p-8">
-                <div className="size-14 rounded-full bg-slate-100 dark:bg-[#1e2430] group-hover:bg-primary text-slate-400 dark:text-[#637083] group-hover:text-white flex items-center justify-center transition-colors">
-                  <span className="material-symbols-outlined text-[32px]">add</span>
+              <button onClick={openCreateModal} className="group flex flex-col items-center justify-center bg-transparent border-2 border-dashed border-slate-300 dark:border-[#282e39] rounded-xl overflow-hidden hover:border-primary hover:bg-primary/5 transition-all aspect-[4/3] sm:aspect-auto">
+                <div className="flex flex-col items-center gap-3 p-8">
+                  <div className="size-14 rounded-full bg-slate-100 dark:bg-[#1e2430] group-hover:bg-primary text-slate-400 dark:text-[#637083] group-hover:text-white flex items-center justify-center transition-colors">
+                    <span className="material-symbols-outlined text-[32px]">add</span>
+                  </div>
+                  <p className="text-slate-500 dark:text-[#9da6b9] group-hover:text-primary font-bold text-lg transition-colors">Create New Song</p>
                 </div>
-                <p className="text-slate-500 dark:text-[#9da6b9] group-hover:text-primary font-bold text-lg transition-colors">Create New Song</p>
-              </div>
-            </button>
-          </div>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -136,35 +139,38 @@ const SongManagerPage: React.FC = () => {
             <SongForm
               ref={formRef}
               initialSong={editingSong}
-              onSubmit={(data) => editSong(editingSong.id as string, data)}
+              onSubmit={async (data) => {
+                await editSong(editingSong.id as string, data)
+                closeAllModals();
+              }}
             />
           )}
       </Modal>
 
       <Modal
-        isOpen={!!selectedSongForNoteEdit}
+        isOpen={isOpenEditNotes}
         onClose={editingNote ? stopEditNote : closeAllModals}
-        title={editingNote ? (editingNote.id ? `Sửa Note: ${editingNote.title}` : 'Tạo Note') : `Quản Lý Notes cho: ${selectedSongForNoteEdit?.name || ''}`}
+        title={editingNote ? (editingNote.id ? `Sửa Note: ${editingNote.title}` : 'Tạo Note') : `Quản Lý Notes cho: ${song?.name || ''}`}
         textOk={editingNote ? 'Lưu note' : ''}
         textClose={editingNote ? 'Quay lại' : 'Đóng'}
         onOk={() => formRef.current?.submitForm()}
         actionsRight={actionsRight}
       >
-        {selectedSongForNoteEdit && (
+        {song && (
           <>
             {editingNote ? (
               <NoteEditForm
-                currentSong={selectedSongForNoteEdit}
+                songId={song.id as string}
+                tracks={song.tracks}
+                maxTime={song.totalDuration}
                 initialNote={initialNote}
                 onSubmit={saveNote}
-                onCancel={() => stopEditNote()}
                 ref={formRef}
               />
             ) : (
               <NoteList
-                songId={selectedSongForNoteEdit.id!}
-                currentSong={selectedSongForNoteEdit}
-                onEditNote={(n) => startEditNote(n)}
+                notes={song.tracks.flatMap(t => t.notes)}
+                onEditNote={async (n) => { startEditNote(n) }}
                 onDeleteNote={deleteNote}
               />
             )}

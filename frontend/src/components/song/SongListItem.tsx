@@ -41,6 +41,7 @@ const SongListItem: React.FC<SongListItemProps> = ({
       label: "Mở Editor",
       onClick: handleOpen,
       icon: <span className="material-symbols-outlined text-[20px]">open_in_new</span>,
+      link: `/editor/${song.id}`
     },
     {
       label: "Quản lý Notes",

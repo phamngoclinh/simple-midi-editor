@@ -5,7 +5,7 @@ type ToastType = 'success' | 'error' | 'warning' | 'info';
 interface ToastProps {
   id: number;
   type: ToastType;
-  message: string;
+  message: string | React.ReactElement;
   extraMessage?: string;
   duration?: number;
   onClose: (id: number) => void;
@@ -43,14 +43,14 @@ const Toast: React.FC<ToastProps> = memo(({ id, type, message, extraMessage, dur
   };
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-lg bg-surface-dark border border-[#3b4354] shadow-2xl shadow-black/50 animate-in slide-in-from-bottom-5 fade-in duration-300">
+    <div className="group relative flex flex-col overflow-hidden max-w-[400px] rounded-lg bg-surface-dark border border-[#3b4354] shadow-2xl shadow-black/50 animate-in slide-in-from-bottom-5 fade-in duration-300">
       <div className="flex items-center gap-3 p-4">
         <div className={`flex items-center justify-center shrink-0 size-8 rounded-full bg-${styles.backgroundColor}-500/10 text-${styles.backgroundColor}-500`}>
           <span className="material-symbols-outlined text-[20px]">{styles.icon}</span>
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-white font-medium leading-normal truncate">{message}</p>
-          {extraMessage && <p className="text-gray-400 text-sm leading-normal truncate">{extraMessage}</p>}
+          {extraMessage && <p className="text-gray-400 text-sm leading-normal">{extraMessage}</p>}
         </div>
         <button onClick={handleClose} className="shrink-0 flex text-gray-400 hover:text-white transition-colors p-1 rounded hover:bg-white/10">
           <span className="material-symbols-outlined text-[18px]">close</span>

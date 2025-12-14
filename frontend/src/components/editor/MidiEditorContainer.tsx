@@ -1,36 +1,31 @@
 import React, { useCallback } from 'react';
-import { loadSongByIdUseCase } from '../../dependencies';
 import { Note } from '../../domain/entities/Note';
 import { Song } from '../../domain/entities/Song';
 import useEditorGrid from '../../hooks/useEditorGrid';
-import useTrackManager from '../../hooks/useTrackManager';
 import { RULER_WIDTH_PX, TIME_UNIT_HEIGHT_PX, TRACK_WIDTH_PX } from './constants';
 import NoteRenderer from './NoteRenderer';
 import TimeRuler from './TimeRuler';
 import TrackHeader from './TrackHeader';
+import useSongManager from '../../hooks/useSongManager';
 
 interface MidiEditorContainerProps {
   currentSong: Song;
   onNoteClick: (note: Note) => void;
-  onSongUpdate: (updatedSong: Song) => void;
 }
 
-const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, onNoteClick, onSongUpdate }) => {
+const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, onNoteClick }) => {
   const {
     totalDuration,
     totalEditorHeight,
     totalEditorWidth,
     allNotes
   } = useEditorGrid({ currentSong });
-  const { editTrackLabel } = useTrackManager();
+  const { editTrackLabel } = useSongManager();
 
   const handleTrackLabelEdit = useCallback(async (trackId: string, newLabel: string) => {
     if (!currentSong.id) return;
-
-    await editTrackLabel(currentSong.id, trackId, newLabel, async () => {
-      onSongUpdate(await loadSongByIdUseCase.execute(currentSong.id as string))
-    })
-  }, [currentSong, editTrackLabel, onSongUpdate]);
+    await editTrackLabel(currentSong.id, trackId, newLabel)
+  }, [currentSong, editTrackLabel]);
 
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-[#0f1115] relative overflow-hidden">

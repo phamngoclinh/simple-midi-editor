@@ -23,7 +23,8 @@ type ToastType = 'success' | 'error' | 'warning' | 'info';
 
 interface ToastOptions {
   type: ToastType;
-  message: string;
+  message: string | React.ReactElement;
+  extraMessage?: string;
   duration?: number;
 }
 
@@ -142,6 +143,7 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
             id={toast.id}
             type={toast.type}
             message={toast.message}
+            extraMessage={toast.extraMessage}
             duration={toast.duration}
             onClose={handleCloseToast}
           />

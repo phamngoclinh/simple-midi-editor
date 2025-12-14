@@ -6,7 +6,7 @@ import {
   editExistingNoteUseCase
 } from '../dependencies';
 import { Note } from '../domain/entities/Note';
-import { Song } from '../domain/entities/Song';
+import { NoteTriggerAction } from '../utils/types';
 
 interface NoteFormData {
   songId: string;
@@ -19,48 +19,52 @@ interface NoteFormData {
   icon?: string;
 }
 
-export default function useNotesManager(onAfterChange?: () => Promise<void>, song?: Song) {
-  const [selectedSongForNoteEdit, setSelectedSongForNoteEdit] = useState<Song | null>(song || null);
+export default function useNotesManager(onAfterChange?: (note: Note, action: NoteTriggerAction) => Promise<void>) {
   const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [isOpenEditNotes, setIsOpenEditNotes] = useState<boolean>(false);
 
   const { showToast, showConfirmation } = useModal();
-
-  const startNoteManagement = useCallback((song: Song | null) => {
-    setSelectedSongForNoteEdit(song);
-    setEditingNote(null);
-  }, []);
 
   const startEditNote = useCallback((note: Note | null) => {
     setEditingNote(note);
   }, [])
 
   const stopEditNote = useCallback(() => setEditingNote(null), [])
+  
+  const startEditNotes = useCallback(() => { setIsOpenEditNotes(true) }, [])
+
+  const stopEditNotes = useCallback(() => { setIsOpenEditNotes(false) }, [])
 
   const saveNote = useCallback(async (noteData: NoteFormData) => {
-    if (!selectedSongForNoteEdit) return;
     try {
-      if (editingNote && editingNote.id) {
-        await editExistingNoteUseCase.execute({ id: editingNote.id as string, ...noteData });
+      const update = editingNote && editingNote.id;
+      let savedNote: Note | null = null;
+      if (update) {
+        savedNote= await editExistingNoteUseCase.execute({ id: editingNote.id as string, ...noteData });
       } else {
-        await addNoteToSongUseCase.execute({ ...noteData });
+        savedNote = await addNoteToSongUseCase.execute({ ...noteData });
       }
+      const noteId = savedNote.id;
       showToast({
         type: 'success',
         message: 'Note đã được lưu thành công.',
       });
+      if (onAfterChange) await onAfterChange(
+        { ...noteData, id: noteId },
+        update ? 'update' : 'create'
+      );
       setEditingNote(null);
-      if (onAfterChange) await onAfterChange();
     } catch (err: any) {
       console.error('Lỗi khi lưu Note:', err);
       showToast({
         type: 'error',
-        message: 'Lưu Note thất bại. ' + (err?.message || ''),
+        message: 'Lưu Note thất bại',
+        extraMessage: err?.message
       });
     }
-  }, [selectedSongForNoteEdit, editingNote, onAfterChange, showToast]);
+  }, [editingNote, onAfterChange, showToast]);
 
   const deleteNote = useCallback(async (noteId: string) => {
-    if (!selectedSongForNoteEdit) return false;
     const confirmed = await showConfirmation({
       message: 'Bạn có chắc chắn muốn xóa Note này không?',
       title: "Xác nhận Xóa",
@@ -73,28 +77,29 @@ export default function useNotesManager(onAfterChange?: () => Promise<void>, son
         type: 'success',
         message: 'Note đã được xóa.',
       });
-      if (onAfterChange) await onAfterChange();
+      if (onAfterChange) await onAfterChange({ id: noteId } as Note, 'delete');
       setEditingNote(null);
       return true;
-    } catch (err) {
+    } catch (err: any) {
       console.error('Lỗi khi xóa Note:', err);
       showToast({
         type: 'error',
-        message: 'Xóa Note thất bại.',
+        message: 'Xóa Note thất bại',
+        extraMessage: err?.message
       });
       return false
     }
-  }, [selectedSongForNoteEdit, onAfterChange, showToast, showConfirmation]);
+  }, [onAfterChange, showToast, showConfirmation]);
 
   const resetNotes = useCallback(() => {
-    setSelectedSongForNoteEdit(null);
     setEditingNote(null);
+    setIsOpenEditNotes(false);
   }, []);
 
   const initialNote = useMemo(() => {
-    return selectedSongForNoteEdit && editingNote ? {
+    return editingNote ? {
       id: editingNote.id,
-      songId: selectedSongForNoteEdit.id as string,
+      songId: editingNote.songId as string,
       trackId: editingNote.trackId as string,
       track: editingNote.track,
       time: editingNote.time,
@@ -103,14 +108,15 @@ export default function useNotesManager(onAfterChange?: () => Promise<void>, son
       color: editingNote.color || '#007bff',
       icon: editingNote.icon || 'none',
     } : null
-  }, [selectedSongForNoteEdit, editingNote])
+  }, [editingNote])
 
   return {
-    selectedSongForNoteEdit,
-    startNoteManagement,
     editingNote,
+    isOpenEditNotes,
     startEditNote,
     stopEditNote,
+    startEditNotes,
+    stopEditNotes,
     saveNote,
     deleteNote,
     resetNotes,

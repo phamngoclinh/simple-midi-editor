@@ -3,10 +3,12 @@
  * Retrieves delivery statistics for a given time period
  */
 
-import { INoteRepository } from 'src/domain/repositories/note.repository';
 import { Note } from 'src/domain/entities/note.entity';
-import { ITrackRepository } from 'src/domain/repositories/track.repository';
 import { NoteAlreadyExistException } from 'src/domain/exceptions/NoteAlreadyExist.exception';
+import { NoteNotFoundException } from 'src/domain/exceptions/NoteNotFound.exception';
+import { TrackNotFoundException } from 'src/domain/exceptions/TrackNotFound.exception';
+import { INoteRepository } from 'src/domain/repositories/note.repository';
+import { ITrackRepository } from 'src/domain/repositories/track.repository';
 
 class CreateNoteDto {
   time: number;
@@ -35,7 +37,7 @@ export class NotesUseCase {
     const track = await this.tracksRepository.findTrackById(trackId);
 
     if (!track) {
-      throw new Error(`Track with ID "${trackId}" not found`);
+      throw new TrackNotFoundException({ id: trackId });
     }
 
     const existingNote = await this.notesRepository.findNoteByTimeNTrackId(
@@ -44,9 +46,7 @@ export class NotesUseCase {
     );
 
     if (existingNote) {
-      throw new Error(
-        `Note already exists on Track ID "${trackId}" at time position "${createNoteDto.time}".`,
-      );
+      throw new NoteAlreadyExistException({ trackId, time: createNoteDto.time });
     }
 
     const newNote = this.notesRepository.createNote({
@@ -64,9 +64,8 @@ export class NotesUseCase {
    */
   async findOne(noteId: string): Promise<Note> {
     const note = await this.notesRepository.findNoteById(noteId);
-
     if (!note) {
-      throw new Error(`Note with ID "${noteId}" not found`);
+      throw new NoteNotFoundException({ id: noteId });
     }
     return note;
   }
@@ -95,7 +94,7 @@ export class NotesUseCase {
     const note = await this.notesRepository.findNoteById(noteId);
 
     if (!note) {
-      throw new Error(`Note with ID "${noteId}" not found`);
+      throw new NoteNotFoundException({ id: noteId });
     }
 
     if (updateNoteDto.time !== undefined) {
@@ -105,9 +104,10 @@ export class NotesUseCase {
       );
 
       if (existingNote && existingNote.id !== note.id) {
-        throw new NoteAlreadyExistException(
-          `Note already exists at time position "${updateNoteDto.time}".`,
-        );
+        throw new NoteAlreadyExistException({
+          trackId: note.track.id,
+          time: updateNoteDto.time,
+        });
       }
 
       if (updateNoteDto.trackId && updateNoteDto.trackId !== note.track.id) {
@@ -117,9 +117,10 @@ export class NotesUseCase {
         );
 
         if (existingNoteInOtherTrack) {
-          throw new NoteAlreadyExistException(
-            `Note already exists on other TrackID ${updateNoteDto.trackId} at time position "${updateNoteDto.time}".`,
-          );
+          throw new NoteAlreadyExistException({
+            trackId: updateNoteDto.trackId,
+            time: updateNoteDto.time,
+          });
         }
 
         note.track.id = updateNoteDto.trackId;
@@ -139,7 +140,7 @@ export class NotesUseCase {
   async remove(noteId: string): Promise<void> {
     const result = await this.notesRepository.deleteNote(noteId);
     if (result.affected === 0) {
-      throw new Error(`Note with ID "${noteId}" not found`);
+      throw new NoteNotFoundException({ id: noteId });
     }
   }
 }

@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 export interface DropdownItem {
   label: string;
   onClick: () => void;
   icon?: React.ReactElement | string;
   isDestructive?: boolean;
+  link?: string;
 }
 
 interface DropdownMenuProps {
@@ -43,6 +45,16 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
 
   const menuPositionStyle: React.CSSProperties =
     align === 'right' ? { right: 0, left: 'auto' } : { left: 0, right: 'auto' };
+  
+  // const getCustomElement = (element: React.ReactElement) => {
+  //   const buttonElement = React.cloneElement(
+  //     element,
+  //     {
+  //       onClick: () => { setIsOpen(false) },
+  //     }
+  //   );
+  //   return buttonElement;
+  // }
 
   return (
     <div style={containerStyle} ref={dropdownRef}>
@@ -56,20 +68,23 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
 
       {isOpen && (
         <div style={{ ...menuStyle, ...menuPositionStyle }}>
-          {items.map((item, index) => (
-            <button
-              key={index}
-              onClick={() => handleItemClick(item.onClick)}
-              style={{
+          {items.map((item, index) => {
+            const props = {
+              style: {
                 ...itemStyle,
                 color: item.isDestructive ? 'red' : '#dbdbdb',
                 backgroundColor: '#151617',
-              }}
-            >
+              }
+            }
+            const child = <>
               {item.icon && <span style={{ marginRight: '8px' }} className='flex'>{item.icon}</span>}
               {item.label}
-            </button>
-          ))}
+            </>
+            if (item.link) {
+              return <Link {...props} to={item.link} key={index}>{child}</Link>
+            }
+            return <button {...props} onClick={() => handleItemClick(item.onClick)} key={index}>{child}</button>
+          })}
         </div>
       )}
     </div>

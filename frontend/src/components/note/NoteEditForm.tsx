@@ -1,9 +1,9 @@
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { Song } from '../../domain/entities/Song';
 import { DEFAULT_COLORS, MUSIC_ICONS } from '../../utils/icons';
 import { ChildFormHandles } from '../../utils/types';
 import { errorStyle } from './NoteEditForm.styles';
+import { Track } from '../../domain/entities/Track';
 
 export interface NoteFormData {
   id?: string;
@@ -18,17 +18,17 @@ export interface NoteFormData {
 }
 
 interface NoteEditFormProps {
-  currentSong: Song;
+  songId: string;
+  tracks: Track[];
+  maxTime: number;
   initialNote: NoteFormData | null;
   onSubmit: (data: NoteFormData) => void;
-  onCancel: () => void;
-  buttonLabel?: string;
 }
 
-const getDefaultNoteFormData = (song: Song, initialNote: NoteFormData | null): NoteFormData => {
+const getDefaultNoteFormData = (songId: string, trackId: string, initialNote: NoteFormData | null): NoteFormData => {
   return initialNote || {
-    songId: song.id || '',
-    trackId: song.tracks[0]?.id || '',
+    songId: songId,
+    trackId: trackId,
     track: 1,
     time: 0,
     title: '',
@@ -40,19 +40,19 @@ const getDefaultNoteFormData = (song: Song, initialNote: NoteFormData | null): N
 
 const NoteEditForm = forwardRef<ChildFormHandles, NoteEditFormProps>(
   ({
-    currentSong,
+    songId,
+    tracks,
+    maxTime,
     initialNote,
     onSubmit,
   }, ref) => {
-    const { tracks, totalDuration } = currentSong;
-
     const { register, handleSubmit, reset, formState: { errors }, control } = useForm<NoteFormData>({
-      defaultValues: getDefaultNoteFormData(currentSong, initialNote),
+      defaultValues: getDefaultNoteFormData(songId, tracks[0].id as string, initialNote),
     });
 
     useEffect(() => {
-      reset(getDefaultNoteFormData(currentSong, initialNote));
-    }, [currentSong, initialNote, reset]);
+      reset(getDefaultNoteFormData(songId, tracks[0].id as string, initialNote));
+    }, [songId, tracks, initialNote, reset]);
 
     useImperativeHandle(ref, () => ({
       submitForm() {
@@ -63,7 +63,7 @@ const NoteEditForm = forwardRef<ChildFormHandles, NoteEditFormProps>(
     const handleRHFSubmit: SubmitHandler<NoteFormData> = (data) => {
       const processedData: NoteFormData = { ...data };
 
-      processedData.track = currentSong.tracks.findIndex(x => x.id === processedData.trackId) + 1;
+      processedData.track = tracks.findIndex(x => x.id === processedData.trackId) + 1;
 
       onSubmit(processedData);
     };
@@ -116,11 +116,12 @@ const NoteEditForm = forwardRef<ChildFormHandles, NoteEditFormProps>(
                   id='time'
                   className="w-full bg-transparent border-none p-0 text-white focus:ring-0"
                   type="number"
+                  step="0.1"
                   {...register("time", {
                     required: "Thời gian là bắt buộc",
                     valueAsNumber: true,
                     min: { value: 0, message: "Thời gian phải >= 0" },
-                    max: { value: totalDuration, message: `Thời gian phải <= ${totalDuration}` }
+                    max: { value: maxTime, message: `Thời gian phải <= ${maxTime}` }
                   })}
                 />
                 {errors.time && <p style={errorStyle}>{errors.time.message}</p>}
