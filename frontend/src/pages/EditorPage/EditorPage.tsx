@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import MidiEditorManager from '../../components/editor/MidiEditorManager';
+import { ResizableProvider } from '../../contexts/ResizableContext';
 import useSongManager from '../../hooks/useSongManager';
 
 const EditorPage = () => {
@@ -19,9 +20,9 @@ const EditorPage = () => {
   }, [])
 
   return (
-    <>
+    <ResizableProvider>
       {song && <MidiEditorManager currentSong={song} reload={() => loadSong(song.id as string)} />}
-    </>
+    </ResizableProvider>
   );
 };
 

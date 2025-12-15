@@ -6,7 +6,6 @@ import useSongManager from '../../hooks/useSongManager';
 import { ChildFormHandles } from '../../utils/types';
 import Modal from '../common/Modal';
 import NoteEditForm, { NoteFormData } from '../note/NoteEditForm';
-import { RULER_WIDTH_PX, TIME_UNIT_HEIGHT_PX, TRACK_WIDTH_PX } from './constants';
 import NoteRenderer from './NoteRenderer';
 import TimeRuler from './TimeRuler';
 import TrackHeader from './TrackHeader';
@@ -21,7 +20,12 @@ const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, 
     totalDuration,
     totalEditorHeight,
     totalEditorWidth,
-    allNotes
+    allNotes,
+    columns,
+    timeUnitHeight,
+    rulerWidth,
+    secondPerUnit,
+    hightLightHorizontalLines,
   } = useEditorGrid({ currentSong });
   const { editTrackLabel, saveNote } = useSongManager();
   const formRef = useRef<ChildFormHandles>(null);
@@ -42,7 +46,7 @@ const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, 
       <div className="flex flex-col overflow-auto relative">
         <div className="sticky top-[-1px] z-10 flex border-[#3b4354] bg-[#111318] shadow-md">
           <div
-            className={`shrink-0 w-[${RULER_WIDTH_PX}px] px-4 py-3 text-left text-[#9da6b9] text-sm font-bold uppercase tracking-wider border-r border-[#282e39] bg-[#111318]`}>
+            className={`shrink-0 w-[${rulerWidth}px] px-4 py-3 text-left text-[#9da6b9] text-sm font-bold uppercase tracking-wider border-r border-[#282e39] bg-[#111318]`}>
             Time
           </div>
 
@@ -57,15 +61,16 @@ const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, 
           <TimeRuler
             totalDuration={totalDuration}
             totalHeight={totalEditorHeight}
+            width={rulerWidth}
+            timeUnitHeight={timeUnitHeight}
+            secondPerUnit={secondPerUnit}
+            hightLightHorizontalLines={hightLightHorizontalLines}
           />
 
-          <div className={`absolute inset-0 left-[${RULER_WIDTH_PX}px] flex pointer-events-none`}>
-            {currentSong.tracks?.map((track, index) => {
-              return index % 2 ? (
-                <div key={track.id} style={hightLightHorizontalLines} className={`w-[${TRACK_WIDTH_PX}px] shrink-0 bg-[#1c1f27]/50`}></div>
-              ) : (
-                <div key={track.id} style={hightLightHorizontalLines} className={`w-[${TRACK_WIDTH_PX}px] shrink-0`}></div>
-              );
+          <div className={`absolute inset-0 left-[${rulerWidth}px] flex pointer-events-none`}>
+            {columns?.map((column, index) => {
+              const bg = index % 2 ? 'bg-[#1c1f27]/50' : '';
+              return <div key={column.id} style={hightLightHorizontalLines} className={`shrink-0 w-[${column.width}px] ${bg}`}></div>
             })}
           </div>
 
@@ -100,8 +105,3 @@ const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, 
 
 export default MidiEditorContainer;
 
-const hightLightHorizontalLines: React.CSSProperties = {
-  backgroundImage: 'linear-gradient(to bottom, #515c51ff 0px, #515c51ff 0px, transparent 0px, transparent calc(25% - 1px), #393d4580 calc(25% - 1px), #393d4580 25%, transparent 25%, transparent calc(50% - 1px), #93565680 calc(50% - 1px), #93565680 50%, transparent 50%, transparent calc(75% - 1px), #393d4580 calc(75% - 1px), #393d4580 75%, transparent 75%, transparent calc(100% - 1px), #27999980 calc(100% - 1px), #27999980 100%)',
-  backgroundSize: `100% ${TIME_UNIT_HEIGHT_PX * 4}px`,
-  backgroundRepeat: 'repeat'
-}
