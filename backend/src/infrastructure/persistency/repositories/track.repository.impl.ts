@@ -34,4 +34,8 @@ export class TrackRepositoryImpl implements ITrackRepository {
     const savedEntity = await this.tracksRepository.save(entity);
     return TrackMapper.toDomain(savedEntity);
   }
+
+  async deleteTracks(ids: string[]): Promise<{ affected?: number | null }> {
+    return this.tracksRepository.delete(ids);
+  }
 }

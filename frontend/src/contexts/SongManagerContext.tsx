@@ -46,7 +46,7 @@ interface SongManagerContextValue {
   startEditNotes: (song: Song) => void;
   stopEditNote: () => void;
   stopEditNotes: () => void;
-  saveNote: (data: NoteFormData) => Promise<void>;
+  saveNote: (data: NoteFormData) => Promise<boolean>;
   setSong: (song: Song | null) => void;
   deleteNote: (noteId: string) => Promise<boolean>;
   importSong: () => void;

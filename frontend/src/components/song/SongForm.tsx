@@ -1,10 +1,14 @@
+import { DragEndEvent } from '@dnd-kit/core';
+import { arrayMove } from '@dnd-kit/sortable';
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
-import { Song } from '../../domain/entities/Song'; 
+import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import { useModal } from '../../contexts/ModalContext';
+import { Song } from '../../domain/entities/Song';
 import { Track } from '../../domain/entities/Track';
-import { errorStyle } from './SongForm.styles';
-import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
-import TagsInput from '../common/TagsInput';
 import { ChildFormHandles } from '../../utils/types';
+import Sortable from '../common/Sortable';
+import TagsInput from '../common/TagsInput';
+import { errorStyle } from './SongForm.styles';
 
 interface SongFormData {
   id: string | undefined;
@@ -18,15 +22,12 @@ interface SongFormData {
 interface SongFormProps {
   initialSong?: Song;
   onSubmit: (data: SongFormData) => void;
-  onCancel?: () => void;
-  buttonLabel?: string;
 }
 
 const getDefaultFormData = (song?: Song): SongFormData => {
   let tracks: Track[] = [];
 
   if (song && song.tracks.length > 0) {
-    
     tracks = song.tracks.map((t, index) => ({
       id: t.id,
       label: t.label,
@@ -36,7 +37,6 @@ const getDefaultFormData = (song?: Song): SongFormData => {
       notes: t.notes
     })).sort((a, b) => a.order - b.order); 
   } else {
-    
     tracks = [
       { id: '1', label: 'Track 1', order: 1, instrument: 'Instrument 1', notes: [] },
       { id: '2', label: 'Track 2', order: 2, instrument: 'Instrument 2', notes: [] },
@@ -62,22 +62,21 @@ const getDefaultFormData = (song?: Song): SongFormData => {
 const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
   ({
     onSubmit,
-    onCancel,
     initialSong,
-    buttonLabel
   }, ref) => {
-    
-    const { register, handleSubmit, control, reset, formState: { errors } } = useForm<SongFormData>({
-      
+    const { register, handleSubmit, control, setValue, reset, formState: { errors } } = useForm<SongFormData>({
       defaultValues: getDefaultFormData(initialSong),
     });
 
-    const { fields: trackFields } = useFieldArray({
+    const { fields: trackFields, move, append, remove } = useFieldArray({
       control,
       name: 'tracks'
     });
 
-    
+    const items = trackFields.map(trackField => trackField.id);
+
+    const { showConfirmation } = useModal();
+
     useEffect(() => {
       reset(getDefaultFormData(initialSong));
     }, [initialSong, reset]);
@@ -88,15 +87,10 @@ const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
       }
     }));
 
-    
     const handleRHFSubmit: SubmitHandler<SongFormData> = (data) => {
-      
       const processedTags = data.tags.filter(tag => tag.length > 0);
-
-      
       const processedTracks = data.tracks.sort((a, b) => a.order - b.order);
 
-      
       const finalData = {
         ...data,
         tags: processedTags, 
@@ -107,8 +101,31 @@ const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
       onSubmit(finalData as any);
     };
 
+    const handleDragEnd = (event: DragEndEvent) => {
+      const { active, over } = event;
+
+      if (active.id !== over?.id) {
+        const oldIndex = items.findIndex((id) => id === active.id);
+        const newIndex = items.findIndex((id) => id === over?.id);
+
+        move(oldIndex, newIndex);
+
+        const newFieldsOrder = arrayMove(trackFields, oldIndex, newIndex);
+        newFieldsOrder.forEach((track, index) => {
+          setValue(`tracks.${index}.order`, index + 1);
+        });
+      }
+    };
+
+    const handleRemoveTrack = async (index: number) => {
+      const confirm = await showConfirmation({
+        message: 'Xoá track sẽ xoá tất cả các notes liên quan. Hành động này không thể thu hồi sau khi lưu!'
+      })
+      if (confirm) remove(index)
+    }
+
     return (
-      <form name='edit-song-form' onSubmit={handleSubmit(handleRHFSubmit)}>
+      <form name='edit-song-form' onSubmit={handleSubmit(handleRHFSubmit)} className='@container'>
         <div className="space-y-4">
           <div className="flex items-center gap-2 mb-2">
             <span className="material-symbols-outlined text-primary !text-[20px]">info</span>
@@ -122,6 +139,7 @@ const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
               className="form-input flex w-full resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-dark bg-surface-input focus:border-primary h-12 placeholder:text-text-subtle px-4 text-base font-normal transition-all"
               placeholder="Ví dụ: Giai điệu mùa hè"
               autoComplete='false'
+              autoFocus
               {...register("name", { required: "Tên bài hát là bắt buộc", maxLength: 100 })}
             />
             {errors.name && <p style={errorStyle}>{errors.name.message}</p>}
@@ -137,7 +155,7 @@ const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
             {errors.description && <p style={errorStyle}>{errors.description.message}</p>}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
             <label className="flex flex-col gap-2">
               <span className="text-white text-base font-medium leading-normal">Tổng thời lượng (giây)</span>
               <div className="relative">
@@ -178,23 +196,48 @@ const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
               <span className="material-symbols-outlined text-primary !text-[20px]">piano</span>
               <h3 className="text-white text-lg font-bold leading-tight tracking-[-0.015em]">Cấu hình Track</h3>
             </div>
-            <span
-              className="text-xs font-medium text-text-subtle bg-surface-input px-2 py-1 rounded border border-border-dark">{trackFields.length} Tracks</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-text-subtle bg-surface-input px-2 py-1 rounded border border-border-dark">{trackFields.length} Tracks</span>
+              <span
+                className="material-symbols-outlined text-primary text-text-subtle cursor-pointer hover:text-white"
+                title="Thêm track"
+                onClick={() => append({
+                  songId: initialSong?.id,
+                  order: trackFields.length + 1,
+                  label: 'New label',
+                  instrument: '',
+                  notes: []
+                })}
+              >add</span>
+            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+
+          <Sortable
+            items={items}
+            onDragEnd={handleDragEnd}
+            withWrapper={(children) => (<div className='grid grid-cols-1 @sm:grid-cols-2 gap-x-6 gap-y-4'>{children}</div>)}
+          >
             {trackFields.map((field, index) => (
-              <div key={field.id} className="flex items-center gap-3">
+              <Sortable.Item 
+                key={field.id} 
+                id={field.id}
+              >
                 <span className="text-text-subtle text-sm font-mono w-6">{index + 1}</span>
                 <input
                   className="form-input flex-1 rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-border-dark bg-surface-input focus:border-primary h-10 px-3 font-normal"
                   placeholder="Track Label"
                   {...register(`tracks.${index}.label`, { required: "Nhãn Track là bắt buộc" })}
                 />
-                <span className="material-symbols-outlined text-text-subtle !text-[18px]">drag_indicator</span>
-              </div>
+                <input type="hidden" {...register(`tracks.${index}.order`)} />
+                <span
+                  className="material-symbols-outlined text-red-400/50 text-sm cursor-pointer hover:text-red-600/50"
+                  title="Xoá track"
+                  onClick={() => handleRemoveTrack(index)}
+                >delete</span>
+                {/* {errors.tracks?.[index]?.label?.message && <p style={errorStyle}>{errors.tracks?.[index]?.label?.message}</p>} */}
+              </Sortable.Item>
             ))}
-            {errors.tracks?.message && <p style={errorStyle}>{errors.tracks.message}</p>}
-          </div>
+          </Sortable>
         </div>
       </form>
     );

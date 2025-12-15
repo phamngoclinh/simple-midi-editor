@@ -54,6 +54,7 @@ export default function useNotesManager(onAfterChange?: (note: Note, action: Not
         update ? 'update' : 'create'
       );
       setEditingNote(null);
+      return true;
     } catch (err: any) {
       console.error('Lỗi khi lưu Note:', err);
       showToast({
@@ -61,6 +62,7 @@ export default function useNotesManager(onAfterChange?: (note: Note, action: Not
         message: 'Lưu Note thất bại',
         extraMessage: err?.message
       });
+      return false;
     }
   }, [editingNote, onAfterChange, showToast]);
 

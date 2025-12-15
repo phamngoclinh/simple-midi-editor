@@ -77,6 +77,7 @@ const NoteEditForm = forwardRef<ChildFormHandles, NoteEditFormProps>(
               id='title'
               className="w-full bg-[#1c1f27] border border-[#3b4354] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-[#58627a]"
               type="text"
+              autoFocus
               {...register("title", { required: "Tên note là bắt buộc", maxLength: 100 })}
             />
             {errors.title && <p style={errorStyle}>{errors.title.message}</p>}
@@ -92,7 +93,7 @@ const NoteEditForm = forwardRef<ChildFormHandles, NoteEditFormProps>(
             {errors.description && <p style={errorStyle}>{errors.description.message}</p>}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid @md:grid-cols-2 gap-3">
             <div className="space-y-2">
               <label htmlFor='track' className="block font-medium text-[#9da6b9]">Track</label>
               <select

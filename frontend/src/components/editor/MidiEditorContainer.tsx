@@ -1,12 +1,15 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Note } from '../../domain/entities/Note';
 import { Song } from '../../domain/entities/Song';
 import useEditorGrid from '../../hooks/useEditorGrid';
+import useSongManager from '../../hooks/useSongManager';
+import { ChildFormHandles } from '../../utils/types';
+import Modal from '../common/Modal';
+import NoteEditForm, { NoteFormData } from '../note/NoteEditForm';
 import { RULER_WIDTH_PX, TIME_UNIT_HEIGHT_PX, TRACK_WIDTH_PX } from './constants';
 import NoteRenderer from './NoteRenderer';
 import TimeRuler from './TimeRuler';
 import TrackHeader from './TrackHeader';
-import useSongManager from '../../hooks/useSongManager';
 
 interface MidiEditorContainerProps {
   currentSong: Song;
@@ -20,12 +23,19 @@ const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, 
     totalEditorWidth,
     allNotes
   } = useEditorGrid({ currentSong });
-  const { editTrackLabel } = useSongManager();
+  const { editTrackLabel, saveNote } = useSongManager();
+  const formRef = useRef<ChildFormHandles>(null);
+  const [isCreateNote, setIsCreateNote] = useState<boolean>(false);
 
   const handleTrackLabelEdit = useCallback(async (trackId: string, newLabel: string) => {
     if (!currentSong.id) return;
     await editTrackLabel(currentSong.id, trackId, newLabel)
   }, [currentSong, editTrackLabel]);
+
+  const handleSave = useCallback(async (data: NoteFormData) => {
+    const success = await saveNote(data);
+    if (success) setIsCreateNote(false);
+  }, [saveNote])
 
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-[#0f1115] relative overflow-hidden">
@@ -49,11 +59,6 @@ const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, 
             totalHeight={totalEditorHeight}
           />
 
-          {/* Following header width */}
-          {/* {currentSong.tracks?.map((track) => (<div 
-            key={track.id}
-            className={`w-[${TRACK_WIDTH_PX}px] shrink-0`}
-          ></div>))} */}
           <div className={`absolute inset-0 left-[${RULER_WIDTH_PX}px] flex pointer-events-none`}>
             {currentSong.tracks?.map((track, index) => {
               return index % 2 ? (
@@ -63,22 +68,32 @@ const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ currentSong, 
               );
             })}
           </div>
-          {/* <div className={`absolute inset-0 left-[${RULER_WIDTH_PX}px] pointer-events-none`}>
-            {timeLines.map((timeLine, index) => {
-              const colors = ['#393d45ff', '#935656ff', '#393d45ff', '#279999ff']
-              const color = colors[index % colors.length];
-              return (
-                <div key={timeLine.key} className={`h-[${TIME_UNIT_HEIGHT_PX}px] shrink-0 w-full border-b border-[${color}]/50`}></div>
-              )
-            })}
-          </div> */}
 
           <NoteRenderer
             notes={allNotes}
             onNoteClick={onNoteClick}
+            onCreateNote={() => setIsCreateNote(true)}
           />
         </div>
       </div>
+
+      <Modal
+        isOpen={isCreateNote}
+        onClose={() => setIsCreateNote(false)}
+        title={'Tạo Note'}
+        textClose='Đóng'
+        textOk='Lưu note'
+        onOk={() => formRef.current?.submitForm()}
+      >
+        <NoteEditForm
+          songId={currentSong.id as string}
+          tracks={currentSong.tracks}
+          maxTime={currentSong.totalDuration}
+          initialNote={null}
+          onSubmit={handleSave}
+          ref={formRef}
+        />
+      </Modal>
     </div>
   );
 };

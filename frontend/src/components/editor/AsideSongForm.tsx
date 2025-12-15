@@ -1,9 +1,9 @@
 import { useRef } from "react";
-import Aside from "../common/Aside"
-import SongSummaryForm from "../song/SongSummaryForm";
-import { ChildFormHandles } from "../../utils/types";
-import useSongManager from "../../hooks/useSongManager";
 import { Song } from "../../domain/entities/Song";
+import useSongManager from "../../hooks/useSongManager";
+import { ChildFormHandles } from "../../utils/types";
+import Aside from "../common/Aside";
+import SongForm from "../song/SongForm";
 
 interface AsideSongFormProps {
   song: Song;
@@ -37,7 +37,7 @@ const AsideSongForm = ({ song }: AsideSongFormProps) => {
         </button>
       ]}
     >
-      <SongSummaryForm 
+      <SongForm
         initialSong={song}
         onSubmit={async (songData) => editSong(song.id as string, songData)}
         ref={propertiesFormRef}

@@ -7,11 +7,12 @@ import { NOTE_SIZE_PX, RULER_WIDTH_PX } from './constants';
 interface NoteRendererProps {
   notes: RenderableNote[];
   onNoteClick: (note: Note) => void;
+  onCreateNote?: () => void;
 }
 
-const NoteRenderer: React.FC<NoteRendererProps> = ({ notes, onNoteClick }) => {
+const NoteRenderer: React.FC<NoteRendererProps> = ({ notes, onNoteClick, onCreateNote }) => {
   return (
-    <div className={`absolute inset-0 left-[${RULER_WIDTH_PX}px] flex`}>
+    <div className={`absolute inset-0 left-[${RULER_WIDTH_PX}px] flex`} onDoubleClick={onCreateNote}>
       <div className='relative'>
         {notes.map((note) => {
           return (
