@@ -9,25 +9,25 @@ export class SongMapper {
    */
   static toPersistence(domain: Song): SongEntity {
     const entity = new SongEntity();
-    if (domain.id) entity.id = domain.id;
+    if (domain.id !== undefined) entity.id = domain.id;
     entity.name = domain.name;
-    if (domain.description) entity.description = domain.description;
+    if (domain.description !== undefined) entity.description = domain.description;
     entity.totalDuration = domain.totalDuration;
-    if (domain.tags) entity.tags = domain.tags;
-    entity.tracks = domain.tracks.map((track) => {
+    if (domain.tags !== undefined) entity.tags = domain.tags;
+    entity.tracks = domain.tracks.map(track => {
       const t = new TrackEntity();
       t.id = track.id;
       t.label = track.label;
       t.order = track.order;
       t.instrument = track.instrument;
-      t.notes = track.notes?.map((note) => {
+      t.notes = track.notes?.map(note => {
         const n = new NoteEntity();
         n.id = note.id;
         n.time = note.time;
         n.title = note.title;
-        if (note.description) n.description = note.description;
+        if (note.description !== undefined) n.description = note.description;
         n.color = note.color;
-        if (note.icon) n.icon = note.icon;
+        if (note.icon !== undefined) n.icon = note.icon;
         return n;
       });
       return t;
@@ -46,7 +46,7 @@ export class SongMapper {
     song.description = persistence.description;
     song.totalDuration = persistence.totalDuration;
     song.tags = persistence.tags;
-    song.tracks = persistence.tracks.map((track) => {
+    song.tracks = persistence.tracks.map(track => {
       return {
         id: track.id,
         song: track.song,

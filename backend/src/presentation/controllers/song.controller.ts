@@ -75,6 +75,11 @@ export class SongController {
     return this.notesUseCase.create(trackId, createNoteDto);
   }
 
+  @Post(':trackId/notes')
+  createNoteOther(@Param('trackId') trackId: string, @Body() createNoteDto: CreateNoteDto) {
+    return this.notesUseCase.create(trackId, createNoteDto);
+  }
+
   @Get(':songId/notes')
   findAllNotesBySong(@Param('songId') songId: string) {
     // Dùng service để lấy Notes, không cần songId
