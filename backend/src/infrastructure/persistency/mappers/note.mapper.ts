@@ -8,13 +8,13 @@ export class NoteMapper {
    */
   static toPersistence(domain: Note): NoteEntity {
     const entity = new NoteEntity();
-    if (domain.id) entity.id = domain.id;
+    if (domain.id !== undefined) entity.id = domain.id;
     entity.time = domain.time;
     entity.title = domain.title;
     entity.color = domain.color;
-    if (domain.description) entity.description = domain.description;
-    if (domain.icon) entity.icon = domain.icon;
-    if (domain.track) entity.track = { id: domain.track.id } as TrackEntity;
+    if (domain.description !== undefined) entity.description = domain.description;
+    if (domain.icon !== undefined) entity.icon = domain.icon;
+    if (domain.track !== undefined) entity.track = { id: domain.track.id } as TrackEntity;
     return entity;
   }
 

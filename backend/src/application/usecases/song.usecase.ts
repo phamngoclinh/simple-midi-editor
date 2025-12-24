@@ -5,7 +5,6 @@
 
 import { Song } from 'src/domain/entities/song.entity';
 import { SongNotFoundException } from 'src/domain/exceptions/SongNotFound.exception';
-import { INoteRepository } from 'src/domain/repositories/note.repository';
 import { ISongRepository } from 'src/domain/repositories/song.repository';
 import { ITrackRepository } from 'src/domain/repositories/track.repository';
 
@@ -24,7 +23,10 @@ export interface UpdateSongDto {
 }
 
 export class SongsUseCase {
-  constructor(private readonly songsRepository: ISongRepository) { }
+  constructor(
+    private readonly songsRepository: ISongRepository,
+    private readonly tracksRepository: ITrackRepository,
+  ) { }
 
   // Lấy tất cả Songs (chỉ metadata)
   findAll(): Promise<Song[]> {
@@ -59,6 +61,29 @@ export class SongsUseCase {
 
     if (!existingSong) {
       throw new SongNotFoundException({ id: updateSong.id });
+    }
+
+    if (updateSong.tracks) {
+      // Lấy IDs của các Tracks cần giữ lại (tức là có trong payload mới)
+      const tracksToKeepIds = new Set(
+        updateSong.tracks.map(trackDto => trackDto.id).filter(id => id),
+      );
+
+      // Lấy IDs của các Tracks hiện có trong DB cần xóa
+      const tracksToRemove = existingSong.tracks.filter(track => !tracksToKeepIds.has(track.id));
+
+      // Thực hiện xóa các Tracks không có trong payload
+      if (tracksToRemove.length > 0) {
+        const trackIdsToRemove = tracksToRemove.map(t => t.id);
+
+        // Vì Track có quan hệ One-to-Many với Note và có 'onDelete: CASCADE',
+        // việc xóa Track sẽ tự động xóa các Notes liên quan.
+        await this.tracksRepository.deleteTracks(trackIdsToRemove);
+
+        existingSong.tracks = existingSong.tracks.filter(
+          track => !trackIdsToRemove.includes(track.id),
+        );
+      }
     }
 
     // 2. Merge DTO với Entity hiện có

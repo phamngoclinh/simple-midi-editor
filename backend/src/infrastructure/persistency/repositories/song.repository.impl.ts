@@ -49,7 +49,7 @@ export class SongRepositoryImpl implements ISongRepository {
       relations: { tracks: { notes: true } },
       order: { tracks: { order: 'ASC' } },
     });
-    return entities.map((entity) => SongMapper.toDomain(entity));
+    return entities.map(entity => SongMapper.toDomain(entity));
   }
 
   deleteSong(id: string): Promise<{ affected?: number | null }> {

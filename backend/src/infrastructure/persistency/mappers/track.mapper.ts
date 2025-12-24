@@ -8,18 +8,18 @@ export class TrackMapper {
    */
   static toPersistence(domain: Track): TrackEntity {
     const entity = new TrackEntity();
-    if (domain.id) entity.id = domain.id;
+    if (domain.id !== undefined) entity.id = domain.id;
     entity.label = domain.label;
     entity.order = domain.order;
     entity.instrument = domain.instrument;
-    entity.notes = domain.notes?.map((note) => {
+    entity.notes = domain.notes?.map(note => {
       const entity = new NoteEntity();
       entity.id = note.id;
-      if (note.time) entity.time = note.time;
+      if (note.time !== undefined) entity.time = note.time;
       entity.title = note.title;
-      if (note.description) entity.description = note.description;
+      if (note.description !== undefined) entity.description = note.description;
       entity.color = note.color;
-      if (note.icon) entity.icon = note.icon;
+      if (note.icon !== undefined) entity.icon = note.icon;
       return entity;
     });
     return entity;

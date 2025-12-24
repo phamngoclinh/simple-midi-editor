@@ -1,7 +1,11 @@
-import { BASE_API_URL } from '../config/api';
-import { CreateNoteDTO, CreateSongDTO, Note, Song, Track, UpdateNoteDTO, UpdateSongDTO } from '../types/api';
+import { BASE_API_URL } from './config';
+import { CreateNoteDTO, CreateSongDTO, Note, Song, Track, UpdateNoteDTO, UpdateSongDTO } from './types';
 
 export async function handleResponse<T>(response: Response): Promise<T> {
+  if (response.status === 204) {
+    return true as T;
+  }
+
   const data = await response.json();
 
   if (!response.ok) {
@@ -47,9 +51,9 @@ export const updateSong = async (songData: UpdateSongDTO): Promise<Song> => {
   return handleResponse<Song>(response);
 };
 
-export const deleteSong = async (songId: string): Promise<void> => {
-  await fetchData(`/${songId}`, 'DELETE');
-  return;
+export const deleteSong = async (songId: string): Promise<boolean> => {
+  const response = await fetchData(`/${songId}`, 'DELETE');
+  return handleResponse<boolean>(response);
 };
 
 export const updateTrackLabel = async (
@@ -70,6 +74,14 @@ export const createNote = async (
   return handleResponse<Note>(response);
 };
 
+export const createNoteOther = async (
+  trackId: string,
+  noteData: CreateNoteDTO
+): Promise<Note> => {
+  const response = await fetchData(`/${trackId}/notes`, 'POST', noteData);
+  return handleResponse<Note>(response);
+};
+
 export const updateNote = async (
   noteId: string,
   noteData: UpdateNoteDTO
@@ -78,9 +90,9 @@ export const updateNote = async (
   return handleResponse<Note>(response);
 };
 
-export const deleteNote = async (noteId: string): Promise<void> => {
-  await fetchData(`/notes/${noteId}`, 'DELETE');
-  return;
+export const deleteNote = async (noteId: string): Promise<boolean> => {
+  const response = await fetchData(`/notes/${noteId}`, 'DELETE');
+  return handleResponse<boolean>(response);
 };
 
 export const findNotesBySong = async (songId: string): Promise<Note[]> => {

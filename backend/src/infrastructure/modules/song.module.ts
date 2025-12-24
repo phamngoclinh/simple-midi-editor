@@ -19,23 +19,20 @@ import { INoteRepository } from 'src/domain/repositories/note.repository';
   providers: [
     {
       provide: SongsUseCase,
-      inject: [ISongRepository],
-      useFactory: (songRepository: ISongRepository) =>
-        new SongsUseCase(songRepository),
+      inject: [ISongRepository, ITrackRepository],
+      useFactory: (songRepository: ISongRepository, trackReposity: ITrackRepository) =>
+        new SongsUseCase(songRepository, trackReposity),
     },
     {
       provide: TracksUseCase,
       inject: [ITrackRepository],
-      useFactory: (trackReposity: ITrackRepository) =>
-        new TracksUseCase(trackReposity),
+      useFactory: (trackReposity: ITrackRepository) => new TracksUseCase(trackReposity),
     },
     {
       provide: NotesUseCase,
       inject: [INoteRepository, ITrackRepository],
-      useFactory: (
-        noteReposity: INoteRepository,
-        trackReposity: ITrackRepository,
-      ) => new NotesUseCase(noteReposity, trackReposity),
+      useFactory: (noteReposity: INoteRepository, trackReposity: ITrackRepository) =>
+        new NotesUseCase(noteReposity, trackReposity),
     },
   ],
   exports: [SongsUseCase, TracksUseCase, NotesUseCase],
