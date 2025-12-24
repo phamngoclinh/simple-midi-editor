@@ -188,6 +188,7 @@ const Color = (props: ColorProps) => {
                 setData(color);
                 onChange?.(e);
               }}
+              name='color'
               id={`color-${color}`}
             />
             <label
@@ -205,6 +206,7 @@ const Color = (props: ColorProps) => {
           type='color'
           value={value}
           id='color-custom'
+          name='color'
           className={`absolute top-0 left-0 w-full h-full scale-[1.7]`}
           onChange={e => {
             setData(e.target.value);
