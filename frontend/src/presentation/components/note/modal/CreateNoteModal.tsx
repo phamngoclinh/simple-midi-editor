@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useMemo, useRef } from 'react';
 import useCreateNote from '../../../hooks/note/useCreateNote';
 import { useNoteFormInitializer } from '../../../hooks/note/useNoteFormInitializer';
@@ -19,15 +18,15 @@ const CreateNoteModal = ({ open, songId, onClose }: CreateNoteModalProps) => {
   const { initializeCreateForm } = useNoteFormInitializer();
   const { createNote } = useCreateNote();
   
-  const handleCreate = useCallback(async (data: NoteFormData) => {
-    const { success } = await createNote(data);
-    if (success) handleClose();
-  }, []);
-
   const handleClose = useCallback(() => {
     closeCreateNoteFormModal();
     onClose?.();
-  }, [])
+  }, [closeCreateNoteFormModal, onClose])
+
+  const handleCreate = useCallback(async (data: NoteFormData) => {
+    const { success } = await createNote(data);
+    if (success) handleClose();
+  }, [createNote, handleClose]);
 
   const noteFormData = useMemo(() => {
     return initializeCreateForm(songId);

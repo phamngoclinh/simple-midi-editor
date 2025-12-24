@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import NoteListItem from './NoteListItem';
 import useNoteList from '../../hooks/note/useNoteList';

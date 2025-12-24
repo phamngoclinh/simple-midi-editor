@@ -59,8 +59,8 @@ const SongListItem: React.FC<SongListItemProps> = ({ id }) => {
 
   return (
     <div className='group relative flex flex-col bg-white dark:bg-[#1e2430] rounded-xl border border-slate-200 dark:border-[#282e39] hover:border-primary/50 dark:hover:border-primary/50 transition-all hover:shadow-xl hover:shadow-primary/5'>
-      <div className='relative aspect-video bg-[#101622] p-4 flex items-center justify-center group-hover:bg-[#151b26] transition-colors' onClick={handleEdit}>
-        <VisualizationBar notes={notes} />
+      <div className='relative aspect-video bg-[#101622] p-4 flex items-center justify-center group-hover:bg-[#151b26] transition-colors rounded-t-xl overflow-hidden' onClick={handleEdit}>
+        <VisualizationBar notes={notes} totalDuration={song.totalDuration} />
         <div className='absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-[1px]'>
           <button className='size-12 rounded-full bg-white dark:bg-white text-primary flex items-center justify-center shadow-lg hover:scale-110 transition-transform'>
             <span className='material-symbols-outlined text-[28px] ml-1'>edit</span>

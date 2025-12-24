@@ -21,7 +21,7 @@ class ImportSongUseCase extends BaseUseCase<SongDocument, SongAggregate> {
       name: importData.name,
       description: importData.description,
       totalDuration: importData.totalDuration,
-      tags: importData.tags,
+      tags: importData.tags || [],
       tracks: importData.trackLabels.map((label, trackIdx) => ({
         id: generateId('track'),
         label,

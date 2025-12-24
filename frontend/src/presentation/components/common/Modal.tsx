@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { DefaultButton, PrimaryButton, SecondaryButton } from './Button';
+import { DefaultButton, PrimaryButton } from './Button';
 
 interface ModalProps {
   isOpen: boolean;

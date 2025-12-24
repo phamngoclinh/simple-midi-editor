@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback } from 'react';
 import { useStudioDispatch, useStudioSelector } from '../../../infrastructure/stores/studio';
 

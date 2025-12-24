@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useState } from 'react';
 import NoteEntity from '../../../domain/note/noteEntity';
 import AsideNoteForm from './AsideNoteForm';
@@ -16,7 +15,7 @@ const MidiEditorManager: React.FC<MidiEditorProps> = ({ songId }) => {
   const handleStartEditNote = useCallback((note: NoteEntity | null) => {
     setIsOpenAside(true);
     setEditingNote(note);
-  }, [isOpenAside])
+  }, [])
 
   return <>
     <MidiEditorContainer songId={songId} onNoteClick={handleStartEditNote} />

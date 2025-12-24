@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback } from 'react';
 import { useModalDispatch, useModalState } from '../../../infrastructure/stores/modal/ModalContext';
 import { AlertOptions, ConfirmationOptions, ToastOptions } from '../../../infrastructure/stores/modal/modalTypes';

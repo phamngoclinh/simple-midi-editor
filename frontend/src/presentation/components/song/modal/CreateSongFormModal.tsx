@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useEffect, useRef } from 'react';
 import useCreateSong from '../../../hooks/song/useCreateSong';
 import { useSongFormInitializer } from '../../../hooks/song/useSongFormInitializer';
@@ -21,11 +20,11 @@ const CreateSongFormModal = ({ open, onClose }: { open: boolean, onClose?: () =>
   const handleClose = useCallback(() => {
     closeCreateSongFormModal();
     onClose?.();
-  }, [])
+  }, [closeCreateSongFormModal, onClose])
 
   useEffect(() => {
     if (open) initializeCreateForm();
-  }, [open])
+  }, [open, initializeCreateForm])
 
   return (
     <Modal

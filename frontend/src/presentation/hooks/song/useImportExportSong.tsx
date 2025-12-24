@@ -24,7 +24,7 @@ const SongDocumentSchema = z.object({
     })
   ),
   
-  tags: z.array(z.string())
+  tags: z.array(z.string()).optional(),
 });
 
 type SongDocument = z.infer<typeof SongDocumentSchema>;

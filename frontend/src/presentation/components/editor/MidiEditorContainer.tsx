@@ -1,15 +1,10 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React from 'react';
 import useEditorGrid from '../../hooks/useEditorGrid';
-import { ChildFormHandles, NoteFormData } from '../../utils/types';
-import Modal from '../common/Modal';
 import NoteRenderer from './NoteRenderer';
 import TimeRuler from './TimeRuler';
 import TrackHeader from './TrackHeader';
-import SongEntity from '../../../domain/song/songEntity';
 import NoteEntity from '../../../domain/note/noteEntity';
-import useModalAction from '../../hooks/store/useModalAction';
 import useStudioAction from '../../hooks/store/useStudioAction';
-import useSong from '../../hooks/song/useSong';
 
 interface MidiEditorContainerProps {
   songId: string;

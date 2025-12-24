@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
 import NoteModalContainer from '../components/note/modal/NoteModalContainer';
 import SongList from '../components/song/SongList';

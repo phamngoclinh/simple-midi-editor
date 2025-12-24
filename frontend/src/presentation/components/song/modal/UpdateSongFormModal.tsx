@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useMemo, useRef } from 'react';
 import { useSongFormInitializer } from '../../../hooks/song/useSongFormInitializer';
 import useUpdateSong from '../../../hooks/song/useUpdateSong';
@@ -21,11 +20,11 @@ const UpdateSongFormModal = ({ songId, open, onClose }: { songId: string; open: 
   const handleClose = useCallback(() => {
     closeUpdateSongFormModal();
     onClose?.();
-  }, [])
+  }, [closeUpdateSongFormModal, onClose])
 
   const songFormData = useMemo(() => {
     return initializeUpdateForm(songId);
-  }, [])
+  }, [songId, initializeUpdateForm])
 
   return (
     <Modal

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useState } from 'react';
 import { initializeSongUseCase } from '../../../dependencies';
 import { useSongsState } from '../../../infrastructure/stores/studio';

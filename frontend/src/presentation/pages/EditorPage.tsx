@@ -11,7 +11,7 @@ const EditorPage = () => {
 
   useEffect(() => {
     if (songId) loadSong(songId);
-  }, []);
+  }, [songId, loadSong]);
 
   if (loading) return <>Đang tải bài hát</>
 

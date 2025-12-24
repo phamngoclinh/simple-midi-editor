@@ -19,7 +19,7 @@ const AsideSongForm = ({ songId }: AsideSongFormProps) => {
 
   const songFormData = useMemo(() => {
     return initializeUpdateForm(songId);
-  }, [])
+  }, [songId, initializeUpdateForm])
 
   return (
     <Aside

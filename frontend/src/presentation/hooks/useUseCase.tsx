@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Result } from '../../application/shared/result';
 import useModalAction from './store/useModalAction';
 
@@ -6,7 +6,7 @@ export function useUseCase() {
   const { showToast } = useModalAction();
   const [loading, setLoading] = useState(false);
 
-  const call = async <T = any>(
+  const call = useCallback(async <T = any>(
     fn: (...args: any) => Promise<Result<T>>,
     messages: { success?: string, error?: string, extraError?: string },
     ...args: any
@@ -32,7 +32,7 @@ export function useUseCase() {
       }
     }
     return result;
-  };
+  }, [showToast]);
 
   return { call, loading };
 }

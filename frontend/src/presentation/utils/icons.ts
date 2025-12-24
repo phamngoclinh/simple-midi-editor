@@ -8,5 +8,3 @@ export const MUSIC_ICONS: { key: string, symbol: string, description: string }[]
   { key: 'piano', symbol: '🎹', description: 'Hợp âm / Chord' },
   { key: 'star', symbol: '✨', description: 'Hiệu ứng / FX' },
 ];
-
-export const DEFAULT_COLORS = ['#135bec', '#f43f5e', '#10b981', '#f59e0b', '#a855f7'];

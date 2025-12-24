@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useState } from 'react';
 import generateId from '../../../application/usecases/common/generateId';
 import { useSongsState } from '../../../infrastructure/stores/studio';

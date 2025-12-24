@@ -18,15 +18,15 @@ const UpdateNoteModal = ({ open, noteId, onClose }: UpdateNoteModalProps) => {
   const { initializeUpdateForm } = useNoteFormInitializer();
   const { updateNote } = useUpdateNote();
   
-  const handleUpdate = useCallback(async (data: NoteFormData) => {
-    const { success } = await updateNote(data);
-    if (success) handleClose();
-  }, []);
-
   const handleClose = useCallback(() => {
     closeUpdateNoteFormModal();
     onClose?.();
-  }, [])
+  }, [closeUpdateNoteFormModal, onClose])
+  
+  const handleUpdate = useCallback(async (data: NoteFormData) => {
+    const { success } = await updateNote(data);
+    if (success) handleClose();
+  }, [updateNote, handleClose]);
 
   const noteFormData = useMemo(() => {
     return initializeUpdateForm(noteId);

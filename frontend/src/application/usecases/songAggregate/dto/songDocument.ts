@@ -23,7 +23,7 @@ interface SongDocument {
 
   }[];
 
-  tags: string[]
+  tags?: string[]
 }
 
 export default SongDocument;
