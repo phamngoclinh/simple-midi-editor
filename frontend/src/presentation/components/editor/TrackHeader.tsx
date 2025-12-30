@@ -1,5 +1,8 @@
 import React from 'react';
-import { ResizableColumn, useResizableContext } from '../../../infrastructure/stores/ResizableContext';
+import {
+  ResizableColumn,
+  useResizableContext,
+} from '../../../infrastructure/stores/ResizableContext';
 
 interface TrackHeaderProps {}
 
@@ -11,19 +14,19 @@ interface TrackHeadItemProps {
 const TrackHeadItem: React.FC<TrackHeadItemProps> = ({ track, intervalClasses }) => {
   const { handleColumnResizeStart } = useResizableContext();
   return (
-    <div 
-      style={trackHeaderItemStyle}
-      className={`w-[${track.width}px] px-2 py-3 text-center text-white text-sm font-bold uppercase ${intervalClasses} relative`}
+    <div
+      style={{ ...trackHeaderItemStyle, width: `${track.width}px` }}
+      className={`px-2 py-3 text-center text-foreground text-sm font-bold uppercase ${intervalClasses} relative`}
     >
-      <span className='block truncate'>{track.label}</span>
+      <span className="block truncate">{track.label}</span>
       <span>#{track.order + 1}</span>
       <div
-        onMouseDown={(e) => handleColumnResizeStart(e, track.id)}
-        className='absolute top-0 bottom-0 right-0 w-[5px] cursor-col-resize bg-transparent flex justify-center items-center hover:bg-[#333333] text-[#4c4c4c]'
+        onMouseDown={e => handleColumnResizeStart(e, track.id)}
+        className="absolute top-0 bottom-0 right-0 w-[5px] cursor-col-resize bg-transparent flex justify-center items-center hover:bg-surface-hover text-muted-foreground"
       ></div>
     </div>
   );
-}
+};
 
 const TrackHeader: React.FC<TrackHeaderProps> = () => {
   const { columns } = useResizableContext();
@@ -31,17 +34,13 @@ const TrackHeader: React.FC<TrackHeaderProps> = () => {
   const renderTrackItem = (track: ResizableColumn, index: number) => {
     const trackId = track.id || index;
 
-    let intervalClasses = 'bg-[#111318]';
-    if (index % 2) intervalClasses = 'bg-[#1c1f27]';
+    let intervalClasses = 'bg-background';
+    if (index % 2) intervalClasses = 'bg-muted/50';
 
-    return <TrackHeadItem key={trackId} track={track} intervalClasses={intervalClasses} />
+    return <TrackHeadItem key={trackId} track={track} intervalClasses={intervalClasses} />;
   };
 
-  return (
-    <div className='flex-1 flex'>
-      {columns.map(renderTrackItem)}
-    </div>
-  );
+  return <div className="flex-1 flex">{columns.map(renderTrackItem)}</div>;
 };
 
 export default TrackHeader;

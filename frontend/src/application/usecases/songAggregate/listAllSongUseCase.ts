@@ -11,7 +11,6 @@ export interface ListAllSongsInput {
 }
 
 class ListAllSongsUseCase extends BaseUseCase<ListAllSongsInput, SongAggregate[]> {
-
   private songAggregateRepository: SongAggregateRepository;
 
   constructor(songAggregateRepository: SongAggregateRepository) {
@@ -57,7 +56,6 @@ class ListAllSongsUseCase extends BaseUseCase<ListAllSongsInput, SongAggregate[]
 
     return songs;
   }
-
 }
 
 export default ListAllSongsUseCase;

@@ -11,7 +11,7 @@ const initialModalState: ModalState = {
     message: '',
     resolve: null,
   },
-  toasts: []
+  toasts: [],
 };
 
 export default initialModalState;

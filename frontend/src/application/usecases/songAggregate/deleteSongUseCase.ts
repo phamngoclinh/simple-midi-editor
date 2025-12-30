@@ -3,7 +3,6 @@ import SongAggregateRepository from '../../../domain/songAggregate/songAggregate
 import BaseUseCase from '../baseUseCase';
 
 class DeleteSongUseCase extends BaseUseCase<Id, boolean> {
-
   private songRepository: SongAggregateRepository;
 
   constructor(songRepository: SongAggregateRepository) {
@@ -15,7 +14,6 @@ class DeleteSongUseCase extends BaseUseCase<Id, boolean> {
   handle(songId: Id) {
     return this.songRepository.deleteById(songId);
   }
-
 }
 
 export default DeleteSongUseCase;

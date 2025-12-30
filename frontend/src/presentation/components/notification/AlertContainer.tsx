@@ -1,3 +1,5 @@
+'use client';
+
 import useModalAction from '../../hooks/store/useModalAction';
 import Alert from '../common/Alert';
 
@@ -12,7 +14,7 @@ const AlertContainer = () => {
       title={alertState.title}
       onClose={handleCloseAlert}
     />
-  )
-}
+  );
+};
 
 export default AlertContainer;

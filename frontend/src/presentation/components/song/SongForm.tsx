@@ -3,6 +3,7 @@ import { FormProvider, SubmitHandler, useController, useForm } from 'react-hook-
 import { ChildFormHandles, SongFormData } from '../../utils/types';
 import TracksSetting from './TracksSetting';
 import FormField from '../common/FormField';
+import { useTranslations } from 'next-intl';
 
 interface SongFormProps {
   initialFormValues: SongFormData;
@@ -10,13 +11,16 @@ interface SongFormProps {
 }
 
 const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
-  ({
-    onSubmit,
-    initialFormValues,
-  }, ref) => {
+  ({ onSubmit, initialFormValues }, ref) => {
+    const t = useTranslations('SongForm');
     const methods = useForm<SongFormData>({ defaultValues: initialFormValues });
 
-    const { register, handleSubmit, control, formState: { errors } } = methods;
+    const {
+      register,
+      handleSubmit,
+      control,
+      formState: { errors },
+    } = methods;
 
     const { field: tagsField } = useController({
       name: 'tags',
@@ -26,64 +30,66 @@ const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
     useImperativeHandle(ref, () => ({
       submitForm() {
         handleSubmit(handleRHFSubmit)();
-      }
+      },
     }));
 
-    const handleRHFSubmit: SubmitHandler<SongFormData> = (data) => {
+    const handleRHFSubmit: SubmitHandler<SongFormData> = data => {
       onSubmit(data);
     };
 
     return (
       <FormProvider {...methods}>
-        <form name='edit-song-form' onSubmit={handleSubmit(handleRHFSubmit)} className='@container'>
-          <div className='space-y-4'>
-            <div className='flex items-center gap-2 mb-2'>
-              <span className='material-symbols-outlined text-primary !text-[20px]'>info</span>
-              <h3 className='text-white text-lg font-bold leading-tight tracking-[-0.015em]'>Thông tin chung</h3>
+        <form name="edit-song-form" onSubmit={handleSubmit(handleRHFSubmit)} className="@container">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="material-symbols-outlined text-primary !text-[20px]">info</span>
+              <h3 className="text-foreground text-lg font-bold leading-tight tracking-[-0.015em]">
+                {t('generalInfo')}
+              </h3>
             </div>
 
             <FormField>
-              <FormField.Label htmlFor='name'>Tên bài hát</FormField.Label>
+              <FormField.Label htmlFor="name">{t('nameLabel')}</FormField.Label>
               <FormField.Input
-                id='name'
-                placeholder='Ví dụ: Giai điệu mùa hè'
-                autoComplete='false'
+                id="name"
+                placeholder={t('namePlaceholder')}
+                autoComplete="false"
                 autoFocus
-                {...register('name', { required: 'Tên bài hát là bắt buộc', maxLength: 100 })}
+                {...register('name', { required: t('nameRequired'), maxLength: 100 })}
               />
               <FormField.ErrorMessage message={errors.name?.message} />
             </FormField>
 
             <FormField>
-              <FormField.Label htmlFor='desc'>Mô tả</FormField.Label>
+              <FormField.Label htmlFor="desc">{t('descriptionLabel')}</FormField.Label>
               <FormField.Textarea
-                id='desc'
+                id="desc"
                 {...register('description', { maxLength: 500 })}
-                placeholder='Ghi chú về nhịp điệu, cảm xúc...'
+                placeholder={t('descriptionPlaceholder')}
               />
               <FormField.ErrorMessage message={errors.description?.message} />
             </FormField>
 
-            <div className='grid grid-cols-1 @md:grid-cols-2 gap-4'>
+            <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
               <FormField>
-                <FormField.Label htmlFor='totalDuration'>Tổng thời lượng (giây)</FormField.Label>
+                <FormField.Label htmlFor="totalDuration">{t('durationLabel')}</FormField.Label>
                 <FormField.Number
-                  id='totalDuration'
-                  placeholder='3:00'
-                  leftIcon='schedule'
+                  id="totalDuration"
+                  placeholder="3:00"
+                  leftIcon="schedule"
                   {...register('totalDuration', {
-                    required: 'Thời lượng là bắt buộc',
-                    min: { value: 1, message: 'Thời lượng phải lớn hơn 0' },
+                    required: t('durationRequired'),
+                    min: { value: 1, message: t('durationMin') },
                     valueAsNumber: true,
                   })}
                 />
                 <FormField.ErrorMessage message={errors.totalDuration?.message} />
               </FormField>
               <FormField>
-                <FormField.Label htmlFor='tags'>Thẻ (Tags)</FormField.Label>
+                <FormField.Label htmlFor="tags">{t('tagsLabel')}</FormField.Label>
                 <FormField.Tags
-                  id='tags'
-                  placeholder='rock, drums, simple'
+                  id="tags"
+                  placeholder={t('tagsPlaceholder')}
                   maxTags={10}
                   {...tagsField}
                 />
@@ -92,13 +98,15 @@ const SongForm = forwardRef<ChildFormHandles, SongFormProps>(
             </div>
           </div>
 
-          <div className='h-px w-full bg-border-dark/50 mt-8 mb-8'></div>
+          <div className="h-px w-full bg-border mt-8 mb-8"></div>
 
           <TracksSetting register={register} control={control} />
         </form>
       </FormProvider>
     );
-  }
-)
+  },
+);
+
+SongForm.displayName = 'SongForm';
 
 export default SongForm;

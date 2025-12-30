@@ -13,18 +13,18 @@ export const storeSongMapper = {
       tracks.push({
         ...track,
         songId: song.id,
-      })
+      });
       trackNotes.forEach(n => {
         notes.push({
           ...n,
           trackId: track.id,
-        })
-      })
+        });
+      });
     });
     return {
       song: song,
       tracks: tracks,
       notes: notes,
-    }
-  }
-}
+    };
+  },
+};

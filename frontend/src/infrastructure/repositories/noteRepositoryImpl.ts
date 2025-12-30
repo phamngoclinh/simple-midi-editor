@@ -5,7 +5,6 @@ import NoteMapper from '../mapper/noteMapper';
 import { createNoteOther, deleteNote, findNotesBySong, updateNote } from '../services/api';
 
 export class NoteRepositoryImpl implements NoteRepository {
-
   async create(note: NoteEntity): Promise<NoteEntity> {
     const result = await createNoteOther(note.trackId, note);
     return NoteMapper.toDomain(result);
@@ -33,5 +32,4 @@ export class NoteRepositoryImpl implements NoteRepository {
   findByTrackId(trackId: Id): Promise<NoteEntity[]> {
     throw new Error('Method not implemented.');
   }
-
 }

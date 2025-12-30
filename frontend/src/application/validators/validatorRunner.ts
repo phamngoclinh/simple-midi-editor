@@ -1,7 +1,7 @@
 import { ValidationError } from '../shared/result';
 
 export const runValidators = (
-  validations: { field: string; error: string | null }[]
+  validations: { field: string; error: string | null }[],
 ): ValidationError => {
   const errors: ValidationError = {};
 

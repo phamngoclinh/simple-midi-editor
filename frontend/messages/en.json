@@ -1,0 +1,121 @@
+{
+  "Home": {
+    "title": "My Songs",
+    "description": "Manage your MIDI projects and realize new ideas.",
+    "loading": "Loading data...",
+    "error": "Error loading song list.",
+    "createButton": "Create New Song",
+    "importButton": "Import Song"
+  },
+  "Editor": {
+    "loading": "Loading song...",
+    "notFound": "Song not found.",
+    "back": "Back",
+    "save": "Save",
+    "delete": "Delete",
+    "export": "Export",
+    "editNote": "Edit note",
+    "editNoteDetails": "Edit note details",
+    "editSong": "Edit song",
+    "editSongDetails": "Edit song details",
+    "initializingForm": "Initializing form..."
+  },
+  "Common": {
+    "cancel": "Cancel",
+    "ok": "OK",
+    "delete": "Delete",
+    "save": "Save",
+    "tracks": "tracks",
+    "unknownDate": "Unknown Date",
+    "openEditor": "Open Editor",
+    "manageNotes": "Manage Notes",
+    "exportJson": "Export (JSON)",
+    "edit": "Edit",
+    "deleteLabel": "Delete",
+    "saveNote": "Save note",
+    "saveSong": "Save song",
+    "updateNote": "Update note",
+    "updateSong": "Update song"
+  },
+  "SongForm": {
+    "generalInfo": "General Information",
+    "nameLabel": "Song Name",
+    "namePlaceholder": "Example: Summer Melody",
+    "nameRequired": "Song name is required",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Notes about rhythm, emotion...",
+    "durationLabel": "Total Duration (seconds)",
+    "durationRequired": "Duration is required",
+    "durationMin": "Duration must be greater than 0",
+    "tagsLabel": "Tags",
+    "tagsPlaceholder": "rock, drums, simple",
+    "tracks": "Tracks Setting"
+  },
+  "NoteForm": {
+    "generalInfo": "Note Information",
+    "titleLabel": "Note Title",
+    "titlePlaceholder": "Example: C3 Piano",
+    "titleRequired": "Title is required",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Add detail about this note...",
+    "timeLabel": "Start Time (seconds)",
+    "timeRequired": "Start time is required",
+    "timeMin": "Time cannot be negative",
+    "colorLabel": "Color",
+    "iconLabel": "Icon",
+    "trackLabel": "Track",
+    "trackRequired": "Track is required"
+  },
+  "Notification": {
+    "createSongSuccess": "Song created successfully",
+    "createSongFailure": "Failed to create song",
+    "readSongFailure": "Failed to load song",
+    "readSongsFailure": "Failed to load song list",
+    "updateSongSuccess": "Song updated successfully",
+    "updateSongFailure": "Failed to update song",
+    "deleteSongSuccess": "Song deleted successfully",
+    "deleteSongFailure": "Failed to delete song",
+    "saveNoteSuccess": "Note saved successfully",
+    "saveNoteFailure": "Failed to save note",
+    "deleteNoteSuccess": "Note deleted successfully",
+    "deleteNoteFailure": "Failed to delete note"
+  },
+  "Confirmation": {
+    "deleteSongTitle": "Confirm Delete",
+    "deleteSongMessage": "Are you sure you want to delete this song?",
+    "deleteSongAction": "DELETE PERMANENTLY",
+    "deleteNoteTitle": "Confirm Delete",
+    "deleteNoteMessage": "Are you sure you want to delete this note?",
+    "deleteNoteAction": "DELETE PERMANENTLY",
+    "deleteTrackTitle": "Delete Track"
+  },
+  "Tracks": {
+    "deleteWarning": "Deleting a track will delete all associated notes. This action cannot be undone after saving!",
+    "addTrack": "Add Track"
+  },
+  "API": {
+    "httpError": "HTTP Error: {status}",
+    "networkError": "Server issue or network connection error."
+  },
+  "Icons": {
+    "none": "No Icon",
+    "melody": "Melody",
+    "chord": "Chord",
+    "fx": "FX"
+  },
+  "Metadata": {
+    "title": "Simple Midi Editor",
+    "description": "A simple MIDI editor built with React and Next.js"
+  },
+  "NoteList": {
+    "empty": "No Notes in this song yet.",
+    "time": "Time",
+    "track": "Track",
+    "color": "Color",
+    "icon": "Icon",
+    "title": "Title",
+    "actions": "Actions",
+    "description": "Description",
+    "createButton": "Create New Note"
+  }
+}

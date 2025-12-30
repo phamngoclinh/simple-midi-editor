@@ -5,7 +5,6 @@ import SongMapper from '../mapper/songMapper';
 import { deleteSong, fetchAllSongs, fetchSongDetails } from '../services/api';
 
 export class SongRepositoryImpl implements SongRepository {
-
   save(song: SongEntity): Promise<SongEntity> {
     throw new Error('Method not implemented.');
   }
@@ -16,12 +15,11 @@ export class SongRepositoryImpl implements SongRepository {
   }
 
   async findAll(): Promise<SongEntity[]> {
-    const response = await fetchAllSongs()
-    return response.map(SongMapper.toDomain)
+    const response = await fetchAllSongs();
+    return response.map(SongMapper.toDomain);
   }
 
   deleteById(songId: Id): Promise<boolean> {
     return deleteSong(songId);
   }
-
 }

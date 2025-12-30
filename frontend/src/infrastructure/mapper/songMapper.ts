@@ -3,7 +3,6 @@ import SongAggregate from '../../domain/songAggregate/songAggregate';
 import { Song as SongResponse } from '../services/types';
 
 const SongMapper = {
-
   toDomain(response: SongResponse): SongEntity {
     return {
       id: response.id,
@@ -12,8 +11,8 @@ const SongMapper = {
       totalDuration: response.totalDuration,
       tags: response.tags,
       createdTimestamp: response.createdTimestamp,
-      updatedTimestamp: response.updatedTimestamp
-    }
+      updatedTimestamp: response.updatedTimestamp,
+    };
   },
 
   toSongAggrate(response: SongResponse): SongAggregate {
@@ -41,9 +40,8 @@ const SongMapper = {
       })),
       createdTimestamp: song.createdTimestamp,
       updatedTimestamp: song.updatedTimestamp,
-    }
-  }
-
-}
+    };
+  },
+};
 
 export default SongMapper;

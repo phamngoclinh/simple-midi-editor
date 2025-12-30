@@ -7,7 +7,7 @@ const initialStudioState: StudioState = {
   uiState: {
     isLoadingSong: true,
     isLoadingSongs: true,
-  }
+  },
 };
 
 export default initialStudioState;

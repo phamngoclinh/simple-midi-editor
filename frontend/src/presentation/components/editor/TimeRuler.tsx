@@ -9,14 +9,14 @@ interface TimeRulerProps {
   hightLightHorizontalLines: React.CSSProperties;
 }
 
-const TimeRuler: React.FC<TimeRulerProps> = ({
+const TimeRuler = ({
   totalDuration,
   totalHeight,
   width,
   timeUnitHeight,
   secondPerUnit,
   hightLightHorizontalLines,
-}) => {
+}: TimeRulerProps) => {
   const timeLabels = useMemo(() => {
     const labels = [];
     const majorInterval = 5;
@@ -38,22 +38,25 @@ const TimeRuler: React.FC<TimeRulerProps> = ({
           key={`ruler-${i}`}
           style={{
             top: yPos,
+            height: `${timeUnitHeight}px`,
           }}
-          className={`h-[${timeUnitHeight}px] px-4 pt-2`}
+          className="px-4 pt-2"
         >
           {timeInSeconds}s
-        </div>
+        </div>,
       );
     }
     return labels;
   }, [totalDuration, totalHeight, timeUnitHeight, secondPerUnit]);
 
   return (
-    <div style={hightLightHorizontalLines} className={`w-[${width}px] flex-none border-r border-[#282e39] bg-[#111318] flex flex-col text-[#58627a] text-sm font-mono select-none`}>
+    <div
+      style={{ ...hightLightHorizontalLines, width: `${width}px` }}
+      className={`flex-none border-r border-border bg-background flex flex-col text-muted-foreground text-sm font-mono select-none`}
+    >
       {timeLabels}
     </div>
   );
 };
 
 export default TimeRuler;
-

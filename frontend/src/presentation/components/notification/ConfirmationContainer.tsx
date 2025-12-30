@@ -1,9 +1,11 @@
+'use client';
+
 import useModalAction from '../../hooks/store/useModalAction';
 import Confirmation from '../common/Confirmation';
 
 const ConfirmationContainer = () => {
   const { confirmationState, handleConfirm, handleCancel } = useModalAction();
-  
+
   return (
     <Confirmation
       isVisible={confirmationState.isVisible}
@@ -13,7 +15,7 @@ const ConfirmationContainer = () => {
       onConfirm={handleConfirm}
       onCancel={handleCancel}
     />
-  )
-}
+  );
+};
 
 export default ConfirmationContainer;

@@ -1,17 +1,13 @@
 import React, { useMemo } from 'react';
-import {
-  PRIMARY_GRID_COLOR,
-  SECONDARY_GRID_COLOR,
-} from '../../utils/editor';
+import { PRIMARY_GRID_COLOR, SECONDARY_GRID_COLOR } from '../../utils/editor';
 
 interface TimeGridProps {
   totalHeight: number;
-  timeLines: { key: string; top: number; isMajorInterval: boolean }[]
-  trackLines: { key: string; left: number; }[]
+  timeLines: { key: string; top: number; isMajorInterval: boolean }[];
+  trackLines: { key: string; left: number }[];
 }
 
 const TimeGrid: React.FC<TimeGridProps> = ({ totalHeight, timeLines, trackLines }) => {
-
   const timeLinesRenderer = useMemo(() => {
     const lines = [];
     for (let i = 0; i < timeLines.length; i++) {
@@ -21,12 +17,14 @@ const TimeGrid: React.FC<TimeGridProps> = ({ totalHeight, timeLines, trackLines 
             style={{
               ...horizontalLineStyle,
               top: timeLines[i].top,
-              borderBottomColor: timeLines[i].isMajorInterval ? PRIMARY_GRID_COLOR : SECONDARY_GRID_COLOR,
+              borderBottomColor: timeLines[i].isMajorInterval
+                ? PRIMARY_GRID_COLOR
+                : SECONDARY_GRID_COLOR,
               borderBottomWidth: timeLines[i].isMajorInterval ? 1.5 : 1,
               opacity: timeLines[i].isMajorInterval ? 1.0 : 0.6,
             }}
           />
-        </React.Fragment>
+        </React.Fragment>,
       );
     }
     return lines;
@@ -43,7 +41,7 @@ const TimeGrid: React.FC<TimeGridProps> = ({ totalHeight, timeLines, trackLines 
             left: trackLines[i].left,
             borderLeftColor: PRIMARY_GRID_COLOR,
           }}
-        />
+        />,
       );
     }
     return lines;

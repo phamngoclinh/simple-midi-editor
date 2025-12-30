@@ -1,0 +1,121 @@
+{
+  "Home": {
+    "title": "Bài hát của tôi",
+    "description": "Quản lý các dự án MIDI của bạn và hiện thực hoá ý tưởng mới.",
+    "loading": "Đang tải dữ liệu...",
+    "error": "Lỗi khi tải danh sách bài hát.",
+    "createButton": "Tạo bài hát mới",
+    "importButton": "Import Song"
+  },
+  "Editor": {
+    "loading": "Đang tải bài hát...",
+    "notFound": "Không tìm thấy bài hát.",
+    "back": "Quay lại",
+    "save": "Lưu",
+    "delete": "Xoá",
+    "export": "Xuất file",
+    "editNote": "Sửa note",
+    "editNoteDetails": "Sửa chi tiết note",
+    "editSong": "Sửa bài hát",
+    "editSongDetails": "Sửa chi tiết bài hát",
+    "initializingForm": "Đang khởi tạo form..."
+  },
+  "Common": {
+    "cancel": "Hủy bỏ",
+    "ok": "OK",
+    "delete": "Xoá",
+    "save": "Lưu",
+    "tracks": "tracks",
+    "unknownDate": "Chưa xác định",
+    "openEditor": "Mở Editor",
+    "manageNotes": "Quản lý Notes",
+    "exportJson": "Xuất file (JSON)",
+    "edit": "Sửa",
+    "deleteLabel": "Xoá",
+    "saveNote": "Lưu note",
+    "saveSong": "Lưu bài hát",
+    "updateNote": "Cập nhật note",
+    "updateSong": "Cập nhật bài hát"
+  },
+  "SongForm": {
+    "generalInfo": "Thông tin chung",
+    "nameLabel": "Tên bài hát",
+    "namePlaceholder": "Ví dụ: Giai điệu mùa hè",
+    "nameRequired": "Tên bài hát là bắt buộc",
+    "descriptionLabel": "Mô tả",
+    "descriptionPlaceholder": "Ghi chú về nhịp điệu, cảm xúc...",
+    "durationLabel": "Tổng thời lượng (giây)",
+    "durationRequired": "Thời lượng là bắt buộc",
+    "durationMin": "Thời lượng phải lớn hơn 0",
+    "tagsLabel": "Thẻ (Tags)",
+    "tagsPlaceholder": "rock, drums, simple",
+    "tracks": "Thiết lập Tracks"
+  },
+  "NoteForm": {
+    "generalInfo": "Thông tin Note",
+    "titleLabel": "Tiêu đề Note",
+    "titlePlaceholder": "Ví dụ: C3 Piano",
+    "titleRequired": "Tiêu đề là bắt buộc",
+    "descriptionLabel": "Mô tả",
+    "descriptionPlaceholder": "Thêm chi tiết về note này...",
+    "timeLabel": "Thời gian bắt đầu (giây)",
+    "timeRequired": "Thời gian là bắt buộc",
+    "timeMin": "Thời gian không được âm",
+    "colorLabel": "Màu sắc",
+    "iconLabel": "Icon",
+    "trackLabel": "Track",
+    "trackRequired": "Track là bắt buộc"
+  },
+  "Notification": {
+    "createSongSuccess": "Tạo bài hát thành công",
+    "createSongFailure": "Tạo bài hát thất bại",
+    "readSongFailure": "Tải bài hát thất bại",
+    "readSongsFailure": "Tải danh sách bài hát thất bại",
+    "updateSongSuccess": "Cập nhật bài hát thành công",
+    "updateSongFailure": "Cập nhật bài hát thất bại",
+    "deleteSongSuccess": "Xoá bài hát thành công",
+    "deleteSongFailure": "Xoá bài hát thất bại",
+    "saveNoteSuccess": "Lưu note thành công",
+    "saveNoteFailure": "Lưu note thất bại",
+    "deleteNoteSuccess": "Xoá note thành công",
+    "deleteNoteFailure": "Xoá note thất bại"
+  },
+  "Confirmation": {
+    "deleteSongTitle": "Xác nhận Xóa",
+    "deleteSongMessage": "Bạn có chắc chắn muốn xóa bài hát không?",
+    "deleteSongAction": "XÓA VĨNH VIỄN",
+    "deleteNoteTitle": "Xác nhận Xóa",
+    "deleteNoteMessage": "Bạn có chắc chắn muốn xóa Note này không?",
+    "deleteNoteAction": "XÓA VĨNH VIỄN",
+    "deleteTrackTitle": "Xoá Track"
+  },
+  "Tracks": {
+    "deleteWarning": "Xoá track sẽ xoá tất cả các notes liên quan. Hành động này không thể thu hồi sau khi lưu!",
+    "addTrack": "Thêm Track"
+  },
+  "API": {
+    "httpError": "Lỗi HTTP: {status}",
+    "networkError": "Server gặp sự cố hoặc lỗi đường truyền mạng."
+  },
+  "Icons": {
+    "none": "Không có Icon",
+    "melody": "Giai điệu / Melody",
+    "chord": "Hợp âm / Chord",
+    "fx": "Hiệu ứng / FX"
+  },
+  "Metadata": {
+    "title": "Simple Midi Editor",
+    "description": "Một trình chỉnh sửa MIDI đơn giản được xây dựng bằng React và Next.js"
+  },
+  "NoteList": {
+    "empty": "Chưa có Notes nào trong bài hát này.",
+    "time": "Thời gian",
+    "track": "Track",
+    "color": "Màu",
+    "icon": "Biểu tượng",
+    "title": "Tiêu đề",
+    "actions": "Thao tác",
+    "description": "Mô tả",
+    "createButton": "Tạo note mới"
+  }
+}

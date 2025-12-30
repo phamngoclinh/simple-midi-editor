@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import useEditorGrid from '../../hooks/useEditorGrid';
 import NoteRenderer from './NoteRenderer';
@@ -26,18 +28,20 @@ const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ songId, onNot
   const { openCreateNoteFormModal } = useStudioAction();
 
   return (
-    <div className='flex-1 flex flex-col min-w-0 bg-[#0f1115] relative overflow-hidden'>
-      <div className='flex flex-col overflow-auto relative'>
-        <div className='sticky top-[-1px] z-10 flex border-[#3b4354] bg-[#111318] shadow-md'>
+    <div className="flex-1 flex flex-col min-w-0 bg-background relative overflow-hidden">
+      <div className="flex flex-col overflow-auto relative">
+        <div className="sticky top-[-1px] z-10 flex border-border bg-background shadow-md">
           <div
-            className={`shrink-0 w-[${rulerWidth}px] px-4 py-3 text-left text-[#9da6b9] text-sm font-bold uppercase tracking-wider border-r border-[#282e39] bg-[#111318]`}>
+            style={{ width: `${rulerWidth}px` }}
+            className={`shrink-0 px-4 py-3 text-left text-muted-foreground text-sm font-bold uppercase tracking-wider border-r border-border bg-background`}
+          >
             Time
           </div>
 
           <TrackHeader />
         </div>
 
-        <div className={`flex relative flex-1 bg-[#101216]`}>
+        <div className={`flex relative flex-1`}>
           <TimeRuler
             totalDuration={totalDuration}
             totalHeight={totalEditorHeight}
@@ -47,10 +51,19 @@ const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ songId, onNot
             hightLightHorizontalLines={hightLightHorizontalLines}
           />
 
-          <div className={`absolute inset-0 left-[${rulerWidth}px] flex pointer-events-none`}>
+          <div
+            style={{ left: `${rulerWidth}px` }}
+            className="absolute inset-0 flex pointer-events-none"
+          >
             {columns?.map((column, index) => {
-              const bg = index % 2 ? 'bg-[#1c1f27]/50' : '';
-              return <div key={column.id} style={hightLightHorizontalLines} className={`shrink-0 w-[${column.width}px] ${bg}`}></div>
+              const bg = index % 2 ? 'bg-muted/30' : '';
+              return (
+                <div
+                  key={column.id}
+                  style={{ ...hightLightHorizontalLines, width: `${column.width}px` }}
+                  className={`shrink-0 ${bg}`}
+                ></div>
+              );
             })}
           </div>
 
@@ -66,4 +79,3 @@ const MidiEditorContainer: React.FC<MidiEditorContainerProps> = ({ songId, onNot
 };
 
 export default MidiEditorContainer;
-

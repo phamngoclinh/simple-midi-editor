@@ -3,15 +3,16 @@ import { ValidationError } from '../../../application/shared/result';
 import { CreateSongInput } from '../../../application/usecases/songAggregate/dto/createSongInput';
 import { createSongUseCase } from '../../../dependencies';
 import { useStudioDispatch } from '../../../infrastructure/stores/studio';
-import { MESSAGES } from '../../utils/contents';
 import { toResult } from '../../utils/helper';
 import { SongFormData } from '../../utils/types';
 import { useUseCase } from '../useUseCase';
 import { storeSongMapper } from '../store/mapper';
+import { useTranslations } from 'next-intl';
 
 const useCreateSong = () => {
   const dispatch = useStudioDispatch();
   const { call } = useUseCase();
+  const t = useTranslations('Notification');
 
   const map = useCallback((songToCreate: SongFormData) => {
     const createData: CreateSongInput = {
@@ -23,24 +24,25 @@ const useCreateSong = () => {
         label: t.label,
         order: t.order,
         instrument: t.instrument,
-        notes: t.notes?.map(n => ({
-          time: n.time,
-          title: n.title,
-          description: n.description,
-          color: n.color,
-          icon: n.icon,
-        })) || [],
+        notes:
+          t.notes?.map(n => ({
+            time: n.time,
+            title: n.title,
+            description: n.description,
+            color: n.color,
+            icon: n.icon,
+          })) || [],
       })),
     };
     return createData;
-  }, [])
+  }, []);
 
   const createSong = async (songToCreate: SongFormData) => {
     const createData = map(songToCreate);
     const messages = {
-      success: MESSAGES.CREATE_SONG_SUCCESS,
-      error: MESSAGES.CREATE_SONG_FAILURE,
-    }
+      success: t('createSongSuccess'),
+      error: t('createSongFailure'),
+    };
     const response = await call(async () => await createSongUseCase.execute(createData), messages);
     if (!response.success) {
       return toResult.failure<void, ValidationError>(response.errors);
@@ -53,6 +55,6 @@ const useCreateSong = () => {
   return {
     createSong,
   };
-}
+};
 
 export default useCreateSong;

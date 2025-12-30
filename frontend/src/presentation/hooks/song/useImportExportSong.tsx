@@ -1,3 +1,5 @@
+'use client';
+
 import { exportSongUseCase, importSongUseCase } from '../../../dependencies';
 import { useStudioDispatch } from '../../../infrastructure/stores/studio';
 import { storeSongMapper } from '../store/mapper';
@@ -6,13 +8,13 @@ import { z } from 'zod';
 
 const SongDocumentSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  
+
   description: z.string().optional(),
-  
+
   totalDuration: z.number().nonnegative(),
-  
+
   trackLabels: z.array(z.string()),
-  
+
   notes: z.array(
     z.object({
       track: z.number().int(),
@@ -21,9 +23,9 @@ const SongDocumentSchema = z.object({
       description: z.string().optional(),
       color: z.string(),
       icon: z.string().optional(),
-    })
+    }),
   ),
-  
+
   tags: z.array(z.string()).optional(),
 });
 
@@ -37,11 +39,11 @@ const useImportExportSong = () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.json';
-    input.onchange = async (e) => {
+    input.onchange = async e => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = async (ev) => {
+      reader.onload = async ev => {
         const jsonString = ev.target?.result;
         try {
           const rawData = JSON.parse(jsonString as string);
@@ -50,7 +52,7 @@ const useImportExportSong = () => {
             showToast({
               type: 'error',
               message: 'Import Song thất bại',
-              extraMessage: 'Nội dung tập tin không hợp lệ'
+              extraMessage: 'Nội dung tập tin không hợp lệ',
             });
             return;
           }
@@ -68,13 +70,16 @@ const useImportExportSong = () => {
             type: 'success',
             message: `Đã import và tạo Song mới: '${createdSong.data.name}'`,
           });
-          dispatch({ type: 'CREATE_SONG', payload: storeSongMapper.toSongChangePayload(createdSong.data) })
+          dispatch({
+            type: 'CREATE_SONG',
+            payload: storeSongMapper.toSongChangePayload(createdSong.data),
+          });
         } catch (err: any) {
           console.error('Lỗi khi import Song:', err);
           showToast({
             type: 'error',
             message: 'Import Song thất bại',
-            extraMessage: err?.message
+            extraMessage: err?.message,
           });
         }
       };
@@ -90,7 +95,7 @@ const useImportExportSong = () => {
         showToast({
           type: 'error',
           message: 'Export Song thất bại',
-          extraMessage: response.message
+          extraMessage: response.message,
         });
         return;
       }
@@ -113,15 +118,15 @@ const useImportExportSong = () => {
       showToast({
         type: 'error',
         message: 'Export Song thất bại',
-        extraMessage: err?.message
+        extraMessage: err?.message,
       });
     }
   };
 
   return {
     importSong,
-    exportSong
+    exportSong,
   };
-}
+};
 
 export default useImportExportSong;

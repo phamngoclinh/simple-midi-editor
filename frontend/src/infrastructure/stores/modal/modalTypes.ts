@@ -28,19 +28,19 @@ export interface ToastItem extends ToastOptions {
 export interface ModalState {
   alertState: { isVisible: boolean } & AlertOptions;
   confirmationState: { isVisible: boolean } & ConfirmationOptions & {
-    resolve: ((confirmed: boolean) => void) | null
-  };
+      resolve: ((confirmed: boolean) => void) | null;
+    };
   toasts: ToastItem[];
 }
 
 export type ModalAction =
-  | { type: 'SHOW_ALERT', payload: AlertOptions }
+  | { type: 'SHOW_ALERT'; payload: AlertOptions }
   | { type: 'CLOSE_ALERT' }
-  | { type: 'SHOW_TOAST', payload: ToastOptions }
-  | { type: 'CLOSE_TOAST', payload: number; }
+  | { type: 'SHOW_TOAST'; payload: ToastOptions }
+  | { type: 'CLOSE_TOAST'; payload: number }
   | {
-    type: 'SHOW_CONFIMATION',
-    payload: ConfirmationOptions & { resolve: ((confirmed: boolean) => void) | null }
-  }
+      type: 'SHOW_CONFIMATION';
+      payload: ConfirmationOptions & { resolve: ((confirmed: boolean) => void) | null };
+    }
   | { type: 'CONFIRM_CONFIMATION' }
-  | { type: 'CANCEL_CONFIMATION' }
+  | { type: 'CANCEL_CONFIMATION' };

@@ -1,7 +1,6 @@
 import { Id, Tag } from '../shared/types';
 
 interface SongEntity {
-
   id: Id;
 
   name: string;
@@ -15,7 +14,6 @@ interface SongEntity {
   createdTimestamp: string;
 
   updatedTimestamp: string;
-
 }
 
 export default SongEntity;

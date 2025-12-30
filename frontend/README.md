@@ -1,46 +1,77 @@
-# Getting Started with Create React App
+# Simple MIDI Editor
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, web-based MIDI editor built with high-performance technologies and a clean architecture.
 
-## Available Scripts
+## 🚀 Highlights
 
-In the project directory, you can run:
+- **Next.js 15 (App Router)**: Leveraging the latest Next.js features for performance and scalability.
+- **Internationalization (i18n)**: Full multi-language support (English and Vietnamese) powered by `next-intl`.
+- **Tailwind CSS v4**: Beautiful, responsive design with customized theme tokens and dark mode support.
+- **Domain-Driven Design (DDD)**: Clean architecture separating domain logic, application use cases, and presentation layers.
+- **Interactive Editor**: Drag-and-drop support for tracks and notes using `@dnd-kit`.
 
-### `npm start`
+## 🛠 Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **Core**: [Next.js 15](https://nextjs.org/), [React 19](https://react.dev/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **State Management**: React Context & Hooks
+- **Forms**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
+- **i18n**: [next-intl](https://next-intl-docs.vercel.app/)
+- **Icons**: Material Symbols Outlined
+- **Theming**: [next-themes](https://github.com/pacocoursey/next-themes)
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 📁 Project Structure
 
-### `npm test`
+The project follows a clean architecture approach:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```text
+src/
+├── app/             # Next.js App Router (Routing, Layouts, Providers)
+├── domain/          # Core Business Logic (Entities, Value Objects, Repositories)
+├── application/     # Use Cases & Services
+├── infrastructure/  # API Clients, Persistent Repositories, Redux/Context Stores
+└── presentation/    # UI Components, Hooks, Contexts, and Utilities
+```
 
-### `npm run build`
+## 🏁 Getting Started
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Prerequisites
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Node.js (Latest LTS recommended)
+- npm or yarn
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Installation
 
-### `npm run eject`
+```bash
+git clone <repository-url>
+cd simple-midi-editor/frontend
+npm install
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Running Locally
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+npm run dev
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## 📜 Available Scripts
 
-## Learn More
+- `npm run dev`: Runs the development server.
+- `npm run build`: Builds the application for production.
+- `npm run start`: Starts the production server.
+- `npm run lint`: Checks the code for linting errors.
+- `npm run format`: Formats the code using Prettier.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🌍 Multi-language Support
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Languages are managed in the `messages/` directory.
+- `en.json`: English translations.
+- `vi.json`: Vietnamese translations.
+
+To add or modify translations, update the respective JSON files and use the `useTranslations` hook in your components.
+
+---
+
+Built with ❤️ by the Simple MIDI Editor Team.

@@ -1,7 +1,6 @@
 import { Id } from '../shared/types';
 
 interface TrackEntity {
-
   id: Id;
 
   order: number;
@@ -11,7 +10,6 @@ interface TrackEntity {
   instrument?: string;
 
   songId: Id;
-
 }
 
 export default TrackEntity;

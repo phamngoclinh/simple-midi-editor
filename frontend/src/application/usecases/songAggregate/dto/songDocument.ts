@@ -8,7 +8,6 @@ interface SongDocument {
   trackLabels: string[];
 
   notes: {
-
     track: number;
 
     time: number;
@@ -20,10 +19,9 @@ interface SongDocument {
     color: string;
 
     icon?: string;
-
   }[];
 
-  tags?: string[]
+  tags?: string[];
 }
 
 export default SongDocument;

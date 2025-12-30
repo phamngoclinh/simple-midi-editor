@@ -1,4 +1,4 @@
-export const MUSIC_ICONS: { key: string, symbol: string, description: string }[] = [
+export const MUSIC_ICONS: { key: string; symbol: string; description: string }[] = [
   { key: 'deselect', symbol: '—', description: 'Không có Icon' },
   { key: 'album', symbol: '🥁', description: 'Kick Drum' },
   { key: 'music_note_2', symbol: '⚪', description: 'Snare Drum' },

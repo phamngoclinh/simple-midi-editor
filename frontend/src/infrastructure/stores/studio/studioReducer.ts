@@ -5,7 +5,6 @@ import { StudioAction, StudioState } from './studioTypes';
 
 const studioReducer = (state: StudioState, action: StudioAction): StudioState => {
   switch (action.type) {
-
     case 'CREATE_SONGS': {
       const newSongs = action.payload
         .map(res => res.song)
@@ -38,24 +37,26 @@ const studioReducer = (state: StudioState, action: StudioAction): StudioState =>
     case 'UPDATE_SONG': {
       const newSongs = {
         ...state.songs,
-        [action.payload.song.id]: action.payload.song
+        [action.payload.song.id]: action.payload.song,
       };
       const newTracks = {
         ...state.tracks,
         ...action.payload.tracks.reduce((acc: Record<string, TrackEntity>, cur) => {
           acc[cur.id] = cur;
           return acc;
-        }, {})
+        }, {}),
       };
       const newNotes = {
         ...state.notes,
         ...action.payload.notes.reduce((acc: Record<string, NoteEntity>, cur) => {
           acc[cur.id] = cur;
           return acc;
-        }, {})
+        }, {}),
       };
       // Tìm track bị xoá
-      const songTracks = Object.values(state.tracks).filter(t => t.songId === action.payload.song.id);
+      const songTracks = Object.values(state.tracks).filter(
+        t => t.songId === action.payload.song.id,
+      );
       const newTrackIds = action.payload.tracks.map(t => t.id);
       const removedTracks = songTracks.filter(t => newTrackIds.every(id => id !== t.id));
       if (removedTracks.length) {
@@ -63,7 +64,9 @@ const studioReducer = (state: StudioState, action: StudioAction): StudioState =>
         removedTracks.forEach(removedTrack => {
           delete newTracks[removedTrack.id];
           // Xoá Notes
-          const removedNotes = Object.values(state.notes).filter(n => n.trackId === removedTrack.id);
+          const removedNotes = Object.values(state.notes).filter(
+            n => n.trackId === removedTrack.id,
+          );
           if (removedNotes.length) {
             removedNotes.forEach(removedNote => {
               delete newNotes[removedNote.id];
@@ -79,10 +82,12 @@ const studioReducer = (state: StudioState, action: StudioAction): StudioState =>
       const { [songIdToRemove]: removedSongId, ...newSongs } = state.songs;
       const newTracks = { ...state.tracks };
       const tracksToRemove = Object.values(state.tracks).filter(t => t.songId === songIdToRemove);
-      tracksToRemove.forEach((track) => delete newTracks[track.id]);
+      tracksToRemove.forEach(track => delete newTracks[track.id]);
       const newNotes = { ...state.notes };
-      const notesToRemove = Object.values(state.notes).filter(n => tracksToRemove.some(t => t.id === n.trackId));
-      notesToRemove.forEach((note) => delete newTracks[note.id]);
+      const notesToRemove = Object.values(state.notes).filter(n =>
+        tracksToRemove.some(t => t.id === n.trackId),
+      );
+      notesToRemove.forEach(note => delete newTracks[note.id]);
       return { ...state, songs: newSongs, tracks: newTracks, notes: newNotes };
     }
 
@@ -104,7 +109,7 @@ const studioReducer = (state: StudioState, action: StudioAction): StudioState =>
 
     case 'CREATE_NOTE':
     case 'UPDATE_NOTE': {
-      const { ...newNote } = action.payload
+      const { ...newNote } = action.payload;
       return {
         ...state,
         notes: { ...state.notes, [newNote.id]: newNote },
@@ -131,6 +136,6 @@ const studioReducer = (state: StudioState, action: StudioAction): StudioState =>
     default:
       return state;
   }
-}
+};
 
 export default studioReducer;

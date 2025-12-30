@@ -2,7 +2,6 @@ import { Id } from '../shared/types';
 import NoteEntity from './noteEntity';
 
 interface TrackEntity {
-
   id: Id;
 
   order: number;
@@ -12,7 +11,6 @@ interface TrackEntity {
   instrument?: string;
 
   notes: NoteEntity[];
-
 }
 
 export default TrackEntity;

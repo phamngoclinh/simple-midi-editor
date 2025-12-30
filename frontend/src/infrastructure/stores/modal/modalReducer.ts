@@ -10,7 +10,7 @@ const modalReducer = (state: ModalState, action: ModalAction): ModalState => {
     }
 
     case 'CLOSE_ALERT': {
-      const alertState = { ...state.alertState, isVisible: false }
+      const alertState = { ...state.alertState, isVisible: false };
       return { ...state, alertState };
     }
 
@@ -29,8 +29,8 @@ const modalReducer = (state: ModalState, action: ModalAction): ModalState => {
     case 'SHOW_CONFIMATION': {
       const confirmationState = {
         isVisible: true,
-        ...action.payload
-      }
+        ...action.payload,
+      };
       return { ...state, confirmationState };
     }
 
@@ -42,7 +42,7 @@ const modalReducer = (state: ModalState, action: ModalAction): ModalState => {
         ...state.confirmationState,
         isVisible: false,
         resolve: null,
-      }
+      };
       return { ...state, confirmationState };
     }
 
@@ -54,13 +54,13 @@ const modalReducer = (state: ModalState, action: ModalAction): ModalState => {
         ...state.confirmationState,
         isVisible: false,
         resolve: null,
-      }
+      };
       return { ...state, confirmationState };
     }
 
     default:
       return state;
   }
-}
+};
 
 export default modalReducer;

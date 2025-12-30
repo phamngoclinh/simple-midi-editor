@@ -5,21 +5,21 @@ const useNote = (noteId: string) => {
   const note = useStudioSelector(state => state.notes[noteId]);
   const tracks = useStudioSelector(state => state.tracks);
   const songs = useStudioSelector(state => state.songs);
-  
+
   const track = useMemo(() => {
     return tracks[note.trackId] || null;
-  }, [note, tracks])
+  }, [note, tracks]);
 
   const song = useMemo(() => {
     if (!track) return null;
     return songs[track.songId] || null;
-  }, [track, songs])
+  }, [track, songs]);
 
   return {
     note,
     track,
-    song
+    song,
   };
-}
+};
 
 export default useNote;

@@ -2,7 +2,6 @@ import { Id, Tag } from '../shared/types';
 import TrackEntity from './trackEntity';
 
 interface SongAggregate {
-
   id: Id;
 
   name: string;
@@ -18,7 +17,6 @@ interface SongAggregate {
   updatedTimestamp: string;
 
   tracks: TrackEntity[];
-
 }
 
 export default SongAggregate;

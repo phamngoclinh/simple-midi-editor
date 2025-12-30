@@ -1,10 +1,19 @@
-import React, { createContext, ReactNode, useCallback, useContext, useMemo, useReducer } from 'react';
+'use client';
+
+import React, {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useReducer,
+} from 'react';
 import initialStudioState from './initialStudioState';
 import studioReducer from './studioReducer';
 import { StudioAction, StudioState } from './studioTypes';
 
 interface StudioContextType {
-  state: StudioState,
+  state: StudioState;
   dispatch: React.Dispatch<StudioAction>;
 }
 
@@ -17,11 +26,7 @@ interface StudioProviderProps {
 export const StudioProvider: React.FC<StudioProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(studioReducer, initialStudioState);
 
-  return (
-    <StudioContext.Provider value={{ state, dispatch }}>
-      {children}
-    </StudioContext.Provider>
-  );
+  return <StudioContext.Provider value={{ state, dispatch }}>{children}</StudioContext.Provider>;
 };
 
 export const useStudio = () => {
@@ -35,31 +40,36 @@ export const useStudio = () => {
 export const useStudioState = () => {
   const { state } = useStudio();
   return state;
-}
+};
 
 export const useStudioDispatch = () => {
   const { dispatch } = useStudio();
   return dispatch;
-}
+};
 
-export const useStudioSelector = <TSelected extends any>(selector: (state: StudioState) => TSelected): TSelected => {
+export const useStudioSelector = <TSelected extends any>(
+  selector: (state: StudioState) => TSelected,
+): TSelected => {
   const state = useStudioState();
   return selector(state);
-}
+};
 
 export const useSongsState = () => {
   const state = useStudioState();
 
-  const select = useCallback((id: string) => {
-    const song = state.songs[id];
-    const tracks = Object.values(state.tracks)
-      .filter(t => t.songId === id)
-      .sort((a, b) => a.order - b.order);
-    const trackIds = tracks.map(t => t.id);
-    const notes = Object.values(state.notes).filter(n => trackIds.includes(n.trackId));
-    
-    return { song, tracks, notes,}
-  }, [state])
+  const select = useCallback(
+    (id: string) => {
+      const song = state.songs[id];
+      const tracks = Object.values(state.tracks)
+        .filter(t => t.songId === id)
+        .sort((a, b) => a.order - b.order);
+      const trackIds = tracks.map(t => t.id);
+      const notes = Object.values(state.notes).filter(n => trackIds.includes(n.trackId));
+
+      return { song, tracks, notes };
+    },
+    [state],
+  );
 
   return {
     select,
@@ -67,14 +77,14 @@ export const useSongsState = () => {
     tracks: state.tracks,
     notes: state.notes,
   };
-}
+};
 
 export const useSongSelector = (id: string) => {
   const { select } = useSongsState();
 
   const song = useMemo(() => {
     return select(id);
-  }, [select, id])
+  }, [select, id]);
 
   return song;
-}
+};

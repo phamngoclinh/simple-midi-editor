@@ -7,7 +7,7 @@ export const songAggregateMapper = {
     const notes: SongDocument['notes'] = [];
 
     songAggregate.tracks.forEach((track, index) => {
-      track.notes.forEach((note) => {
+      track.notes.forEach(note => {
         notes.push({
           track: index + 1,
           time: note.time,
@@ -15,7 +15,7 @@ export const songAggregateMapper = {
           description: note.description,
           color: note.color,
           icon: note.icon,
-        })
+        });
       });
     });
 
@@ -30,5 +30,4 @@ export const songAggregateMapper = {
 
     return result;
   },
-
-}
+};

@@ -3,7 +3,6 @@ import SongAggregateRepository from '../../../domain/songAggregate/songAggregate
 import BaseUseCase from '../baseUseCase';
 import { UpdateSongInput } from './dto/updateSongInput';
 
-
 class UpdateSongUseCase extends BaseUseCase<UpdateSongInput, SongAggregate> {
   private songAggregateRepository: SongAggregateRepository;
 

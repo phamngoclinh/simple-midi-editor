@@ -1,7 +1,6 @@
 import { Id } from '../shared/types';
 
 interface NoteEntity {
-
   id: Id;
 
   time: number;
@@ -13,7 +12,6 @@ interface NoteEntity {
   color: string;
 
   icon?: string;
-
 }
 
 export default NoteEntity;

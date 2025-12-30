@@ -10,15 +10,16 @@ interface SortableItemProps {
   [key: string]: any;
 }
 
-const SortableItem: React.FC<SortableItemProps> = ({ id, children, indicator = true, className, ...other }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
+const SortableItem: React.FC<SortableItemProps> = ({
+  id,
+  children,
+  indicator = true,
+  className,
+  ...other
+}) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
 
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -33,11 +34,19 @@ const SortableItem: React.FC<SortableItemProps> = ({ id, children, indicator = t
       ref={setNodeRef}
       {...other}
       style={style}
-      className={`flex items-center gap-3 ${className}`}
+      className={`cursor-grabbing flex items-center gap-3 ${className}`}
       {...(!indicator ? { ...listeners, ...attributes } : {})}
     >
       {children}
-      {indicator && <span {...listeners} {...attributes} className='material-symbols-outlined text-text-subtle !text-[18px]'>drag_indicator</span>}
+      {indicator && (
+        <span
+          {...listeners}
+          {...attributes}
+          className="material-symbols-outlined text-muted-foreground !text-[18px]"
+        >
+          drag_indicator
+        </span>
+      )}
     </div>
   );
 };

@@ -5,7 +5,6 @@ import generateId from '../common/generateId';
 import SongDocument from './dto/songDocument';
 
 class ImportSongUseCase extends BaseUseCase<SongDocument, SongAggregate> {
-
   private songAggregateRepository: SongAggregateRepository;
 
   constructor(songAggregateRepository: SongAggregateRepository) {
@@ -15,7 +14,6 @@ class ImportSongUseCase extends BaseUseCase<SongDocument, SongAggregate> {
   }
 
   async handle(importData: SongDocument) {
-
     const songAggregate: SongAggregate = {
       id: generateId('song'),
       name: importData.name,
@@ -46,7 +44,6 @@ class ImportSongUseCase extends BaseUseCase<SongDocument, SongAggregate> {
 
     return result;
   }
-
 }
 
 export default ImportSongUseCase;

@@ -6,7 +6,6 @@ import SongDocument from './dto/songDocument';
 import { songAggregateMapper } from './mapper/songAggregateMapper';
 
 class ExportSongUseCase extends BaseUseCase<Id, SongDocument, SongAggregate> {
-
   private songAggregateRepository: SongAggregateRepository;
 
   constructor(songAggregateRepository: SongAggregateRepository) {
@@ -59,9 +58,7 @@ class ExportSongUseCase extends BaseUseCase<Id, SongDocument, SongAggregate> {
     // return exportData;
 
     // throw new Error('This function is not implemented');
-
   }
-
 }
 
 export default ExportSongUseCase;

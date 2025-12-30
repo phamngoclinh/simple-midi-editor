@@ -9,7 +9,7 @@ const NotificationManagement = () => {
       <ConfirmationContainer />
       <ToastsContainer />
     </>
-  )
-}
+  );
+};
 
 export default NotificationManagement;

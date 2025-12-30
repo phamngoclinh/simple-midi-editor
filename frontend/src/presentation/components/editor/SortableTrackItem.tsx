@@ -8,14 +8,9 @@ interface SortableTrackItemProps {
 }
 
 const SortableTrackItem: React.FC<SortableTrackItemProps> = ({ id, children }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
 
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -26,9 +21,15 @@ const SortableTrackItem: React.FC<SortableTrackItemProps> = ({ id, children }) =
   };
 
   return (
-    <div ref={setNodeRef} style={style} className='flex items-center gap-3'>
+    <div ref={setNodeRef} style={style} className="flex items-center gap-3">
       {children}
-      <span {...listeners} {...attributes} className='material-symbols-outlined text-text-subtle !text-[18px]'>drag_indicator</span>
+      <span
+        {...listeners}
+        {...attributes}
+        className="material-symbols-outlined text-text-subtle !text-[18px]"
+      >
+        drag_indicator
+      </span>
     </div>
   );
 };

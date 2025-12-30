@@ -3,7 +3,6 @@ import TrackEntity from '../../domain/track/trackEntity';
 import TrackRepository from '../../domain/track/trackRepository';
 
 export class TrackRepositoryImpl implements TrackRepository {
-
   async save(track: TrackEntity): Promise<TrackEntity> {
     throw new Error('Method not implemented.');
   }
@@ -19,5 +18,4 @@ export class TrackRepositoryImpl implements TrackRepository {
   async findBySongId(songId: Id): Promise<TrackEntity[]> {
     throw new Error('Method not implemented.');
   }
-
 }

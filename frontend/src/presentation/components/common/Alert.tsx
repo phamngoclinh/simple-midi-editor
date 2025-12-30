@@ -32,16 +32,17 @@ const Alert: React.FC<AlertProps> = ({ isVisible, type, message, onClose, title 
   return (
     <div style={modalOverlayStyle}>
       <div style={modalContentStyle}>
-        
         <div style={{ ...modalHeaderStyle, ...headerStyle }}>
           <h3 style={titleStyle}>{title || type.toUpperCase()}</h3>
-          <button onClick={onClose} style={closeButtonStyle}>&times;</button>
+          <button onClick={onClose} style={closeButtonStyle}>
+            &times;
+          </button>
         </div>
-        
+
         <div style={modalBodyStyle}>
           <p>{message}</p>
         </div>
-        
+
         <div style={modalFooterStyle}>
           <button onClick={onClose} style={actionButtonStyle}>
             Đã hiểu

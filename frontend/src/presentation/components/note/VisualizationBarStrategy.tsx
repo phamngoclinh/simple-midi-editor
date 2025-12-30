@@ -4,11 +4,11 @@ import { mixColors } from '../../utils/color';
 type TimeData = number[];
 
 export type Config = {
-  numColumns: number,
-  maxHeight: number,
-  tailWindsHeightSteps: number[],
-  tailwindOpacitySteps: number[]
-}
+  numColumns: number;
+  maxHeight: number;
+  tailWindsHeightSteps: number[];
+  tailwindOpacitySteps: number[];
+};
 
 const CONFIG: Config = {
   numColumns: 15,
@@ -24,7 +24,7 @@ const CONFIG: Config = {
  */
 const findNearestStep = (value: number, steps: number[]): number => {
   return steps.reduce((prev, curr) =>
-    (Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev)
+    Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev,
   );
 };
 
@@ -33,11 +33,21 @@ const createSameRates = (config: Config) => {
   // Có thể gán đều 1 giá trị cơ bản cho tất cả các cột nếu cần.
   const defaultHeight = findNearestStep(30, config.tailWindsHeightSteps);
   const defaultOpacity = findNearestStep(defaultHeight, config.tailwindOpacitySteps);
-  return <div className='w-full h-full flex items-end gap-[2px] opacity-60 group-hover:opacity-100 transition-opacity' data-alt='Default visualization'>
-    {Array.from({length: config.numColumns}).map((num, index) => (<div key={index} className={`w-1/12 bg-indigo-500/${defaultOpacity} h-[${defaultHeight}%] rounded-t-sm`}></div>))}
-  </div>;
-
-}
+  return (
+    <div
+      className="w-full h-full flex items-end gap-[2px] opacity-60 group-hover:opacity-100 transition-opacity"
+      data-alt="Default visualization"
+    >
+      {Array.from({ length: config.numColumns }).map((num, index) => (
+        <div
+          key={index}
+          style={{ height: `${defaultHeight}%`, opacity: defaultOpacity / 100 }}
+          className="w-1/12 bg-indigo-500 rounded-t-sm"
+        ></div>
+      ))}
+    </div>
+  );
+};
 
 /**
  * Tạo chuỗi HTML cho visualization bar từ dữ liệu chỉ có thời gian.
@@ -45,7 +55,10 @@ const createSameRates = (config: Config) => {
  * * @param eventTimes Mảng các thời điểm xảy ra sự kiện (ví dụ: thời gian nhấn nốt)
  * @returns Chuỗi HTML visualization bar
  */
-export const createVisualizationBarFromTimeOnly = (eventTimes: TimeData, config: Config = CONFIG): React.ReactElement => {
+export const createVisualizationBarFromTimeOnly = (
+  eventTimes: TimeData,
+  config: Config = CONFIG,
+): React.ReactElement => {
   if (eventTimes.length === 0) {
     return <></>;
   }
@@ -71,7 +84,7 @@ export const createVisualizationBarFromTimeOnly = (eventTimes: TimeData, config:
   for (const time of eventTimes) {
     // Tìm index của slice mà sự kiện này thuộc về
     let sliceIndex = Math.floor((time - minTime) / sliceDuration);
-    
+
     // Đảm bảo index nằm trong phạm vi [0, numColumns - 1]
     sliceIndex = Math.min(sliceIndex, config.numColumns - 1);
 
@@ -107,17 +120,26 @@ export const createVisualizationBarFromTimeOnly = (eventTimes: TimeData, config:
     const displayOpacity = Math.max(finalOpacity, 10);
 
     // Tạo HTML cho cột
-    finalHtmlContent.push(<div className={`w-1/12 bg-indigo-500/${displayOpacity} h-[${finalHeight}%] rounded-t-sm`}></div>);
+    finalHtmlContent.push(
+      <div
+        style={{ height: `${finalHeight}%`, opacity: displayOpacity / 100 }}
+        className="w-1/12 bg-indigo-500 rounded-t-sm"
+      ></div>,
+    );
   }
 
   // --- III. Tạo Chuỗi HTML Cuối cùng ---
 
-  const finalHtml = <div className='w-full h-full flex items-end gap-[2px] opacity-60 group-hover:opacity-100 transition-opacity'>
-    {finalHtmlContent.map((html, index) => <React.Fragment key={index}>{html}</React.Fragment>)}
-  </div>;
+  const finalHtml = (
+    <div className="w-full h-full flex items-end gap-[2px] opacity-60 group-hover:opacity-100 transition-opacity">
+      {finalHtmlContent.map((html, index) => (
+        <React.Fragment key={index}>{html}</React.Fragment>
+      ))}
+    </div>
+  );
 
   return finalHtml;
-}
+};
 
 /**
  * Tạo chuỗi HTML cho visualization bar từ dữ liệu có thời gian và màu sắc.
@@ -125,7 +147,11 @@ export const createVisualizationBarFromTimeOnly = (eventTimes: TimeData, config:
  * * @param events Mảng các thời điểm xảy ra sự kiện (ví dụ: thời gian nhấn nốt và cấu hình màu sắc của nốt)
  * @returns Chuỗi HTML visualization bar
  */
-export const createVisualizationBarTNN = (events: { time: number, color: string }[], totalDuration: number, config: Config = CONFIG): React.ReactElement => {
+export const createVisualizationBarTNN = (
+  events: { time: number; color: string }[],
+  totalDuration: number,
+  config: Config = CONFIG,
+): React.ReactElement => {
   if (events.length === 0) {
     return <></>;
   }
@@ -140,13 +166,15 @@ export const createVisualizationBarTNN = (events: { time: number, color: string 
   const sliceDuration = totalDuration / config.numColumns;
 
   // Khởi tạo mảng số lần xuất hiện (Count) cho mỗi cột
-  const columnCounts: { count: number, colors: string[] }[] = new Array(config.numColumns).fill(0).map(() => ({ count: 0, colors: [] }));
+  const columnCounts: { count: number; colors: string[] }[] = new Array(config.numColumns)
+    .fill(0)
+    .map(() => ({ count: 0, colors: [] }));
 
   // 2. Tính Tần suất (Count) cho mỗi Khoảng
   for (const event of events) {
     // Tìm index của slice mà sự kiện này thuộc về
     let sliceIndex = Math.floor(event.time / sliceDuration);
-    
+
     // Đảm bảo index nằm trong phạm vi [0, numColumns - 1]
     sliceIndex = Math.min(sliceIndex, config.numColumns - 1);
 
@@ -185,14 +213,23 @@ export const createVisualizationBarTNN = (events: { time: number, color: string 
     const color = mixColors(columnCounts[i].colors);
 
     // Tạo HTML cho cột
-    finalHtmlContent.push(<div className={`w-1/12 bg-[${color}]/${displayOpacity} h-[${finalHeight}%] rounded-t-sm`}></div>);
+    finalHtmlContent.push(
+      <div
+        style={{ height: `${finalHeight}%`, opacity: displayOpacity / 100, backgroundColor: color }}
+        className="w-1/12 rounded-t-sm"
+      ></div>,
+    );
   }
 
   // --- III. Tạo Chuỗi HTML Cuối cùng ---
 
-  const finalHtml = <div className='w-full h-full flex items-end gap-[2px] opacity-60 group-hover:opacity-100 transition-opacity'>
-    {finalHtmlContent.map((html, index) => <React.Fragment key={index}>{html}</React.Fragment>)}
-  </div>;
+  const finalHtml = (
+    <div className="w-full h-full flex items-end gap-[2px] opacity-60 group-hover:opacity-100 transition-opacity">
+      {finalHtmlContent.map((html, index) => (
+        <React.Fragment key={index}>{html}</React.Fragment>
+      ))}
+    </div>
+  );
 
   return finalHtml;
-}
+};

@@ -1,5 +1,13 @@
 import { BASE_API_URL } from './config';
-import { CreateNoteDTO, CreateSongDTO, Note, Song, Track, UpdateNoteDTO, UpdateSongDTO } from './types';
+import {
+  CreateNoteDTO,
+  CreateSongDTO,
+  Note,
+  Song,
+  Track,
+  UpdateNoteDTO,
+  UpdateSongDTO,
+} from './types';
 
 export async function handleResponse<T>(response: Response): Promise<T> {
   if (response.status === 204) {
@@ -22,14 +30,14 @@ const fetchData = async (path: string = '', method: string = 'GET', data?: any) 
       method: method,
       headers: {
         'Content-Type': 'application/json',
-      }
-    }
+      },
+    };
     if (data) request['body'] = JSON.stringify(data);
     return await fetch(`${BASE_API_URL}${path}`, request);
   } catch (e: any) {
     throw new Error('Server gặp sự cố hoặc lỗi đường truyền mạng.');
   }
-}
+};
 
 export const fetchAllSongs = async (): Promise<Song[]> => {
   const response = await fetchData();
@@ -59,33 +67,29 @@ export const deleteSong = async (songId: string): Promise<boolean> => {
 export const updateTrackLabel = async (
   songId: string,
   trackId: string,
-  newLabel: string
+  newLabel: string,
 ): Promise<Track> => {
-  const response = await fetchData(`/${songId}/tracks/${trackId}/label`, 'PUT', { label: newLabel });
+  const response = await fetchData(`/${songId}/tracks/${trackId}/label`, 'PUT', {
+    label: newLabel,
+  });
   return handleResponse<Track>(response);
 };
 
 export const createNote = async (
   songId: string,
   trackId: string,
-  noteData: CreateNoteDTO
+  noteData: CreateNoteDTO,
 ): Promise<Note> => {
   const response = await fetchData(`/${songId}/tracks/${trackId}/notes`, 'POST', noteData);
   return handleResponse<Note>(response);
 };
 
-export const createNoteOther = async (
-  trackId: string,
-  noteData: CreateNoteDTO
-): Promise<Note> => {
+export const createNoteOther = async (trackId: string, noteData: CreateNoteDTO): Promise<Note> => {
   const response = await fetchData(`/${trackId}/notes`, 'POST', noteData);
   return handleResponse<Note>(response);
 };
 
-export const updateNote = async (
-  noteId: string,
-  noteData: UpdateNoteDTO
-): Promise<Note> => {
+export const updateNote = async (noteId: string, noteData: UpdateNoteDTO): Promise<Note> => {
   const response = await fetchData(`/notes/${noteId}`, 'PUT', noteData);
   return handleResponse<Note>(response);
 };
