@@ -99,6 +99,14 @@ const SongListItem: React.FC<SongListItemProps> = ({ id }) => {
                   },
                 },
                 {
+                  label: t('viewEventList'),
+                  icon: <span className="material-symbols-outlined text-[18px]">list_alt</span>,
+                  onClick: () => {
+                    router.push(`/editor/${id}/event-list`);
+                  },
+                  link: `/editor/${id}/event-list`,
+                },
+                {
                   label: t('exportJson'),
                   icon: (
                     <span className="material-symbols-outlined text-[18px]">arrow_downward</span>

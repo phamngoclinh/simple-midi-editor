@@ -171,21 +171,26 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
 const Select = (props: SelectProps) => {
   const { options, children, ...rest } = props;
   return (
-    <select
-      className="w-full bg-input border border-border rounded-lg px-3 py-2 text-foreground focus:outline-none focus:border-primary appearance-none cursor-pointer"
-      {...rest}
-    >
-      {options?.map(option => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-      {children}
-    </select>
+    <div className="relative">
+      <select
+        className="w-full bg-input border border-border rounded-lg px-3 py-2 text-foreground focus:outline-none focus:border-primary appearance-none cursor-pointer"
+        {...rest}
+      >
+        {options?.map(option => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+        {children}
+      </select>
+      <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+        expand_more
+      </span>
+    </div>
   );
 };
 
-interface ColorProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+interface ColorProps extends React.InputHTMLAttributes<HTMLInputElement> { }
 
 const Color = (props: ColorProps) => {
   const { theme } = useTheme();
@@ -271,7 +276,7 @@ const Color = (props: ColorProps) => {
   );
 };
 
-interface MusicIconProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+interface MusicIconProps extends React.InputHTMLAttributes<HTMLInputElement> { }
 
 const MusicIcon = (props: MusicIconProps) => {
   const { value, onChange, name } = props;
@@ -308,6 +313,21 @@ const MusicIcon = (props: MusicIconProps) => {
   );
 };
 
+const Range = (props: React.InputHTMLAttributes<HTMLInputElement>) => {
+  const { min, max, value, onChange, ...rest } = props;
+  return (
+    <input
+      type="range"
+      min={min}
+      max={max}
+      value={value}
+      onChange={(e) => onChange?.(e)}
+      className="w-full h-1.5 bg-slate-200 dark:bg-border-dark rounded-full appearance-none cursor-pointer accent-primary"
+      {...rest}
+    />
+  );
+};
+
 interface ErrorMessageProps extends React.HTMLAttributes<HTMLElement> {
   message?: string;
 }
@@ -332,5 +352,6 @@ FormField.Select = Select;
 FormField.Color = Color;
 FormField.MusicIcon = MusicIcon;
 FormField.ErrorMessage = ErrorMessage;
+FormField.Range = Range;
 
 export default FormField;

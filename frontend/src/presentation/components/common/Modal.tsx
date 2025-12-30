@@ -49,7 +49,7 @@ const Modal: React.FC<ModalProps> = ({
   if (!isOpen) return null;
 
   return ReactDOM.createPortal(
-    <div style={backdropStyle}>
+    <div style={backdropStyle} className="animate-fade-in">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-0"></div>
       <div className="relative z-10 w-full max-w-[800px] bg-background rounded-xl shadow-2xl border border-border flex flex-col max-h-[90vh] animate-fade-in-up">
         <div className="flex items-start justify-between px-8 py-6 border-b border-border bg-muted/30 rounded-t-xl shrink-0">

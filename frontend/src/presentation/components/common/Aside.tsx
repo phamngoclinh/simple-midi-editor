@@ -9,7 +9,7 @@ interface AsideProps {
 
 const Aside = ({ title, subTitle, actions, children }: AsideProps) => {
   return (
-    <aside className="w-[450px] h-full flex flex-col bg-background border-l border-border shadow-2xl z-30">
+    <aside className="w-[400px] h-full flex flex-col bg-background border-l border-border shadow-2xl z-30">
       <div className="p-6 border-b border-border">
         <h2 className="text-xl font-bold text-foreground mb-1">{title}</h2>
         {subTitle && <p className="text-muted-foreground text-sm">{subTitle}</p>}

@@ -18,23 +18,31 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   return (
     <div className="flex flex-col h-full bg-background text-foreground">
-      <header className="flex-none flex items-center justify-between whitespace-nowrap border-b border-solid border-border bg-background px-6 py-3 z-20">
-        <div className="flex items-center gap-2 text-foreground">
-          <div className="size-8 text-primary">
-            <span className="material-symbols-outlined !text-3xl">piano</span>
+      <header className="flex-none flex items-center justify-between whitespace-nowrap border-b border-solid border-border bg-background px-3 md:px-6 py-2 md:py-3 z-20">
+        <div className="flex items-center gap-2 text-foreground min-w-0 flex-1">
+          <div className="size-7 md:size-8 text-primary shrink-0">
+            <span className="material-symbols-outlined !text-2xl md:!text-3xl">piano</span>
           </div>
           <Link
             href="/"
-            className="text-foreground text-xl font-bold leading-tight tracking-[-0.015em]"
+            className="text-foreground text-base md:text-xl font-bold leading-tight tracking-[-0.015em] truncate"
           >
-            Simple Midi Editor
+            <span className="hidden sm:inline">Simple Midi Editor</span>
+            <span className="sm:hidden">SME</span>
           </Link>
         </div>
-        <div className="flex items-center gap-4">
-          <DefaultButton onClick={importSong}>
+        <div className="flex items-center gap-2 md:gap-4 shrink-0">
+          <DefaultButton onClick={importSong} className="hidden sm:flex">
             <span className="material-symbols-outlined text-sm mr-2">ios_share</span>{' '}
             {tHome('importButton')}
           </DefaultButton>
+          <button
+            onClick={importSong}
+            className="sm:hidden p-2 rounded-lg bg-surface hover:bg-surface-hover transition-colors"
+            title={tHome('importButton')}
+          >
+            <span className="material-symbols-outlined text-[20px]">ios_share</span>
+          </button>
           <LanguageSwitcher />
           <ThemeToggle />
         </div>

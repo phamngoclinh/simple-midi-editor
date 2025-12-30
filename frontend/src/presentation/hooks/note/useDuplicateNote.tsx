@@ -78,7 +78,7 @@ const useDuplicateNote = () => {
 
       return toResult.success<NoteEntity>(response.data);
     },
-    [state.notes, call, dispatch, t],
+    [getAvailableDuplicatedNote, state.tracks, call, dispatch, t],
   );
 
   return {

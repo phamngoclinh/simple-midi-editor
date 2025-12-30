@@ -78,7 +78,7 @@ export const useNoteFormInitializer = () => {
 
       return noteFormData;
     },
-    [songs],
+    [songs, tracks],
   );
 
   return { formValues, initializeUpdateForm, initializeCreateForm };

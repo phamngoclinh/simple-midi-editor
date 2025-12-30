@@ -37,7 +37,11 @@
     "saveNote": "Save note",
     "saveSong": "Save song",
     "updateNote": "Update note",
-    "updateSong": "Update song"
+    "updateSong": "Update song",
+    "viewEventList": "View Event List",
+    "total": "Total",
+    "loading": "Loading...",
+    "filter": "Filter"
   },
   "SongForm": {
     "generalInfo": "General Information",
@@ -121,5 +125,36 @@
     "actions": "Actions",
     "description": "Description",
     "createButton": "Create New Note"
+  },
+  "NotFound": {
+    "title": "404: Page not found",
+    "returnHome": "Return Home"
+  },
+  "EventList": {
+    "title": "Event List",
+    "notFound": "Song not found.",
+    "subtitle": "{count} Events in {songName}",
+    "sortBy": "Sort Events By",
+    "sortOptions": {
+      "startTime": "Start Time",
+      "pitch": "Pitch (High-Low)",
+      "velocity": "Velocity",
+      "trackName": "Track Name"
+    },
+    "timeRange": "Time Range",
+    "visibleTracks": "Visible Tracks",
+    "selectAll": "Select All",
+    "exportMidi": "Export MIDI",
+    "addNote": "Add Note",
+    "table": {
+      "startTime": "Start Time",
+      "pitch": "Pitch",
+      "velocity": "Velocity",
+      "trackInstrument": "Track & Instrument",
+      "meta": "Meta / Description",
+      "action": "Action"
+    },
+    "noEvents": "End of visible events.",
+    "loadMore": "Load more"
   }
 }

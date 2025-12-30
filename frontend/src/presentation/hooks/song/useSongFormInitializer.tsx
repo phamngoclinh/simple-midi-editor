@@ -61,7 +61,7 @@ export const useSongFormInitializer = () => {
 
       return songFormData;
     },
-    [songs, tracks, notes],
+    [getSongById],
   );
 
   const initializeCreateForm = useCallback(async () => {
@@ -97,7 +97,7 @@ export const useSongFormInitializer = () => {
     setFormValues(songFormData);
 
     return songFormData;
-  }, []);
+  }, [call]);
 
   return { formValues, initializeUpdateForm, initializeCreateForm };
 };

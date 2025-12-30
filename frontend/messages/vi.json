@@ -37,7 +37,11 @@
     "saveNote": "Lưu note",
     "saveSong": "Lưu bài hát",
     "updateNote": "Cập nhật note",
-    "updateSong": "Cập nhật bài hát"
+    "updateSong": "Cập nhật bài hát",
+    "viewEventList": "Xem danh sách sự kiện",
+    "total": "Tổng",
+    "loading": "Đang tải...",
+    "filter": "Lọc"
   },
   "SongForm": {
     "generalInfo": "Thông tin chung",
@@ -121,5 +125,36 @@
     "actions": "Thao tác",
     "description": "Mô tả",
     "createButton": "Tạo note mới"
+  },
+  "NotFound": {
+    "title": "404: Trang không tồn tại",
+    "returnHome": "Quay lại trang chủ"
+  },
+  "EventList": {
+    "title": "Danh sách sự kiện",
+    "notFound": "Không tìm thấy bài hát.",
+    "subtitle": "{count} sự kiện trong {songName}",
+    "sortBy": "Sắp xếp theo",
+    "sortOptions": {
+      "startTime": "Thời gian bắt đầu",
+      "pitch": "Cao độ (Cao-Thấp)",
+      "velocity": "Cường độ (Velocity)",
+      "trackName": "Tên Track"
+    },
+    "timeRange": "Khoảng thời gian",
+    "visibleTracks": "Tracks hiển thị",
+    "selectAll": "Chọn tất cả",
+    "exportMidi": "Xuất MIDI",
+    "addNote": "Thêm Note",
+    "table": {
+      "startTime": "Bắt đầu",
+      "pitch": "Cao độ",
+      "velocity": "Cường độ",
+      "trackInstrument": "Track & Nhạc cụ",
+      "meta": "Mô tả / Meta",
+      "action": "Thao tác"
+    },
+    "noEvents": "Đã hết sự kiện hiển thị.",
+    "loadMore": "Tải thêm"
   }
 }

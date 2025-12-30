@@ -32,7 +32,7 @@ const useDeleteNote = () => {
       dispatch({ type: 'DELETE_NOTE', payload: { noteId } });
       return toResult.success<boolean>(true);
     },
-    [call, dispatch, showConfirmation],
+    [call, dispatch, showConfirmation, tConfirmation, tNotification],
   );
 
   return {

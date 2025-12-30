@@ -32,7 +32,7 @@ const useSongList = () => {
     const songResult: SongChangePayload[] = response.data.map(storeSongMapper.toSongChangePayload);
     dispatch({ type: 'CREATE_SONGS', payload: songResult });
     dispatch({ type: 'LOADED_SONGS' });
-  }, [dispatch, call]);
+  }, [dispatch, call, t]);
 
   const setInitialSongs = useCallback(
     (songAggregates: SongAggregate[]) => {

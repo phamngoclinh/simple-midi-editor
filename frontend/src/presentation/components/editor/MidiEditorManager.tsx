@@ -20,15 +20,18 @@ const MidiEditorManager: React.FC<MidiEditorProps> = ({ songId }) => {
   }, []);
 
   return (
-    <>
+    <div className="flex w-full">
       <MidiEditorContainer songId={songId} onNoteClick={handleStartEditNote} />
 
       <div
-        className={`relative aside flex ${!isOpenAside ? 'w-0 closed' : ''} transition duration-500 ease-in-out`}
+        className={`relative aside flex transition-width duration-500 ease-in-out`}
+        style={{
+          width: isOpenAside ? '400px' : '0',
+        }}
       >
         {
           <span
-            className="absolute block right-full top-1/2 mr-[-5px] text-surface-medium cursor-pointer hover:text-text-subtle"
+            className="w-7 h-7 z absolute flex right-full top-1/2 mr-[-1px] text-border cursor-pointer hover:text-gray-500 bg-surface hover:bg-surface-hover border border-border z-100"
             onClick={() => setIsOpenAside(!isOpenAside)}
           >
             <span className="material-symbols-outlined">arrow_menu_close</span>
@@ -40,7 +43,7 @@ const MidiEditorManager: React.FC<MidiEditorProps> = ({ songId }) => {
           <AsideSongForm songId={songId} />
         )}
       </div>
-    </>
+    </div>
   );
 };
 
