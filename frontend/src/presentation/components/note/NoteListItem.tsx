@@ -2,6 +2,7 @@ import React from 'react';
 import useDeleteNote from '../../hooks/note/useDeleteNote';
 import useNote from '../../hooks/note/useNote';
 import useStudioAction from '../../hooks/store/useStudioAction';
+import useDuplicateNote from '../../hooks/note/useDuplicateNote';
 import { toMMSS } from '../../utils/helper';
 import DropdownMenu from '../common/DropdownMenu';
 import { useTranslations } from 'next-intl';
@@ -15,6 +16,7 @@ const NoteListItem: React.FC<NoteListItemProps> = ({ index, noteId }) => {
   const { track, note } = useNote(noteId);
   const { deleteNote } = useDeleteNote();
   const { openUpdateNoteFormModal } = useStudioAction();
+  const { duplicateNote } = useDuplicateNote();
   const t = useTranslations('NoteList');
   const tCommon = useTranslations('Common');
 
@@ -58,6 +60,11 @@ const NoteListItem: React.FC<NoteListItemProps> = ({ index, noteId }) => {
               label: tCommon('edit'),
               onClick: () => openUpdateNoteFormModal(note.id),
               icon: <span className="material-symbols-outlined text-[20px]">edit</span>,
+            },
+            {
+              label: tCommon('duplicate'),
+              onClick: () => duplicateNote(note.id),
+              icon: <span className="material-symbols-outlined text-[20px]">content_copy</span>,
             },
             {
               label: tCommon('deleteLabel'),

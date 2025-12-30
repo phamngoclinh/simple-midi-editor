@@ -4,10 +4,11 @@ import { useMemo, useRef } from 'react';
 import useDeleteNote from '../../hooks/note/useDeleteNote';
 import { useNoteFormInitializer } from '../../hooks/note/useNoteFormInitializer';
 import useUpdateNote from '../../hooks/note/useUpdateNote';
+import useDuplicateNote from '../../hooks/note/useDuplicateNote';
 import { ChildFormHandles } from '../../utils/types';
 import Aside from '../common/Aside';
 import NoteForm from '../note/NoteForm';
-import { PrimaryButton, SecondaryButton } from '../common/Button';
+import { DefaultButton, PrimaryButton, SecondaryButton } from '../common/Button';
 import { useTranslations } from 'next-intl';
 
 interface AsideNoteFormProps {
@@ -20,6 +21,7 @@ const AsideNoteForm = ({ noteId, onCancel }: AsideNoteFormProps) => {
   const { initializeUpdateForm } = useNoteFormInitializer();
   const { updateNote } = useUpdateNote();
   const { deleteNote } = useDeleteNote();
+  const { duplicateNote } = useDuplicateNote();
   const t = useTranslations('Editor');
 
   const handleDelete = async (noteId: string) => {
@@ -36,12 +38,19 @@ const AsideNoteForm = ({ noteId, onCancel }: AsideNoteFormProps) => {
       title={t('editNote')}
       subTitle={t('editNoteDetails')}
       actions={[
-        <SecondaryButton
+        <DefaultButton
           key="delete"
           className="flex-1 border-red-500/30 text-red-500 hover:bg-red-500/10"
           onClick={() => handleDelete(noteId)}
         >
           <span className="material-symbols-outlined text-lg mr-2">delete</span> {t('delete')}
+        </DefaultButton>,
+        <SecondaryButton
+          key="duplicate"
+          className="flex-1"
+          onClick={() => duplicateNote(noteId)}
+        >
+          <span className="material-symbols-outlined text-lg mr-2">content_copy</span> {t('duplicate')}
         </SecondaryButton>,
         <PrimaryButton
           key="save"
