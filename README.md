@@ -1,5 +1,10 @@
 # Simple MIDI Editor
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](RELEASE_NOTES.md)
+
+[🇻🇳 Tiếng Việt](README.md) | [🇺🇸 English](README.en.md)
+
 Tài liệu ngắn gọn hướng dẫn cài đặt và chạy song song frontend (Create React App) và backend (NestJS) trên macOS / Linux.
 
 ## Mục lục
@@ -27,6 +32,15 @@ Ví dụ đường dẫn cục bộ:
 `/Users/linhpham/WorkingPlace/Coding/simple-midi-editor/backend`
 
 Live demo: https://mini-editor.linhpham.site/ — Bạn có thể xem bản live demo tại liên kết trên.
+
+## Tính năng (v0.1.0)
+
+- **Visual Editor**: Giao diện piano roll trực quan để xem và chỉnh sửa nốt nhạc MIDI.
+- **Kéo thả**: Hỗ trợ kéo thả nốt nhạc để thay đổi thời gian và cao độ.
+- **Hỗ trợ đa track**: Hiển thị và quản lý nhiều track MIDI.
+- **Playback**: Phát lại MIDI ngay trên trình duyệt.
+- **Công nghệ hiện đại**: Next.js 15, React 19, Tailwind CSS v4, NestJS, SQLite.
+- **Đa ngôn ngữ**: Hỗ trợ tiếng Việt và tiếng Anh.
 
 ## Yêu cầu
 
@@ -279,4 +293,22 @@ docker compose exec backend sh
 # hoặc bash nếu có
 docker compose exec backend bash
 ```
+
+## Release Notes
+
+Xem chi tiết các thay đổi trong [RELEASE_NOTES.md](RELEASE_NOTES.md).
+
+## Đóng góp (Contributing)
+
+Mọi đóng góp đều được hoan nghênh! Vui lòng:
+
+1. Fork dự án.
+2. Tạo nhánh tính năng (`git checkout -b feature/AmazingFeature`).
+3. Commit thay đổi (`git commit -m 'Add some AmazingFeature'`).
+4. Push lên nhánh (`git push origin feature/AmazingFeature`).
+5. Mở Pull Request.
+
+## Giấy phép (License)
+
+Dự án này được cấp phép theo giấy phép MIT. Xem file [LICENSE](LICENSE) để biết thêm chi tiết.
 
